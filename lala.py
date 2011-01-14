@@ -69,6 +69,7 @@ class Bot(lurklib.Client):
         self._identified = []
         self._channel = channel
         self._callbacks = {}
+        self._regexes = {}
         self._cbprefix = "!"
         self.__version__ = version
         self.plugger = Plugger(self, "plugins")
@@ -89,6 +90,16 @@ class Bot(lurklib.Client):
                     user,
                     event[1], #channel
                     text)
+
+            for regex in self._regexes:
+                match = regex.search(text)
+                if match is not None:
+                    self._regexes[regex](
+                            self,
+                            user,
+                            event[1], #channel
+                            text,
+                            match)
         except (lurklib.exceptions._Exceptions.NotInChannel,
                 lurklib.exceptions._Exceptions.NotOnChannel):
             # Some plugin tried to send to a channel it's not in
@@ -106,6 +117,9 @@ class Bot(lurklib.Client):
         """ Adds func to the callbacks for trigger """
         logging.debug("Registering callback for %s" % trigger)
         self._callbacks[trigger] = func
+
+    def register_regex(self, regex, func):
+        self._regexes[regex] = func
 
 if __name__ == '__main__':
     bot = Bot()
