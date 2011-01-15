@@ -133,7 +133,10 @@ class Bot(lurklib.Client):
             # Some plugin tried to send to a channel it's not in
             # This should not happen, but anyway:
             pass
-        # TODO Catch TypeError (some command argument was not correct)
+        # Catch TypeError: some command parameter was not correct
+        # TODO Find a way to tell people about wrong parameters
+        except TypeError, e:
+            pass
 
     def on_ctcp(self, event):
         if event[2] == "VERSION":
