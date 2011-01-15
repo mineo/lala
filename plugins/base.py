@@ -50,6 +50,8 @@ class Plugin(plugin.baseplugin):
                 bot.privmsg(channel, "Sorry, I'm already in enough channels.")
             except _Exceptions.InviteOnlyChan, e:
                 bot.privmsg(channel, "Sorry, invite only.")
+            except _Exceptions.AlreadyInChannel, e:
+                bot.privmsg(channel, "I'm already there!")
 
     def quit(self, bot, user, channel, text):
         if self.is_admin(bot, user):
