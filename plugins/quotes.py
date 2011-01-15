@@ -11,7 +11,12 @@ class Plugin(plugin.baseplugin):
         self._con.text_factory = sqlite3.OptimizedUnicode
         bot.register_callback("getquote", self.getquote)
         bot.register_callback("addquote", self.addquote)
-        bot.register_callback("delquote", self.delquote)
+        bot.register_callback("rquote", self.randomquote)
+        bot.register_callback("lastquote", self.lastquote)
+        #bot.register_callback("delquote", self.delquote)
+
+    def __del__(self):
+        self._con.close()
 
     def getquote(self, bot, user, channel, text):
         s_text = text.split()
@@ -49,3 +54,15 @@ class Plugin(plugin.baseplugin):
                 self._con.commit()
         else:
             bot.privmsg(channel, "%s: Bist du nur dumm, Junge?" % user)
+
+    def lastquote(self, bot, user, channel, text):
+        with self._con:
+            id, quote = self._con.execute("SELECT rowid, quote FROM quotes\
+            ORDER BY rowid DESC LIMIT 1;")
+            bot.privmsg(channel, "[%s] %s" % (id, quote))
+
+    def randomquote(self, bot, user, channel, text):
+        with self._con:
+            id, quote = self._con.execute("SELECT rowid, quote FROM quotes ORDER\
+            BY random() LIMIT 1;").fetchall()[0]
+            bot.privmsg(channel, "[%s] %s" % (id, quote))
