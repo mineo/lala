@@ -23,4 +23,4 @@ class Plugin(plugin.baseplugin):
         beg = content.find("<title>")
         if beg != -1:
             title = content[beg+7:content.find("</title>")].replace("\n","")
-            bot.privmsg(channel, "Title: %s" % title)
+            bot.privmsg(channel, "Title: %s" % unicode(title, "utf-8"))
