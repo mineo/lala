@@ -86,8 +86,8 @@ class Bot(lurklib.Client):
                     when="midnight")
             self._logger.setLevel(logging.INFO)
             handler.setFormatter(
-                    logging.Formatter("%(asctime)s %(message)s"),
-                                      "%Y-%m-%d %H:%m")
+                    logging.Formatter("%(asctime)s %(message)s",
+                                      "%Y-%m-%d %H:%m"))
             self._logger.addHandler(handler)
 
         if debug:
