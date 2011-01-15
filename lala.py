@@ -11,6 +11,7 @@ import os
 from os.path import basename, join
 from time import sleep
 
+
 class Plugger(object):
     def __init__(self, bot, path):
         self.bot = bot
@@ -33,6 +34,7 @@ class Plugger(object):
             plug.Plugin(self.bot)
         else:
             raise exc.NoSuchPlugin("No %s.py found in sys.path" % name)
+
 
 class Bot(lurklib.Client):
     def __init__(self,
@@ -70,21 +72,22 @@ class Bot(lurklib.Client):
                 UTC = UTC
                 )
 
-
         self._admins = [admin]
 
         if log:
             logfolder = os.path.expanduser(logfolder)
-            self._logfile = join(logfolder,"lala.log")
+            self._logfile = join(logfolder, "lala.log")
             if not os.path.exists(logfolder):
                 os.makedirs(logfolder)
             self._logger = logging.getLogger("MessageLog")
             handler = logging.handlers.TimedRotatingFileHandler(
+                    encoding="utf-8",
                     filename=self._logfile,
                     when="midnight")
             self._logger.setLevel(logging.INFO)
             handler.setFormatter(
-                logging.Formatter("%(asctime)s %(message)s"))
+                    logging.Formatter("%(asctime)s %(message)s"),
+                                      "%Y-%m-%d %H:%m")
             self._logger.addHandler(handler)
 
         if debug:
@@ -109,11 +112,11 @@ class Bot(lurklib.Client):
         self._logger.info("%s: %s" % (user, text))
         command = text.split()[0].replace(self._cbprefix, "")
         try:
-            if self._callbacks.has_key(command):
+            if command in self._callbacks:
                 self._callbacks[command](
-                    self, #bot
+                    self,  # bot
                     user,
-                    event[1], #channel
+                    event[1],  # channel
                     text)
 
             for regex in self._regexes:
@@ -122,7 +125,7 @@ class Bot(lurklib.Client):
                     self._regexes[regex](
                             self,
                             user,
-                            event[1], #channel
+                            event[1],  # channel
                             text,
                             match)
         except (lurklib.exceptions._Exceptions.NotInChannel,
@@ -130,13 +133,13 @@ class Bot(lurklib.Client):
             # Some plugin tried to send to a channel it's not in
             # This should not happen, but anyway:
             pass
+        # TODO Catch TypeError (some command argument was not correct)
 
     def on_ctcp(self, event):
         if event[2] == "VERSION":
             logging.debug("VERSION request from %s" % event[0][0])
-            self.notice(event[0][0], 
+            self.notice(event[0][0],
                         self.ctcp_encode("VERSION %s" % self.__version__))
-
 
     def register_callback(self, trigger, func):
         """ Adds func to the callbacks for trigger """
