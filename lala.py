@@ -5,9 +5,11 @@ import glob
 import sys
 import exceptions as exc
 import logging
+import logging.handlers
+import os
 
-from os.path import basename
-from os import listdir
+from os.path import basename, join
+from time import sleep
 
 class Plugger(object):
     def __init__(self, bot, path):
@@ -26,7 +28,7 @@ class Plugger(object):
         if not py:
             name = name + ".py"
 
-        if name in listdir(self.path):
+        if name in os.listdir(self.path):
             plug = __import__(name[:-3])
             plug.Plugin(self.bot)
         else:
@@ -37,18 +39,22 @@ class Bot(lurklib.Client):
                 server,
                 admin,
                 port=None,
-                nick='Lurklib',
-                user='Lurklib',
-                real_name='The Lurk Internet Relay Chat Library',
+                nick='lalal',
+                user='lalala',
+                real_name='lalilu',
                 password=None,
                 tls=False,
                 tls_verify=False,
                 encoding='UTF-8',
                 hide_called_events=True,
                 UTC=False,
-                channel="#reisplanet",
+                channel="#lalala",
                 version="lala 0.1",
-                logformat="%(filename)s: %(funcName)s:%(lineno)d %(message)s"
+                debug=True,
+                debugformat=
+                "%(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s",
+                log=True,
+                logfolder="~/.lala/logs"
                 ):
 
         lurklib.Client.__init__(self,
@@ -64,9 +70,26 @@ class Bot(lurklib.Client):
                 UTC = UTC
                 )
 
-        logging.basicConfig(format=logformat, level=logging.DEBUG)
+
         self._admins = [admin]
-        self._identified = []
+
+        if log:
+            logfolder = os.path.expanduser(logfolder)
+            self._logfile = join(logfolder,"lala.log")
+            if not os.path.exists(logfolder):
+                os.makedirs(logfolder)
+            self._logger = logging.getLogger("MessageLog")
+            handler = logging.handlers.TimedRotatingFileHandler(
+                    filename=self._logfile,
+                    when="midnight")
+            self._logger.setLevel(logging.INFO)
+            handler.setFormatter(
+                logging.Formatter("%(asctime)s %(message)s"))
+            self._logger.addHandler(handler)
+
+        if debug:
+            logging.basicConfig(format=debugformat, level=logging.DEBUG)
+
         self._channel = channel
         self._callbacks = {}
         self._regexes = {}
@@ -76,12 +99,14 @@ class Bot(lurklib.Client):
         self.plugger.load_plugins()
 
     def on_connect(self):
+        sleep(2)
         self.join(self._channel)
 
     def on_privmsg(self, event):
         user = event[0][0]
         text = event[2]
         logging.info("%s: %s" % (user, text))
+        self._logger.info("%s: %s" % (user, text))
         command = text.split()[0].replace(self._cbprefix, "")
         try:
             if self._callbacks.has_key(command):
