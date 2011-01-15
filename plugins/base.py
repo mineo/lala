@@ -10,6 +10,7 @@ class Plugin(plugin.baseplugin):
         bot.register_callback("quit", self.quit)
         bot.register_callback("part", self.part)
         bot.register_callback("join", self.join)
+        bot.register_callback("server", self.server)
 
     def is_admin(self, bot, user):
         if user in bot._admins:
@@ -57,3 +58,7 @@ class Plugin(plugin.baseplugin):
         if self.is_admin(bot, user):
             logging.debug("Quitting")
             bot.quit("leaving")
+
+    def server(self, bot, user, channel, text):
+        """Shows the server the bot is connected to"""
+        bot.privmsg(user, bot.server)
