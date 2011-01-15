@@ -13,6 +13,7 @@ class Plugin(plugin.baseplugin):
         bot.register_callback("addquote", self.addquote)
         bot.register_callback("rquote", self.randomquote)
         bot.register_callback("lastquote", self.lastquote)
+        bot.register_callback("searchquote", self.searchquote)
         #bot.register_callback("delquote", self.delquote)
 
     def __del__(self):
@@ -66,3 +67,17 @@ class Plugin(plugin.baseplugin):
             (id, quote) = self._con.execute("SELECT rowid, quote FROM quotes ORDER\
             BY random() LIMIT 1;").fetchall()[0]
             bot.privmsg(channel, "[%s] %s" % (id, quote))
+
+    def searchquote(self, bot, user, channel, text):
+        s_text = text.split()
+        logging.debug(s_text[1:])
+        with self._con:
+            quotes = self._con.execute("SELECT rowid, quote FROM quotes\
+            WHERE quote LIKE (?)", [
+                "".join(("%",
+                        " ".join(s_text[1:]),
+                        "%"))]
+                ).fetchall()
+            logging.debug(len(quotes))
+            for (id, quote) in quotes:
+                bot.privmsg(channel, "[%s] %s" % (id, quote))
