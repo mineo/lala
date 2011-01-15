@@ -57,12 +57,12 @@ class Plugin(plugin.baseplugin):
 
     def lastquote(self, bot, user, channel, text):
         with self._con:
-            id, quote = self._con.execute("SELECT rowid, quote FROM quotes\
-            ORDER BY rowid DESC LIMIT 1;")
+            (id, quote) = self._con.execute("SELECT rowid, quote FROM quotes\
+            ORDER BY rowid DESC LIMIT 1;").fetchall()[0]
             bot.privmsg(channel, "[%s] %s" % (id, quote))
 
     def randomquote(self, bot, user, channel, text):
         with self._con:
-            id, quote = self._con.execute("SELECT rowid, quote FROM quotes ORDER\
+            (id, quote) = self._con.execute("SELECT rowid, quote FROM quotes ORDER\
             BY random() LIMIT 1;").fetchall()[0]
             bot.privmsg(channel, "[%s] %s" % (id, quote))
