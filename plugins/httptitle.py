@@ -4,7 +4,7 @@ import logging
 import re
 
 from httplib import HTTPException
-from htmllib import HTMLParser
+import HTMLParser
 
 class Plugin(plugin.baseplugin):
     def __init__(self, bot):
@@ -13,7 +13,7 @@ class Plugin(plugin.baseplugin):
         bot.register_regex(self._regex, self.title)
 
     def unescape(self, s):
-        p = HTMLParser(None)
+        p = HTMLParser.HTMLParser(None)
         p.save_bgn()
         p.feed(s)
         return p.save_end()
@@ -30,5 +30,8 @@ class Plugin(plugin.baseplugin):
         beg = content.find("<title>")
         if beg != -1:
             title = content[beg+7:content.find("</title>")].replace("\n","")
-            title = self.unescape(title)
+            try:
+                title = self.unescape(title)
+            except HTMLParser.HTMLParseError, e:
+                logging.info("%s -  %s" % (e.msg, url))
             bot.privmsg(channel, "Title: %s" % unicode(title, "utf-8"))
