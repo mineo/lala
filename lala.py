@@ -110,14 +110,15 @@ class Bot(lurklib.Client):
         text = event[2]
         logging.info("%s: %s" % (user, text))
         self._logger.info("%s: %s" % (user, text))
-        command = text.split()[0].replace(self._cbprefix, "")
         try:
-            if command in self._callbacks:
-                self._callbacks[command](
-                    self,  # bot
-                    user,
-                    event[1],  # channel
-                    text)
+            if text.startswith(self._cbprefix):
+                command = text.split()[0].replace(self._cbprefix, "")
+                if command in self._callbacks:
+                    self._callbacks[command](
+                        self,  # bot
+                        user,
+                        event[1],  # channel
+                        text)
 
             for regex in self._regexes:
                 match = regex.search(text)
