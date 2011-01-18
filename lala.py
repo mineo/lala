@@ -9,7 +9,6 @@ import logging.handlers
 import os
 
 from os.path import basename, join
-from time import sleep
 
 
 class Plugger(object):
@@ -56,7 +55,9 @@ class Bot(lurklib.Client):
                 debugformat=
                 "%(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s",
                 log=True,
-                logfolder="~/.lala/logs"
+                logfolder="~/.lala/logs",
+                plugins=['last', 'quotes', 'base'],
+                nickserv=None
                 ):
 
         lurklib.Client.__init__(self,
@@ -98,12 +99,19 @@ class Bot(lurklib.Client):
         self._regexes = {}
         self._cbprefix = "!"
         self.__version__ = version
+        self._nickserv_password = nickserv
         self.plugger = Plugger(self, "plugins")
-        self.plugger.load_plugins()
+        try:
+            for plugin in plugins:
+                self.plugger.load_plugin(plugin)
+        except exc.NoSuchPlugin, e:
+            logging.info("%s could not be loaded" % plugin)
+        self.plugger.load_plugin("base")
 
     def on_connect(self):
-        sleep(2)
-        self.join(self._channel)
+        if self._nickserv_password:
+            logging.debug("Identifying with %s" % self._nickserv_password)
+            self.privmsg("NickServ", "identify %s" % self._nickserv_password)
 
     def on_privmsg(self, event):
         user = event[0][0]
@@ -138,6 +146,11 @@ class Bot(lurklib.Client):
         # TODO Find a way to tell people about wrong parameters
         except TypeError, e:
             pass
+
+    def on_notice(self, event):
+        user = event[0][0]
+        text = event[2]
+        self._logger.info("NOTICE from %s: %s" % (user, text))
 
     def on_ctcp(self, event):
         if event[2] == "VERSION":
