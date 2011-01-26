@@ -28,11 +28,12 @@ class Plugger(object):
         if not py:
             name = name + ".py"
 
-        if name in os.listdir(self.path):
-            plug = __import__(name[:-3])
-            plug.Plugin(self.bot)
-        else:
-            raise exc.NoSuchPlugin("No %s.py found in sys.path" % name)
+        logging.debug("Trying to load %s" % name)
+        #if name in os.listdir(self.path):
+        plug = __import__(name[:-3])
+        plug.Plugin(self.bot)
+        #else:
+            #raise exc.NoSuchPlugin("No %s.py found in sys.path" % name)
 
 
 class Bot(lurklib.Client):
@@ -60,19 +61,6 @@ class Bot(lurklib.Client):
                 nickserv=None
                 ):
 
-        lurklib.Client.__init__(self,
-                server = server,
-                port = port,
-                nick = nick,
-                real_name = real_name,
-                password = password,
-                tls = tls,
-                tls_verify = tls_verify,
-                encoding = encoding,
-                hide_called_events = hide_called_events,
-                UTC = UTC
-                )
-
         self._admins = [admin]
 
         if log:
@@ -96,18 +84,31 @@ class Bot(lurklib.Client):
 
         self._channel = channel
         self._callbacks = {}
+        self._join_callbacks = list()
         self._regexes = {}
         self._cbprefix = "!"
         self.__version__ = version
         self._nickserv_password = nickserv
         self.plugger = Plugger(self, "plugins")
-        try:
-            for plugin in plugins:
-                self.plugger.load_plugin(plugin)
-        except exc.NoSuchPlugin, e:
-            logging.info("%s could not be loaded" % plugin)
+        #try:
+        for plugin in plugins:
+            self.plugger.load_plugin(plugin)
+        #except exc.NoSuchPlugin, e:
+            #logging.info("%s could not be loaded" % plugin)
         self.plugger.load_plugin("base")
 
+        lurklib.Client.__init__(self,
+                server = server,
+                port = port,
+                nick = nick,
+                real_name = real_name,
+                password = password,
+                tls = tls,
+                tls_verify = tls_verify,
+                encoding = encoding,
+                hide_called_events = hide_called_events,
+                UTC = UTC
+                )
     def on_connect(self):
         if self._nickserv_password:
             logging.debug("Identifying with %s" % self._nickserv_password)
@@ -152,6 +153,11 @@ class Bot(lurklib.Client):
         text = event[2]
         self._logger.info("NOTICE from %s: %s" % (user, text))
 
+    def on_join(self, event):
+        logging.debug("%s joined" % event[0][0])
+        for cb in self._join_callbacks:
+            cb(self, event)
+
     def on_ctcp(self, event):
         if event[2] == "VERSION":
             logging.debug("VERSION request from %s" % event[0][0])
@@ -162,6 +168,9 @@ class Bot(lurklib.Client):
         """ Adds func to the callbacks for trigger """
         logging.debug("Registering callback for %s" % trigger)
         self._callbacks[trigger] = func
+
+    def register_join_callback(self, func):
+        self._join_callbacks.append(func)
 
     def register_regex(self, regex, func):
         self._regexes[regex] = func
