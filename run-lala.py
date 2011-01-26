@@ -12,10 +12,6 @@ def main():
         debug = True
     else:
         debug = False
-    if "nickserv_password" in lalaconfig:
-        nickserv_password = lalaconfig["nickserv_password"]
-    else:
-        nick
     nickserv_password = lalaconfig["nickserv_password"] if "nickserv_password"\
             in lalaconfig else None
     plugins = lalaconfig["plugins"].split(",")
