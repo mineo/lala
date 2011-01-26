@@ -2,6 +2,9 @@ import sqlite3
 import logging
 import plugin
 
+
+from time import sleep
+
 class Plugin(plugin.baseplugin):
     def __init__(self, bot):
         self._con = sqlite3.connect("quotes.sqlite3")
@@ -14,6 +17,7 @@ class Plugin(plugin.baseplugin):
         bot.register_callback("rquote", self.randomquote)
         bot.register_callback("lastquote", self.lastquote)
         bot.register_callback("searchquote", self.searchquote)
+        bot.register_join_callback(self.join)
         #bot.register_callback("delquote", self.delquote)
 
     def __del__(self):
@@ -78,6 +82,21 @@ class Plugin(plugin.baseplugin):
                         " ".join(s_text[1:]),
                         "%"))]
                 ).fetchall()
-            logging.debug(len(quotes))
             for (id, quote) in quotes:
                 bot.privmsg(channel, "[%s] %s" % (id, quote))
+                # TODO get rid of this ugly thing
+                sleep(1)
+
+    def join(self, bot, event):
+        user =  event[0][0]
+        print user
+        channel = event[1]
+        with self._con:
+            try:
+                (id, quote) = self._con.execute("SELECT rowid, quote FROM quotes\
+                    WHERE quote LIKE (?) ORDER BY random() LIMIT\
+                    1;", ["".join(["%", user, "%"])]).fetchall()[0]
+            except IndexError, e:
+                # There's no matching quote,
+                return
+            bot.privmsg(channel, "[%s] %s" % (id, quote))
