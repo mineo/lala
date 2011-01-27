@@ -34,7 +34,8 @@ class Plugin(plugin.baseplugin):
                 if len(q) > 0:
                     bot.privmsg(channel, "[%s] %s" % (quotenumber, q[0][0]))
         else:
-            bot.privmsg(channel, "%s: Bist du nur dumm, Junge?" % user)
+            bot.privmsg(channel, "%s: There's no quote #%s" % (user,
+                quotenumber))
 
     def addquote(self, bot, user, channel, text):
         s_text = text.split()
@@ -46,7 +47,7 @@ class Plugin(plugin.baseplugin):
                         [text])
                 bot.privmsg(channel, "New quote: %s" % c.lastrowid)
         else:
-            bot.privmsg(channel, "%s: Bist du nur dumm, Junge?" % user)
+            bot.privmsg(channel, "%s: You didn't give me any text to quote " % user)
 
     def delquote(self, bot, user, channel, text):
         s_text = text.split()
@@ -58,7 +59,8 @@ class Plugin(plugin.baseplugin):
                     [quotenumber]).fetchall()
                 self._con.commit()
         else:
-            bot.privmsg(channel, "%s: Bist du nur dumm, Junge?" % user)
+            bot.privmsg(channel, "%s: There's no quote #%s" % (user,
+                quotenumber))
 
     def lastquote(self, bot, user, channel, text):
         with self._con:
