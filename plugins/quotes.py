@@ -97,7 +97,6 @@ class Plugin(plugin.baseplugin):
 
     def join(self, bot, event):
         user =  event[0][0]
-        print user
         channel = event[1]
         with self._con:
             try:
