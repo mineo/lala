@@ -109,6 +109,7 @@ class Bot(lurklib.Client):
                 hide_called_events = hide_called_events,
                 UTC = UTC
                 )
+
     def on_connect(self):
         if self._nickserv_password:
             logging.debug("Identifying with %s" % self._nickserv_password)
