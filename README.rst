@@ -3,7 +3,7 @@ lala bot
 
 Dependencies
 ------------
-Depends on lurklib, which can be found at https://github.com/mineo/lurklib_
+Depends on lurklib, which can be found at https://github.com/mineo/lurklib
 This includes some modifications / bugfixes by me
 
 Setup
