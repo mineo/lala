@@ -2,11 +2,13 @@
 import lala
 import ConfigParser
 import sys
+import os
 
 def main():
     """Main method"""
     config = ConfigParser.SafeConfigParser()
-    config.read("config")
+    configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
+    config.read(configfile)
     lalaconfig = config._sections["lala"]
     if "-d" in sys.argv:
         debug = True
@@ -20,7 +22,7 @@ def main():
             admin=lalaconfig["admin"],
             port=int(lalaconfig["port"]),
             nick=lalaconfig["nick"],
-            channel=lalaconfig["channel"],
+            #channel=lalaconfig["channel"],
             debug=debug,
             plugins=plugins,
             nickserv = nickserv_password
