@@ -8,8 +8,7 @@ from lala import Bot
 def main():
     """Main method"""
     config = ConfigParser.SafeConfigParser()
-    #configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
-    configfile = "config.test"
+    configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
     config.read(configfile)
     lalaconfig = config._sections["lala"]
     if "-d" in sys.argv:
