@@ -9,7 +9,7 @@ from time import sleep
 class Plugin(plugin.baseplugin):
     def __init__(self, bot):
         self._con = sqlite3.connect(
-                os.path.join(os.path.expanduser("~/.lala","quotes.sqlite3"))
+                os.path.join(os.path.expanduser("~/.lala"),"quotes.sqlite3"))
         self._con.execute("CREATE TABLE IF NOT EXISTS quotes(\
             quote TEXT);")
         self._con.commit()
