@@ -1,13 +1,15 @@
 #!/usr/bin/python2
-import lala
 import ConfigParser
 import sys
 import os
 
+from lala import Bot
+
 def main():
     """Main method"""
     config = ConfigParser.SafeConfigParser()
-    configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
+    #configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
+    configfile = "config.test"
     config.read(configfile)
     lalaconfig = config._sections["lala"]
     if "-d" in sys.argv:
@@ -17,7 +19,7 @@ def main():
     nickserv_password = lalaconfig["nickserv_password"] if "nickserv_password"\
             in lalaconfig else None
     plugins = lalaconfig["plugins"].split(",")
-    bot = lala.Bot(
+    bot = Bot(
             server=lalaconfig["server"],
             admin=lalaconfig["admin"],
             port=int(lalaconfig["port"]),

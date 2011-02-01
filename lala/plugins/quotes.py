@@ -1,6 +1,6 @@
 import sqlite3
 import logging
-import plugin
+from lala import plugin
 
 
 from time import sleep

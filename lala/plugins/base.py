@@ -1,6 +1,5 @@
-import plugin
+from lala import plugin
 import logging
-import exceptions
 
 from lurklib.exceptions import _Exceptions
 

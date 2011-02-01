@@ -1,4 +1,4 @@
-import plugin
+from lala import plugin
 import codecs
 
 from lurklib.exceptions import _Exceptions

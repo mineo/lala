@@ -1,5 +1,5 @@
 import logging
-import plugin
+from lala import plugin
 
 
 from random import randint

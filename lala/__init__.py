@@ -3,7 +3,6 @@
 import lurklib
 import glob
 import sys
-import exceptions as exc
 import logging
 import logging.handlers
 import os
@@ -15,7 +14,7 @@ class Plugger(object):
     def __init__(self, bot, path):
         self.bot = bot
         if not path in sys.path:
-            sys.path.append(path)
+            sys.path.append(os.path.join(os.getcwd(),path))
         self.path = path
 
     def load_plugins(self):
@@ -29,11 +28,8 @@ class Plugger(object):
             name = name + ".py"
 
         logging.debug("Trying to load %s" % name)
-        #if name in os.listdir(self.path):
         plug = __import__(name[:-3])
         plug.Plugin(self.bot)
-        #else:
-            #raise exc.NoSuchPlugin("No %s.py found in sys.path" % name)
 
 
 class Bot(lurklib.Client):
@@ -89,12 +85,9 @@ class Bot(lurklib.Client):
         self._cbprefix = "!"
         self.__version__ = version
         self._nickserv_password = nickserv
-        self.plugger = Plugger(self, "plugins")
-        #try:
+        self.plugger = Plugger(self, "lala/plugins")
         for plugin in plugins:
             self.plugger.load_plugin(plugin)
-        #except exc.NoSuchPlugin, e:
-            #logging.info("%s could not be loaded" % plugin)
         self.plugger.load_plugin("base")
 
         lurklib.Client.__init__(self,

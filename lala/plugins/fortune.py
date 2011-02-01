@@ -1,4 +1,4 @@
-import plugin
+from lala import plugin
 import logging
 import subprocess
 
