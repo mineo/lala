@@ -57,7 +57,7 @@ class Bot(lurklib.Client):
                 nickserv=None
                 ):
 
-        self._admins = [admin]
+        self._admins = admin
 
         if log:
             logfolder = os.path.expanduser(logfolder)
