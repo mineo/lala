@@ -5,10 +5,11 @@ from lurklib.exceptions import _Exceptions
 
 class Plugin(plugin.baseplugin):
     def __init__(self, bot):
-        bot.register_callback("load", self.load)
+        #bot.register_callback("load", self.load)
         bot.register_callback("quit", self.quit)
         bot.register_callback("part", self.part)
         bot.register_callback("join", self.join)
+        bot.register_callback("commands", self.commands)
         bot.register_callback("server", self.server)
 
     def is_admin(self, bot, user):
@@ -61,3 +62,9 @@ class Plugin(plugin.baseplugin):
     def server(self, bot, user, channel, text):
         """Shows the server the bot is connected to"""
         bot.privmsg(user, bot.server)
+
+    def commands(self, bot, user, channel, text):
+        """Prints all available callbacks"""
+        bot.privmsg(channel, "I know the following commands:")
+        s = "!" + " !".join(bot._callbacks)
+        bot.privmsg(channel, s)
