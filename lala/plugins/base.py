@@ -6,6 +6,7 @@ from lurklib.exceptions import _Exceptions
 class Plugin(plugin.baseplugin):
     def __init__(self, bot):
         #bot.register_callback("load", self.load)
+        bot.register_callback("addadmin", self.addadmin)
         bot.register_callback("quit", self.quit)
         bot.register_callback("part", self.part)
         bot.register_callback("join", self.join)
@@ -68,3 +69,9 @@ class Plugin(plugin.baseplugin):
         bot.privmsg(channel, "I know the following commands:")
         s = "!" + " !".join(bot._callbacks)
         bot.privmsg(channel, s)
+
+    def addadmin(self, bot, user, channel, text):
+        """Add a user to the list of admins"""
+        if self.is_admin(bot, user):
+            bot._admins.append(text)
+            bot.privmsg("%s has been added to the list of admins" % text)
