@@ -7,6 +7,7 @@ class Plugin(plugin.baseplugin):
     def __init__(self, bot):
         #bot.register_callback("load", self.load)
         bot.register_callback("addadmin", self.addadmin)
+        bot.register_callback("deladmin", self.deladmin)
         bot.register_callback("quit", self.quit)
         bot.register_callback("part", self.part)
         bot.register_callback("join", self.join)
@@ -72,6 +73,23 @@ class Plugin(plugin.baseplugin):
 
     def addadmin(self, bot, user, channel, text):
         """Add a user to the list of admins"""
+        admin = text.split()[1]
         if self.is_admin(bot, user):
-            bot._admins.append(text)
-            bot.privmsg("%s has been added to the list of admins" % text)
+            if admin in bot._admins:
+                bot.privmsg(channel, "%s already is an admin" % admin)
+            else:
+                bot._admins.append(admin)
+                bot.privmsg(channel,
+                            "%s has been added to the list of admins" % admin)
+
+    def deladmin(self, bot, user, channel, text):
+        """Remove a user from the list of admins"""
+        admin = text.split()[1]
+        if self.is_admin(bot, user):
+            if admin in bot._admins:
+                bot._admins.remove(admin)
+                bot.privmsg(channel,
+                            "%s has been removed from the list of admins" %
+                            admin)
+            else:
+                bot.privmsg(channel, "Sorry, %s is not even an admin" % text)
