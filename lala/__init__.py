@@ -111,6 +111,10 @@ class Bot(lurklib.Client):
     def on_privmsg(self, event):
         user = event[0][0]
         text = event[2]
+        if event[1] == self.current_nick:
+            channel = user
+        else:
+            channel = event[1]
         logging.info("%s: %s" % (user, text))
         self._logger.info("%s: %s" % (user, text))
         try:
@@ -120,7 +124,7 @@ class Bot(lurklib.Client):
                     self._callbacks[command](
                         self,  # bot
                         user,
-                        event[1],  # channel
+                        channel,  # channel
                         text)
 
             for regex in self._regexes:
@@ -129,7 +133,7 @@ class Bot(lurklib.Client):
                     self._regexes[regex](
                             self,
                             user,
-                            event[1],  # channel
+                            channel,
                             text,
                             match)
         except (lurklib.exceptions._Exceptions.NotInChannel,
