@@ -115,7 +115,6 @@ class Bot(lurklib.Client):
             channel = user
         else:
             channel = event[1]
-        logging.info("%s: %s" % (user, text))
         self._logger.info("%s: %s" % (user, text))
         try:
             if text.startswith(self._cbprefix):
