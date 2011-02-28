@@ -161,6 +161,12 @@ class Bot(lurklib.Client):
             self.notice(event[0][0],
                         self.ctcp_encode("VERSION %s" % self.__version__))
 
+    def on_part(self, event):
+        user = event[0][0]
+        channel = event[1]
+        reason = event[2]
+        self._logger.info("%s parted: %s" % (user, reason))
+
     def on_quit(self, event):
         user = event[0][0]
         reason = event[1]
