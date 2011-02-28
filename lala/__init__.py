@@ -161,6 +161,11 @@ class Bot(lurklib.Client):
             self.notice(event[0][0],
                         self.ctcp_encode("VERSION %s" % self.__version__))
 
+    def on_quit(self, event):
+        user = event[0][0]
+        reason = event[1]
+        self._logger.info("%s left: %s" % (user, reason))
+
     def register_callback(self, trigger, func):
         """ Adds func to the callbacks for trigger """
         logging.debug("Registering callback for %s" % trigger)
