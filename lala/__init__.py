@@ -151,7 +151,7 @@ class Bot(lurklib.Client):
         self._logger.info("NOTICE from %s: %s" % (user, text))
 
     def on_join(self, event):
-        logging.debug("%s joined" % event[0][0])
+        self._logger.info("%s joined" % event[0][0])
         for cb in self._join_callbacks:
             cb(self, event)
 
