@@ -183,6 +183,10 @@ class Bot(lurklib.Client):
     def register_regex(self, regex, func):
         self._regexes[regex] = func
 
+    def privmsg(self, target, message):
+        self._logger.info("%s: %s" % (self.current_nick, message))
+        lurklib.Client.privmsg(self, target, message)
+
 if __name__ == '__main__':
     bot = Bot()
     bot.mainloop()
