@@ -35,9 +35,9 @@ class Plugin(plugin.baseplugin):
                     WHERE rowid = ?;", [quotenumber]).fetchall()
                 if len(q) > 0:
                     bot.privmsg(channel, "[%s] %s" % (quotenumber, q[0][0]))
-        else:
-            bot.privmsg(channel, "%s: There's no quote #%s" % (user,
-                quotenumber))
+                else:
+                    bot.privmsg(channel, "%s: There's no quote #%s" % (user,
+                        quotenumber))
 
     def addquote(self, bot, user, channel, text):
         s_text = text.split()
