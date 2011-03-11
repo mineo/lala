@@ -154,7 +154,7 @@ class Bot(lurklib.Client):
     def on_join(self, event):
         self._logger.info("%s joined" % event[0][0])
         for cb in self._join_callbacks:
-            cb(self, event)
+            cb(event)
 
     def on_ctcp(self, event):
         if event[2] == "VERSION":

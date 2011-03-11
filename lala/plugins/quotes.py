@@ -3,7 +3,7 @@ import logging
 import os
 
 from time import sleep
-from lala.util import command, initplz, msg
+from lala.util import command, initplz, msg, on_join
 
 #@initplz
 #class Plugin(object):
@@ -108,6 +108,7 @@ def searchquote( user, channel, text):
             # TODO get rid of this ugly thing
             sleep(1)
 
+@on_join
 def join( event):
     user =  event[0][0]
     channel = event[1]

@@ -12,6 +12,10 @@ class command(object):
     def __call__(self, func):
         _BOT.register_callback(self.cmd, func)
 
+def on_join(f):
+    """Decorator for functions reacting to joins"""
+    _BOT.register_join_callback(f)
+
 def initplz(f):
     f()
 
