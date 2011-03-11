@@ -1,101 +1,89 @@
-from lala import plugin
 import logging
 
 from lurklib.exceptions import _Exceptions
+from lala.util import _BOT, command, is_admin, msg
 
-class Plugin(plugin.baseplugin):
-    def __init__(self, bot):
-        #bot.register_callback("load", self.load)
-        bot.register_callback("addadmin", self.addadmin)
-        bot.register_callback("admins", self.admins)
-        bot.register_callback("deladmin", self.deladmin)
-        bot.register_callback("quit", self.quit)
-        bot.register_callback("part", self.part)
-        bot.register_callback("join", self.join)
-        bot.register_callback("commands", self.commands)
-        bot.register_callback("server", self.server)
+@command("load")
+def load(user, channel, text):
+    if is_admin(user):
+        try:
+            _BOT.plugger.load_plugin(text.split()[1])
+        except exceptions.NoSuchPlugin:
+            msg(channel, "%s could not be found" % text[1])
 
-    def is_admin(self, bot, user):
-        if user in bot._admins:
-            logging.debug("%s is an admin" % user)
-            return True
+@command("part")
+def part(user, channel, text):
+    if is_admin(user):
+        try:
+            logging.debug("Parting %s" % text.split()[1])
+            _BOT.part(text.split()[1])
+        except _Exceptions.NotInChannel, e:
+            msg(channel, "Sorry, %s, I'm not in %s" % (user,
+                text.split()[1]))
+
+@command("join")
+def join(user, channel, text):
+    if is_admin(user):
+        chan = text.split()[1]
+        try:
+            logging.debug("Joining %s" % chan)
+            _BOT.join(chan)
+        except _Exceptions.ChannelIsFull, e:
+            msg(channel, "Sorry, %s is full." % chan)
+        except _Exceptions.NoSuchChannel, e:
+            msg(channel, "Sorry, %s doesn't exist." % chan)
+        except _Exceptions.TooManyChannels, e:
+            msg(channel, "Sorry, I'm already in enough channels.")
+        except _Exceptions.InviteOnlyChan, e:
+            msg(channel, "Sorry, invite only.")
+        except _Exceptions.AlreadyInChannel, e:
+            msg(channel, "I'm already there!")
+
+@command("quit")
+def quit(user, channel, text):
+    if is_admin(user):
+        logging.debug("Quitting")
+        _BOT.quit("leaving")
+
+@command("server")
+def server(user, channel, text):
+    """Shows the server the _BOT is connected to"""
+    msg(user, _BOT.server)
+
+@command("commands")
+def commands(user, channel, text):
+    """Prints all available callbacks"""
+    msg(channel, "I know the following commands:")
+    s = "!" + " !".join(_BOT._callbacks)
+    msg(channel, s)
+
+@command("addadmin")
+def addadmin(user, channel, text):
+    """Add a user to the list of admins"""
+    admin = text.split()[1]
+    if is_admin(user):
+        if admin in _BOT._admins:
+            msg(channel, "%s already is an admin" % admin)
         else:
-            logging.debug("%s is not an admin" % user)
-            return False
+            _BOT._admins.append(admin)
+            msg(channel,
+                        "%s has been added to the list of admins" % admin)
 
+@command("admins")
+def admins(user, channel, text):
+    """Print the list of admins"""
+    if is_admin(user):
+        msg(channel, " ".join(_BOT._admins))
 
-    def load(self, bot, user, channel, text):
-        if self.is_admin(bot, user):
-            try:
-                bot.plugger.load_plugin(text.split()[1])
-            except exceptions.NoSuchPlugin:
-                bot.privmsg(channel, "%s could not be found" % text[1])
-
-    def part(self, bot, user, channel, text):
-        if self.is_admin(bot, user):
-            try:
-                logging.debug("Parting %s" % text.split()[1])
-                bot.part(text.split()[1])
-            except _Exceptions.NotInChannel, e:
-                bot.privmsg(channel, "Sorry, %s, I'm not in %s" % (user,
-                    text.split()[1]))
-
-    def join(self, bot, user, channel, text):
-        if self.is_admin(bot, user):
-            chan = text.split()[1]
-            try:
-                logging.debug("Joining %s" % chan)
-                bot.join(chan)
-            except _Exceptions.ChannelIsFull, e:
-                bot.privmsg(channel, "Sorry, %s is full." % chan)
-            except _Exceptions.NoSuchChannel, e:
-                bot.privmsg(channel, "Sorry, %s doesn't exist." % chan)
-            except _Exceptions.TooManyChannels, e:
-                bot.privmsg(channel, "Sorry, I'm already in enough channels.")
-            except _Exceptions.InviteOnlyChan, e:
-                bot.privmsg(channel, "Sorry, invite only.")
-            except _Exceptions.AlreadyInChannel, e:
-                bot.privmsg(channel, "I'm already there!")
-
-    def quit(self, bot, user, channel, text):
-        if self.is_admin(bot, user):
-            logging.debug("Quitting")
-            bot.quit("leaving")
-
-    def server(self, bot, user, channel, text):
-        """Shows the server the bot is connected to"""
-        bot.privmsg(user, bot.server)
-
-    def commands(self, bot, user, channel, text):
-        """Prints all available callbacks"""
-        bot.privmsg(channel, "I know the following commands:")
-        s = "!" + " !".join(bot._callbacks)
-        bot.privmsg(channel, s)
-
-    def addadmin(self, bot, user, channel, text):
-        """Add a user to the list of admins"""
-        admin = text.split()[1]
-        if self.is_admin(bot, user):
-            if admin in bot._admins:
-                bot.privmsg(channel, "%s already is an admin" % admin)
-            else:
-                bot._admins.append(admin)
-                bot.privmsg(channel,
-                            "%s has been added to the list of admins" % admin)
-
-    def admins(self, bot, user, channel, text):
-        """Print the list of admins"""
-        if self.is_admin(bot, user):
-            bot.privmsg(channel, " ".join(bot._admins))
-
-    def deladmin(self, bot, user, channel, text):
-        """Remove a user from the list of admins"""
-        admin = text.split()[1]
-        if self.is_admin(bot, user):
-            if admin in bot._admins:
-                bot._admins.remove(admin)
-                bot.privmsg(channel,
-                            "%s has been removed from the list of admins" %
-                            admin)
-            else:
-                bot.privmsg(channel, "Sorry, %s is not even an admin" % text)
+@command("deladmin")
+def deladmin(user, channel, text):
+    """Remove a user from the list of admins"""
+    admin = text.split()[1]
+    if is_admin(user):
+        if admin in _BOT._admins:
+            _BOT._admins.remove(admin)
+            msg(channel,
+                        "%s has been removed from the list of admins" %
+                        admin)
+        else:
+            msg(channel, "Sorry, %s is not even an admin" % text)

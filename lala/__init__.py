@@ -8,6 +8,7 @@ import logging.handlers
 import os
 
 from os.path import basename, join
+from lala import util
 
 
 class Plugger(object):
@@ -29,7 +30,6 @@ class Plugger(object):
 
         logging.debug("Trying to load %s" % name)
         plug = __import__(name[:-3])
-        plug.Plugin(self.bot)
 
 
 class Bot(lurklib.Client):
@@ -86,9 +86,6 @@ class Bot(lurklib.Client):
         self.__version__ = version
         self._nickserv_password = nickserv
         self.plugger = Plugger(self, "plugins")
-        for plugin in plugins:
-            self.plugger.load_plugin(plugin)
-        self.plugger.load_plugin("base")
 
         lurklib.Client.__init__(self,
                 server = server,
@@ -102,6 +99,10 @@ class Bot(lurklib.Client):
                 hide_called_events = hide_called_events,
                 UTC = UTC
                 )
+        util._BOT = self
+        for plugin in plugins:
+            self.plugger.load_plugin(plugin)
+        self.plugger.load_plugin("base")
 
     def on_connect(self):
         if self._nickserv_password:
@@ -121,7 +122,7 @@ class Bot(lurklib.Client):
                 command = text.split()[0].replace(self._cbprefix, "")
                 if command in self._callbacks:
                     self._callbacks[command](
-                        self,  # bot
+                        #self,  # bot
                         user,
                         channel,  # channel
                         text)
