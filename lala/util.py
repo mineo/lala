@@ -13,6 +13,16 @@ class command(object):
     def __call__(self, func):
         _BOT.register_callback(self.cmd, func)
 
+class regex(object):
+    """Decorator to register a regex"""
+    def __init__(self, regex):
+        """docstring for __init__"""
+        self.re = regex
+
+    def __call__(self, func):
+        """docstring for __call"""
+        _BOT.register_regex(self.re, func)
+
 def initplz(f):
     f()
 

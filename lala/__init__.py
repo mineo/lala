@@ -131,7 +131,6 @@ class Bot(lurklib.Client):
                 match = regex.search(text)
                 if match is not None:
                     self._regexes[regex](
-                            self,
                             user,
                             channel,
                             text,
