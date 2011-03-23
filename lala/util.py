@@ -5,7 +5,7 @@ import logging
 _BOT = None
 
 class command(object):
-    """Decorator for commands"""
+    """Decorator to register a command"""
     def __init__(self, command):
         """docstring for __init__"""
         self.cmd = command
