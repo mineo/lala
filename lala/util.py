@@ -24,5 +24,5 @@ def is_admin(user):
         return False
 
 def msg(target, message):
-    """Message wrapper"""
+    """Send a message to a target"""
     _BOT.privmsg(target, message)
