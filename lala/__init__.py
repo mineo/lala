@@ -122,7 +122,6 @@ class Bot(lurklib.Client):
                 command = text.split()[0].replace(self._cbprefix, "")
                 if command in self._callbacks:
                     self._callbacks[command](
-                        #self,  # bot
                         user,
                         channel,  # channel
                         text)
