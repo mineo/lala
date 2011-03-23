@@ -1,3 +1,4 @@
+"""Helpers to be used with plugins"""
 import logging
 
 
