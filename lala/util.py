@@ -17,6 +17,7 @@ def initplz(f):
     f()
 
 def is_admin(user):
+    """True if the user is an admin, false otherwise"""
     if user in _BOT._admins:
         logging.debug("%s is an admin" % user)
         return True
