@@ -46,23 +46,17 @@ def main():
                               "%Y-%m-%d %H:%m"))
     logger.addHandler(handler)
 
-    while True:
-        try:
-            bot = Bot(
-                    server=lalaconfig["server"],
-                    admin=admins,
-                    port=int(lalaconfig["port"]),
-                    nick=lalaconfig["nick"],
-                    #channel=lalaconfig["channel"],
-                    debug=debug,
-                    plugins=plugins,
-                    nickserv = nickserv_password
-                    )
-            bot.mainloop()
-        except socket.error, e:
-            print e
-            print "Sleeping for 10 seconds"
-            sleep(10)
+    bot = Bot(
+            server=lalaconfig["server"],
+            admin=admins,
+            port=int(lalaconfig["port"]),
+            nick=lalaconfig["nick"],
+            #channel=lalaconfig["channel"],
+            debug=debug,
+            plugins=plugins,
+            nickserv = nickserv_password
+            )
+    bot.mainloop()
 
 if __name__ == '__main__':
     main()
