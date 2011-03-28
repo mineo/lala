@@ -2,8 +2,12 @@
 import ConfigParser
 import sys
 import os
+import socket
+import logging
 
 from lala import Bot
+from time import sleep
+from os.path import join
 
 def main():
     """Main method"""
@@ -27,20 +31,38 @@ def main():
     for i in lalaconfig["admin"].split(","):
         admins.append(i)
 
-    bot = Bot(
-            server=lalaconfig["server"],
-            admin=admins,
-            port=int(lalaconfig["port"]),
-            nick=lalaconfig["nick"],
-            #channel=lalaconfig["channel"],
-            debug=debug,
-            plugins=plugins,
-            nickserv = nickserv_password
-            )
-    #try:
-    bot.mainloop()
-    #except RuntimeError, e:
-        #print e
+    logfolder = os.path.expanduser("~/.lala/logs")
+    logfile = join(logfolder, "lala.log")
+    if not os.path.exists(logfolder):
+        os.makedirs(logfolder)
+    logger = logging.getLogger("MessageLog")
+    handler = logging.handlers.TimedRotatingFileHandler(
+            encoding="utf-8",
+            filename=logfile,
+            when="midnight")
+    logger.setLevel(logging.INFO)
+    handler.setFormatter(
+            logging.Formatter("%(asctime)s %(message)s",
+                              "%Y-%m-%d %H:%m"))
+    logger.addHandler(handler)
+
+    while True:
+        try:
+            bot = Bot(
+                    server=lalaconfig["server"],
+                    admin=admins,
+                    port=int(lalaconfig["port"]),
+                    nick=lalaconfig["nick"],
+                    #channel=lalaconfig["channel"],
+                    debug=debug,
+                    plugins=plugins,
+                    nickserv = nickserv_password
+                    )
+            bot.mainloop()
+        except socket.error, e:
+            print e
+            print "Sleeping for 10 seconds"
+            sleep(10)
 
 if __name__ == '__main__':
     main()
