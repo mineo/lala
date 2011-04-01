@@ -47,33 +47,16 @@ class Bot(lurklib.Client):
                 hide_called_events=True,
                 UTC=False,
                 channel="#lalala",
-                version="lala 0.1",
+                version="lala 0.1.2",
                 debug=True,
                 debugformat=
                 "%(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s",
-                log=True,
-                logfolder="~/.lala/logs",
                 plugins=['last', 'quotes', 'base'],
                 nickserv=None
                 ):
 
         self._admins = admin
-
-        if log:
-            logfolder = os.path.expanduser(logfolder)
-            self._logfile = join(logfolder, "lala.log")
-            if not os.path.exists(logfolder):
-                os.makedirs(logfolder)
-            self._logger = logging.getLogger("MessageLog")
-            handler = logging.handlers.TimedRotatingFileHandler(
-                    encoding="utf-8",
-                    filename=self._logfile,
-                    when="midnight")
-            self._logger.setLevel(logging.INFO)
-            handler.setFormatter(
-                    logging.Formatter("%(asctime)s %(message)s",
-                                      "%Y-%m-%d %H:%m"))
-            self._logger.addHandler(handler)
+        self._logger = logging.getLogger("MessageLog")
 
         if debug:
             logging.basicConfig(format=debugformat, level=logging.DEBUG)
@@ -122,7 +105,6 @@ class Bot(lurklib.Client):
                 command = text.split()[0].replace(self._cbprefix, "")
                 if command in self._callbacks:
                     self._callbacks[command](
-                        #self,  # bot
                         user,
                         channel,  # channel
                         text)
@@ -131,7 +113,6 @@ class Bot(lurklib.Client):
                 match = regex.search(text)
                 if match is not None:
                     self._regexes[regex](
-                            self,
                             user,
                             channel,
                             text,

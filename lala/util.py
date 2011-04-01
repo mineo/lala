@@ -1,10 +1,11 @@
+"""Helpers to be used with plugins"""
 import logging
 
 
 _BOT = None
 
 class command(object):
-    """Decorator for commands"""
+    """Decorator to register a command"""
     def __init__(self, command):
         """docstring for __init__"""
         self.cmd = command
@@ -16,10 +17,21 @@ def on_join(f):
     """Decorator for functions reacting to joins"""
     _BOT.register_join_callback(f)
 
+class regex(object):
+    """Decorator to register a regex"""
+    def __init__(self, regex):
+        """docstring for __init__"""
+        self.re = regex
+
+    def __call__(self, func):
+        """docstring for __call__"""
+        _BOT.register_regex(self.re, func)
+
 def initplz(f):
     f()
 
 def is_admin(user):
+    """True if the user is an admin, false otherwise"""
     if user in _BOT._admins:
         logging.debug("%s is an admin" % user)
         return True
@@ -28,5 +40,5 @@ def is_admin(user):
         return False
 
 def msg(target, message):
-    """Message wrapper"""
+    """Send a message to a target"""
     _BOT.privmsg(target, message)

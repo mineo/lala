@@ -5,18 +5,6 @@ import os
 from time import sleep
 from lala.util import command, initplz, msg, on_join
 
-#@initplz
-#class Plugin(object):
-    #def __init__(self):
-        #self._con = sqlite3.connect(
-                #os.path.join(os.path.expanduser("~/.lala"),"quotes.sqlite3"))
-        #self._con.execute("CREATE TABLE IF NOT EXISTS quotes(\
-            #quote TEXT);")
-        #self._con.commit()
-        #self._con.text_factory = sqlite3.OptimizedUnicode
-
-    #def __del__(self):
-        #self._con.close()
 db_connection = None
 
 @initplz
