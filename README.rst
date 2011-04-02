@@ -16,5 +16,4 @@ Setup
 
 TODO
 ----
-* Implement a better plugin system
 * Implement settings for plugins
