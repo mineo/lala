@@ -6,7 +6,6 @@ import socket
 import logging
 
 from lala import Bot, config
-from time import sleep
 from os.path import join
 
 def main():
