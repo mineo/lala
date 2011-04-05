@@ -35,7 +35,7 @@ class Plugger(object):
 class Bot(lurklib.Client):
     def __init__(self,
                 server,
-                admin,
+                admins,
                 port=None,
                 nick='lalal',
                 user='lalala',
@@ -46,7 +46,7 @@ class Bot(lurklib.Client):
                 encoding='UTF-8',
                 hide_called_events=True,
                 UTC=False,
-                channel="#lalala",
+                channels=[],
                 version="lala 0.1.2",
                 debug=True,
                 debugformat=
@@ -55,13 +55,13 @@ class Bot(lurklib.Client):
                 nickserv=None
                 ):
 
-        self._admins = admin
+        self._admins = admins
         self._logger = logging.getLogger("MessageLog")
 
         if debug:
             logging.basicConfig(format=debugformat, level=logging.DEBUG)
 
-        self._channel = channel
+        self._channels = channels
         self._callbacks = {}
         self._join_callbacks = list()
         self._regexes = {}
@@ -88,6 +88,9 @@ class Bot(lurklib.Client):
         self.plugger.load_plugin("base")
 
     def on_connect(self):
+        for channel in self._channels:
+            self.join(channel)
+
         if self._nickserv_password:
             logging.debug("Identifying with %s" % self._nickserv_password)
             self.privmsg("NickServ", "identify %s" % self._nickserv_password)

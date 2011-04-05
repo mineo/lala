@@ -1,10 +1,14 @@
+# All entries which allow multiple values should be comma-separated, e.g.
+# admins = admin1,admin2
 [lala]
 server = irc.example.com
 port = 6667
 nick =
-# Admin of the bot. Can issue commands from the "base"-plugin
-admin =
-# Plugins to load on startup
+# Admins of the bot. Can issue commands from the "base"-plugin (not! optional)
+admins =
+# Plugins to load on startup (optional)
 plugins=decide,quotes,last,fortune
-# The nickserv password.
-# nickserv_password = 
+# The nickserv password (optional)
+# nickserv_password =
+# Channels to automatically join (optional)
+# channels =
