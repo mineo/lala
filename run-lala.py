@@ -44,7 +44,7 @@ def main():
             admins=lalaconfig["admins"].split(","),
             port=int(lalaconfig["port"]),
             nick=lalaconfig["nick"],
-            channels=get_conf_key(lalaconf, "channels", []),
+            channels=get_conf_key(lalaconfig, "channels", []),
             debug=debug,
             plugins=get_conf_key(lalaconfig, "plugins", []),
             nickserv = get_conf_key(lalaconfig, "nickserv_password", None)
