@@ -1,6 +1,6 @@
 # All entries which allow multiple values should be comma-separated, e.g.
 # admins = admin1,admin2
-[lala]
+[base]
 server = irc.example.com
 port = 6667
 nick =
