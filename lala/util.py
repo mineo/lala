@@ -39,6 +39,6 @@ def is_admin(user):
         logging.debug("%s is not an admin" % user)
         return False
 
-def msg(target, message):
+def msg(target, message, log=True):
     """Send a message to a target"""
-    _BOT.privmsg(target, message)
+    _BOT.privmsg(target, message, log)

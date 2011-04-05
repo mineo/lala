@@ -18,7 +18,7 @@ def last(user, channel, text):
     lines = min(lines, len(_lines))
     for line in _lines[-lines:]:
         try:
-            msg(user, line.replace("\n", ""))
+            msg(user, line.replace("\n", ""), log=False)
         except (_Exceptions.ErrorneusNickname,
                 _Exceptions.NoSuchNick), e:
             # The user left, we shoulnd't try to send further lines
