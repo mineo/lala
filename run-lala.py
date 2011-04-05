@@ -23,13 +23,9 @@ def main():
         debug = True
     else:
         debug = False
+
     nickserv_password = lalaconfig["nickserv_password"] if "nickserv_password"\
             in lalaconfig else None
-
-    plugins = lalaconfig["plugins"].split(",")
-    admins = []
-    for i in lalaconfig["admin"].split(","):
-        admins.append(i)
 
     logfolder = os.path.expanduser("~/.lala/logs")
     logfile = join(logfolder, "lala.log")
@@ -48,15 +44,16 @@ def main():
 
     bot = Bot(
             server=lalaconfig["server"],
-            admin=admins,
+            admins=lalaconfig["admins"].split(","),
             port=int(lalaconfig["port"]),
             nick=lalaconfig["nick"],
-            #channel=lalaconfig["channel"],
+            channels=lalaconfig["channels"].split(","),
             debug=debug,
-            plugins=plugins,
+            plugins=lalaconfig["plugins"].split(","),
             nickserv = nickserv_password
             )
     bot.mainloop()
+
 
 if __name__ == '__main__':
     main()
