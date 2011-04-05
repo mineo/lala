@@ -1,7 +1,12 @@
 import logging
+import lala.config as config
 
 from lurklib.exceptions import _Exceptions
-from lala.util import _BOT, command, is_admin, msg
+from lala.util import _BOT, command, msg
+
+def is_admin(user):
+    """docstring for is_admin"""
+    return user in config.get("admins")
 
 @command("load")
 def load(user, channel, text):
@@ -62,10 +67,10 @@ def addadmin(user, channel, text):
     """Add a user to the list of admins"""
     admin = text.split()[1]
     if is_admin(user):
-        if admin in _BOT._admins:
+        if admin in config.get("admins"):
             msg(channel, "%s already is an admin" % admin)
         else:
-            _BOT._admins.append(admin)
+            config.set("admins", "%s,%s" % (config.get("admins"), admin))
             msg(channel,
                         "%s has been added to the list of admins" % admin)
 
@@ -73,17 +78,19 @@ def addadmin(user, channel, text):
 def admins(user, channel, text):
     """Print the list of admins"""
     if is_admin(user):
-        msg(channel, " ".join(_BOT._admins))
+        msg(channel, config.get("admins"))
 
 @command("deladmin")
 def deladmin(user, channel, text):
     """Remove a user from the list of admins"""
     admin = text.split()[1]
     if is_admin(user):
-        if admin in _BOT._admins:
-            _BOT._admins.remove(admin)
+        if admin in config.get("admins"):
+            admins = config.get("admins").split(",")
+            admins.remove(admin)
+            config.set("admins", ",".join(admins))
             msg(channel,
                         "%s has been removed from the list of admins" %
                         admin)
         else:
-            msg(channel, "Sorry, %s is not even an admin" % text)
+            msg(channel, "Sorry, %s is not even an admin" % admin)

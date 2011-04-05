@@ -5,19 +5,22 @@ import os
 import socket
 import logging
 
-from lala import Bot
+from lala import Bot, config
 from time import sleep
 from os.path import join
 
 def main():
     """Main method"""
-    config = ConfigParser.SafeConfigParser()
+    cfg = ConfigParser.SafeConfigParser()
     try:
         configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
     except AttributeError:
         configfile = os.path.join(os.getenv("HOME"),".lala","config")
-    config.read(configfile)
-    lalaconfig = config._sections["lala"]
+    cfg.read(configfile)
+    lalaconfig = cfg._sections["base"]
+
+    config._CFG = cfg
+    config._FILENAME = configfile
 
     if "-d" in sys.argv:
         debug = True
@@ -41,12 +44,11 @@ def main():
 
     bot = Bot(
             server=lalaconfig["server"],
-            admins=lalaconfig["admins"].split(","),
             port=int(lalaconfig["port"]),
             nick=lalaconfig["nick"],
-            channels=get_conf_key(lalaconfig, "channels", []),
+            channels=get_conf_key(lalaconfig, "channels", []).split(","),
             debug=debug,
-            plugins=get_conf_key(lalaconfig, "plugins", []),
+            plugins=get_conf_key(lalaconfig, "plugins", []).split(","),
             nickserv = get_conf_key(lalaconfig, "nickserv_password", None)
             )
     bot.mainloop()

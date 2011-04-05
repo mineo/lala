@@ -1,17 +1,18 @@
 import codecs
+import lala.config
 
 from lurklib.exceptions import _Exceptions
 from lala.util import _BOT, command, msg
 
-MAX_LINES = 30
-
 @command("last")
 def last(user, channel, text):
+    max_lines = lala.config.get("max_lines", default=30)
     s_text = text.split()
     try:
-        lines = min(MAX_LINES, int(s_text[1]))
+        lines = min(max_lines, int(s_text[1]))
     except IndexError, e:
-        lines = MAX_LINES
+        lines = max_lines
+    # TODO: Fix this, it's ugly
     with codecs.open(_BOT._logfile, "r", "utf-8") as _file:
         _lines = _file.readlines()
     lines = min(lines, len(_lines))

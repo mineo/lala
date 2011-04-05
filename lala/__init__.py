@@ -35,7 +35,6 @@ class Plugger(object):
 class Bot(lurklib.Client):
     def __init__(self,
                 server,
-                admins,
                 port=None,
                 nick='lalal',
                 user='lalala',
@@ -55,7 +54,6 @@ class Bot(lurklib.Client):
                 nickserv=None
                 ):
 
-        self._admins = admins
         self._logger = logging.getLogger("MessageLog")
 
         if debug:
