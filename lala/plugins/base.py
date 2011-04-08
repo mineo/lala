@@ -2,11 +2,7 @@ import logging
 import lala.config as config
 
 from lurklib.exceptions import _Exceptions
-from lala.util import _BOT, command, msg
-
-def is_admin(user):
-    """docstring for is_admin"""
-    return user in config.get("admins")
+from lala.util import _BOT, command, msg, is_admin
 
 @command("load")
 def load(user, channel, text):

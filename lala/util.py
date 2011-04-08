@@ -1,5 +1,6 @@
 """Helpers to be used with plugins"""
 import logging
+import lala.config as config
 
 
 _BOT = None
@@ -31,13 +32,8 @@ def initplz(f):
     f()
 
 def is_admin(user):
-    """True if the user is an admin, false otherwise"""
-    if user in _BOT._admins:
-        logging.debug("%s is an admin" % user)
-        return True
-    else:
-        logging.debug("%s is not an admin" % user)
-        return False
+    """docstring for is_admin"""
+    return user in config._get("base", "admins")
 
 def msg(target, message, log=True):
     """Send a message to a target"""
