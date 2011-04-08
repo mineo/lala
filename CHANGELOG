@@ -1,0 +1,23 @@
+Wieland (2):
+      decorators: add on_join
+      Merge branch 'master' of github.com:mineo/lala into next
+
+Wieland Hoffmann (17):
+      Readme: remove the note about a better plugin system
+      config.example: Update
+      run-lala, Bot: re-enable the auto-join of channels
+      run-lala: Make the option reading safer
+      run-lala: Rename "channel" to "channels"
+      Merge branch 'master' into next
+      Implement a config module and update some plugins
+      last.py: Don't log the messages it sends
+      run-lala: remove the unused import of sleep
+      config.example: Rename section lala into base
+      config: Add a _get method
+      base/util: Move is_admin to util
+      run-lala: Make log_folder an option
+      config.example: Add log_folder option
+      plugins/last: Use _get to find the log file
+      README: Update
+      0.1.3
+
