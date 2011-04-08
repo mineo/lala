@@ -26,6 +26,7 @@ def get(key, default=None):
             return default
         else:
             raise
+_get = lambda section, key: _CFG.get(section, key)
 
 def set(key, value):
     """Sets the value of an option.
