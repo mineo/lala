@@ -12,3 +12,6 @@ plugins=decide,quotes,last,fortune
 # nickserv_password =
 # Channels to automatically join (optional)
 # channels =
+# Folder to save the logs in (optional)
+# Defaults to ~/.lala/logs (to be changed in the future)
+# log_folder =
