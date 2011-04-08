@@ -46,7 +46,7 @@ class Bot(lurklib.Client):
                 hide_called_events=True,
                 UTC=False,
                 channels=[],
-                version="lala 0.1.2",
+                version="lala 0.1.3",
                 debug=True,
                 debugformat=
                 "%(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s",
