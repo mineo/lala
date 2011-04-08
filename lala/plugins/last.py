@@ -3,6 +3,7 @@ import lala.config
 
 from lurklib.exceptions import _Exceptions
 from lala.util import _BOT, command, msg
+from os.path import join
 
 @command("last")
 def last(user, channel, text):
@@ -12,8 +13,8 @@ def last(user, channel, text):
         lines = min(max_lines, int(s_text[1]))
     except IndexError, e:
         lines = max_lines
-    # TODO: Fix this, it's ugly
-    with codecs.open(_BOT._logfile, "r", "utf-8") as _file:
+    logfile = join(lala.config._get("base", "log_folder"), "lala.log")
+    with codecs.open(logfile, "r", "utf-8") as _file:
         _lines = _file.readlines()
     lines = min(lines, len(_lines))
     for line in _lines[-lines:]:
