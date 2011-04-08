@@ -8,6 +8,13 @@ import logging
 from lala import Bot, config
 from os.path import join
 
+CONFIG_DEFAULTS = {
+        "channels": [],
+        "plugins": [],
+        "nickserv_password": None,
+        "log_folder": os.path.expanduser("~/.lala/logs")
+        }
+
 def main():
     """Main method"""
     cfg = ConfigParser.SafeConfigParser()
@@ -26,10 +33,10 @@ def main():
     else:
         debug = False
 
-    logfolder = os.path.expanduser("~/.lala/logs")
-    logfile = join(logfolder, "lala.log")
-    if not os.path.exists(logfolder):
-        os.makedirs(logfolder)
+    log_folder = get_conf_key(lalaconfig, "log_folder")
+    logfile = join(log_folder, "lala.log")
+    if not os.path.exists(log_folder):
+        os.makedirs(log_folder)
     logger = logging.getLogger("MessageLog")
     handler = logging.handlers.TimedRotatingFileHandler(
             encoding="utf-8",
@@ -45,19 +52,18 @@ def main():
             server=lalaconfig["server"],
             port=int(lalaconfig["port"]),
             nick=lalaconfig["nick"],
-            channels=get_conf_key(lalaconfig, "channels", []).split(","),
+            channels=get_conf_key(lalaconfig, "channels").split(","),
             debug=debug,
-            plugins=get_conf_key(lalaconfig, "plugins", []).split(","),
-            nickserv = get_conf_key(lalaconfig, "nickserv_password", None)
+            plugins=get_conf_key(lalaconfig, "plugins").split(","),
+            nickserv = get_conf_key(lalaconfig, "nickserv_password")
             )
     bot.mainloop()
 
-def get_conf_key(conf, key, default):
+def get_conf_key(conf, key):
     try:
         return conf[key]
     except KeyError:
-        return default
-
+        return CONFIG_DEFAULTS[key]
 
 if __name__ == '__main__':
     main()
