@@ -5,6 +5,7 @@ from lala.util import command,msg
 
 @command("fortune")
 def fortune(user, channel, text):
+    """Show a random, hopefully interesting, adage"""
     try:
         p = subprocess.Popen(["fortune", "fortunes"],
                 stdout=subprocess.PIPE)
