@@ -90,3 +90,18 @@ def deladmin(user, channel, text):
                         admin)
         else:
             msg(channel, "Sorry, %s is not even an admin" % admin)
+
+@command("help")
+def help(user, channel, text):
+    """Show the help for a command"""
+    cmd = text.split()[1]
+    try:
+        func = _BOT._callbacks[cmd]
+    except KeyError, e:
+        msg(channel, "%s is not a command I know" % cmd)
+        return
+    else:
+        if func.__doc__ is not None:
+            msg(channel, "%s: %s" % (cmd, func.__doc__))
+        else:
+            msg(channel, "There is no help available for %s" % cmd)
