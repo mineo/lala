@@ -3,7 +3,7 @@ import logging
 import os
 
 from time import sleep
-from lala.util import command, initplz, msg, on_join
+from lala.util import command, initplz, msg, on_join, is_admin
 
 db_connection = None
 
@@ -49,16 +49,17 @@ def addquote( user, channel, text):
 @command("delquote")
 def delquote( user, channel, text):
     s_text = text.split()
-    if len(s_text) > 1:
-        quotenumber = s_text[1]
-        logging.debug("Deleting quote: %s" % quotenumber)
-        with db_connection:
-            c = db_connection.execute("DELETE FROM quotes where ROWID = (?);",
-                [quotenumber]).fetchall()
-            db_connection.commit()
-    else:
-        msg(channel, "%s: There's no quote #%s" % (user,
-            quotenumber))
+    is is_admin(user):
+        if len(s_text) > 1:
+            quotenumber = s_text[1]
+            logging.debug("Deleting quote: %s" % quotenumber)
+            with db_connection:
+                c = db_connection.execute("DELETE FROM quotes where ROWID = (?);",
+                    [quotenumber]).fetchall()
+                db_connection.commit()
+        else:
+            msg(channel, "%s: There's no quote #%s" % (user,
+                quotenumber))
 
 @command("lastquote")
 def lastquote( user, channel, text):
