@@ -22,7 +22,7 @@ def main():
         configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
     except AttributeError:
         configfile = os.path.join(os.getenv("HOME"),".lala","config")
-    cfg.read(configfile)
+    cfg.read(["/etc/lala.config", configfile])
     lalaconfig = cfg._sections["base"]
 
     config._CFG = cfg

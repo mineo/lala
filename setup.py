@@ -5,7 +5,7 @@ setup(name="lala",
         author="Wieland Hoffmann",
         author_email="themineo@gmail.com",
         scripts=["run-lala.py"],
-        packages=["lala", "lala.plugins"],
+        packages=["lala"],
         package_dir = {"lala": "lala"},
         requires=["lurklib"],
         download_url=["https://github.com/mineo/lala/tarball/master"],
@@ -15,5 +15,6 @@ setup(name="lala",
             "Intended Audience :: End Users/Desktop",
             "Natural Language :: English",
             "Operating System :: OS Independent",
-            "Programming Language :: Python :: 2.7"]
+            "Programming Language :: Python :: 2.7"],
+        data_files=[("/usr/share/doc/lala", ["config.example"])]
         )
