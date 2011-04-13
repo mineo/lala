@@ -49,7 +49,7 @@ def addquote( user, channel, text):
 @command("delquote")
 def delquote( user, channel, text):
     s_text = text.split()
-    is is_admin(user):
+    if is_admin(user):
         if len(s_text) > 1:
             quotenumber = s_text[1]
             logging.debug("Deleting quote: %s" % quotenumber)
