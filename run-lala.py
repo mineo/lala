@@ -4,6 +4,7 @@ import sys
 import os
 import socket
 import logging
+import argparse
 
 from lala import Bot, config
 from os.path import join
@@ -17,21 +18,26 @@ CONFIG_DEFAULTS = {
 
 def main():
     """Main method"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--config", help="Configuration file location")
+    parser.add_argument("-d", "--debug", help="Enable debugging",
+                        action="store_true", default=False)
+    args = parser.parse_args()
+
     cfg = ConfigParser.SafeConfigParser()
-    try:
-        configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
-    except AttributeError:
-        configfile = os.path.join(os.getenv("HOME"),".lala","config")
-    cfg.read(["/etc/lala.config", configfile])
+    if args.config is None:
+        try:
+            configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
+        except AttributeError:
+            configfile = os.path.join(os.getenv("HOME"),".lala","config")
+        cfg.read(["/etc/lala.config", configfile])
+    else:
+        cfg.read(args.config)
+
     lalaconfig = cfg._sections["base"]
 
     config._CFG = cfg
-    config._FILENAME = configfile
-
-    if "-d" in sys.argv:
-        debug = True
-    else:
-        debug = False
+    config._FILENAME = args.config
 
     log_folder = get_conf_key(lalaconfig, "log_folder")
     logfile = join(log_folder, "lala.log")
@@ -53,7 +59,7 @@ def main():
             port=int(lalaconfig["port"]),
             nick=lalaconfig["nick"],
             channels=get_conf_key(lalaconfig, "channels").split(","),
-            debug=debug,
+            debug=args.debug,
             plugins=get_conf_key(lalaconfig, "plugins").split(","),
             nickserv = get_conf_key(lalaconfig, "nickserv_password")
             )
