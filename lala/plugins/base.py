@@ -4,7 +4,7 @@ import lala.config as config
 from lurklib.exceptions import _Exceptions
 from lala.util import _BOT, command, msg, is_admin
 
-@command("load")
+@command
 def load(user, channel, text):
     if is_admin(user):
         try:
@@ -12,7 +12,7 @@ def load(user, channel, text):
         except exceptions.NoSuchPlugin:
             msg(channel, "%s could not be found" % text[1])
 
-@command("part")
+@command
 def part(user, channel, text):
     if is_admin(user):
         try:
@@ -22,7 +22,7 @@ def part(user, channel, text):
             msg(channel, "Sorry, %s, I'm not in %s" % (user,
                 text.split()[1]))
 
-@command("join")
+@command
 def join(user, channel, text):
     if is_admin(user):
         chan = text.split()[1]
@@ -40,25 +40,25 @@ def join(user, channel, text):
         except _Exceptions.AlreadyInChannel, e:
             msg(channel, "I'm already there!")
 
-@command("quit")
+@command
 def quit(user, channel, text):
     if is_admin(user):
         logging.debug("Quitting")
         _BOT.quit("leaving")
 
-@command("server")
+@command
 def server(user, channel, text):
     """Shows the server the _BOT is connected to"""
     msg(user, _BOT.server)
 
-@command("commands")
+@command
 def commands(user, channel, text):
     """Prints all available callbacks"""
     msg(channel, "I know the following commands:")
     s = "!" + " !".join(_BOT._callbacks)
     msg(channel, s)
 
-@command("addadmin")
+@command
 def addadmin(user, channel, text):
     """Add a user to the list of admins"""
     admin = text.split()[1]
@@ -70,13 +70,13 @@ def addadmin(user, channel, text):
             msg(channel,
                         "%s has been added to the list of admins" % admin)
 
-@command("admins")
+@command
 def admins(user, channel, text):
     """Print the list of admins"""
     if is_admin(user):
         msg(channel, config.get("admins"))
 
-@command("deladmin")
+@command
 def deladmin(user, channel, text):
     """Remove a user from the list of admins"""
     admin = text.split()[1]
@@ -91,7 +91,7 @@ def deladmin(user, channel, text):
         else:
             msg(channel, "Sorry, %s is not even an admin" % admin)
 
-@command("help")
+@command
 def help(user, channel, text):
     """Show the help for a command"""
     cmd = text.split()[1]

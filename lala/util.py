@@ -2,13 +2,17 @@
 import logging
 import lala.config as config
 
+from types import FunctionType
 
 _BOT = None
 
 class command(object):
     """Decorator to register a command"""
-    def __init__(self, command):
+    def __init__(self, command=None):
         """docstring for __init__"""
+        if isinstance(command, FunctionType):
+            _BOT.register_callback(command.__name__, command)
+            return
         self.cmd = command
 
     def __call__(self, func):

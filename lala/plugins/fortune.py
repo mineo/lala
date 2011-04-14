@@ -3,7 +3,7 @@ import subprocess
 
 from lala.util import command,msg
 
-@command("fortune")
+@command
 def fortune(user, channel, text):
     try:
         p = subprocess.Popen(["fortune", "fortunes"],

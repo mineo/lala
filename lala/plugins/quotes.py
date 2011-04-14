@@ -18,7 +18,7 @@ def setup():
     db_connection.text_factory = sqlite3.OptimizedUnicode
 
 
-@command("getquote")
+@command
 def getquote( user, channel, text):
     s_text = text.split()
     if len(s_text) > 1:
@@ -33,7 +33,7 @@ def getquote( user, channel, text):
                 msg(channel, "%s: There's no quote #%s" % (user,
                     quotenumber))
 
-@command("addquote")
+@command
 def addquote( user, channel, text):
     s_text = text.split()
     if len(s_text) > 1:
@@ -46,7 +46,7 @@ def addquote( user, channel, text):
     else:
         msg(channel, "%s: You didn't give me any text to quote " % user)
 
-@command("delquote")
+@command
 def delquote( user, channel, text):
     s_text = text.split()
     if is_admin(user):
@@ -61,7 +61,7 @@ def delquote( user, channel, text):
             msg(channel, "%s: There's no quote #%s" % (user,
                 quotenumber))
 
-@command("lastquote")
+@command
 def lastquote( user, channel, text):
     with db_connection:
         try:
@@ -71,7 +71,7 @@ def lastquote( user, channel, text):
             return
         msg(channel, "[%s] %s" % (id, quote))
 
-@command("rquote")
+@command
 def randomquote( user, channel, text):
     with db_connection:
         try:
@@ -81,7 +81,7 @@ def randomquote( user, channel, text):
             return
         msg(channel, "[%s] %s" % (id, quote))
 
-@command("searchquote")
+@command
 def searchquote( user, channel, text):
     s_text = text.split()
     logging.debug(s_text[1:])

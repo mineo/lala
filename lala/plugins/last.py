@@ -5,7 +5,7 @@ from lurklib.exceptions import _Exceptions
 from lala.util import _BOT, command, msg
 from os.path import join
 
-@command("last")
+@command
 def last(user, channel, text):
     max_lines = lala.config.get("max_lines", default=30)
     s_text = text.split()
