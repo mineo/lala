@@ -20,6 +20,7 @@ def setup():
 
 @command
 def getquote( user, channel, text):
+    """Show the quote with a specified number"""
     s_text = text.split()
     if len(s_text) > 1:
         quotenumber = s_text[1]
@@ -35,6 +36,7 @@ def getquote( user, channel, text):
 
 @command
 def addquote( user, channel, text):
+    """Add a quote"""
     s_text = text.split()
     if len(s_text) > 1:
         text = " ".join(s_text[1:])
@@ -48,6 +50,7 @@ def addquote( user, channel, text):
 
 @command
 def delquote( user, channel, text):
+    """Delete a quote with a specified number"""
     s_text = text.split()
     if is_admin(user):
         if len(s_text) > 1:
@@ -63,6 +66,7 @@ def delquote( user, channel, text):
 
 @command
 def lastquote( user, channel, text):
+    """Show the last quote"""
     with db_connection:
         try:
             (id, quote) = db_connection.execute("SELECT rowid, quote FROM quotes\
@@ -73,6 +77,7 @@ def lastquote( user, channel, text):
 
 @command
 def randomquote( user, channel, text):
+    """Show a random quote"""
     with db_connection:
         try:
             (id, quote) = db_connection.execute("SELECT rowid, quote FROM quotes ORDER\
@@ -83,6 +88,7 @@ def randomquote( user, channel, text):
 
 @command
 def searchquote( user, channel, text):
+    """Search for a quote"""
     s_text = text.split()
     logging.debug(s_text[1:])
     with db_connection:

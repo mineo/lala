@@ -7,6 +7,7 @@ from os.path import join
 
 @command
 def last(user, channel, text):
+    """Show the last lines from the log"""
     max_lines = lala.config.get("max_lines", default=30)
     s_text = text.split()
     try:
