@@ -1,8 +1,23 @@
-Wieland (2):
+Changes from 0.1.3 to 0.1.4
+
+    Wieland Hoffmann (9):
+      plugins/base: Add a help command
+      plugins/quotes: Allow delquote to be only used by an admin
+      Distribute config.example
+      plugins/lala: Fix a typo
+      run-lala: Use the argparse module
+      Add build/ to .gitignore
+      util: Automatically determine the name of a command
+      Prepare 0.1.4
+      README.rst: Update
+
+Changes from 0.1.2 to 0.1.3
+
+    Wieland (2):
       decorators: add on_join
       Merge branch 'master' of github.com:mineo/lala into next
 
-Wieland Hoffmann (17):
+    Wieland Hoffmann (17):
       Readme: remove the note about a better plugin system
       config.example: Update
       run-lala, Bot: re-enable the auto-join of channels
