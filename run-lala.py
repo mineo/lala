@@ -30,14 +30,14 @@ def main():
             configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
         except AttributeError:
             configfile = os.path.join(os.getenv("HOME"),".lala","config")
-        cfg.read(["/etc/lala.config", configfile])
+        files = cfg.read([configfile, "/etc/lala.config"])
     else:
-        cfg.read(args.config)
+        files = cfg.read(args.config)
 
     lalaconfig = cfg._sections["base"]
 
     config._CFG = cfg
-    config._FILENAME = args.config
+    config._FILENAME = files[0]
 
     log_folder = get_conf_key(lalaconfig, "log_folder")
     logfile = join(log_folder, "lala.log")
