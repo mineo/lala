@@ -16,8 +16,8 @@ else:
     import optparse
 
 CONFIG_DEFAULTS = {
-        "channels": ""
-        "plugins": ""
+        "channels": "",
+        "plugins": "",
         "nickserv_password": None,
         "log_folder": os.path.expanduser("~/.lala/logs")
         }
