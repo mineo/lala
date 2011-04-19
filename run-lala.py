@@ -4,10 +4,16 @@ import sys
 import os
 import socket
 import logging
-import argparse
+import signal
 
 from lala import Bot, config
 from os.path import join
+from sys import version_info
+
+if version_info >= (2,7):
+    import argparse
+else:
+    import optparse
 
 CONFIG_DEFAULTS = {
         "channels": [],
@@ -18,11 +24,18 @@ CONFIG_DEFAULTS = {
 
 def main():
     """Main method"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", help="Configuration file location")
-    parser.add_argument("-d", "--debug", help="Enable debugging",
-                        action="store_true", default=False)
-    args = parser.parse_args()
+    if version_info >= (2,7):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-c", "--config", help="Configuration file location")
+        parser.add_argument("-d", "--debug", help="Enable debugging",
+                            action="store_true", default=False)
+        args = parser.parse_args()
+    else:
+        parser = optparse.OptionParser()
+        parser.add_option("-c", "--config", help="Configuration file location")
+        parser.add_option("-d", "--debug", help="Enable debugging",
+                            action="store_true", default=False)
+        (args, options) = parser.parse_args()
 
     cfg = ConfigParser.SafeConfigParser()
     if args.config is None:
@@ -63,6 +76,8 @@ def main():
             plugins=get_conf_key(lalaconfig, "plugins").split(","),
             nickserv = get_conf_key(lalaconfig, "nickserv_password")
             )
+    signal.signal(signal.SIGTERM,
+                  bot._handle_quit)
     bot.mainloop()
 
 def get_conf_key(conf, key):

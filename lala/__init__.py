@@ -171,6 +171,9 @@ class Bot(lurklib.Client):
             self._logger.info("%s: %s" % (self.current_nick, message))
         lurklib.Client.privmsg(self, target, message)
 
+    def _handle_quit(self, sig, frame):
+        self.quit("Somebody pushed the big red button!")
+
 if __name__ == '__main__':
     bot = Bot()
     bot.mainloop()
