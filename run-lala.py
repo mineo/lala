@@ -47,12 +47,11 @@ def main():
     else:
         files = cfg.read(args.config)
 
-    #lalaconfig = cfg._sections["base"]
-
     config._CFG = cfg
     config._FILENAME = files[0]
 
     log_folder = get_conf_key(cfg, "log_folder")
+    config._CFG.set("base","log_folder", log_folder)
     logfile = join(log_folder, "lala.log")
     if not os.path.exists(log_folder):
         os.makedirs(log_folder)
