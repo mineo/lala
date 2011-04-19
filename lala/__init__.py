@@ -91,7 +91,8 @@ class Bot(lurklib.Client):
 
         if self._nickserv_password:
             logging.debug("Identifying with %s" % self._nickserv_password)
-            self.privmsg("NickServ", "identify %s" % self._nickserv_password)
+            self.privmsg("NickServ", "identify %s" % self._nickserv_password,
+                    log=False)
 
     def on_privmsg(self, event):
         user = event[0][0]
@@ -166,7 +167,7 @@ class Bot(lurklib.Client):
     def register_regex(self, regex, func):
         self._regexes[regex] = func
 
-    def privmsg(self, target, message, log):
+    def privmsg(self, target, message, log=True):
         if log:
             self._logger.info("%s: %s" % (self.current_nick, message))
         lurklib.Client.privmsg(self, target, message)
