@@ -47,12 +47,12 @@ def main():
     else:
         files = cfg.read(args.config)
 
-    lalaconfig = cfg._sections["base"]
+    #lalaconfig = cfg._sections["base"]
 
     config._CFG = cfg
     config._FILENAME = files[0]
 
-    log_folder = get_conf_key(lalaconfig, "log_folder")
+    log_folder = get_conf_key(cfg, "log_folder")
     logfile = join(log_folder, "lala.log")
     if not os.path.exists(log_folder):
         os.makedirs(log_folder)
@@ -68,13 +68,13 @@ def main():
     logger.addHandler(handler)
 
     bot = Bot(
-            server=lalaconfig["server"],
-            port=int(lalaconfig["port"]),
-            nick=lalaconfig["nick"],
-            channels=get_conf_key(lalaconfig, "channels").split(","),
+            server=get_conf_key(cfg,"server"),
+            port=int(get_conf_key(cfg,"port")),
+            nick=get_conf_key(cfg,"nick"),
+            channels=get_conf_key(cfg, "channels").split(","),
             debug=args.debug,
-            plugins=get_conf_key(lalaconfig, "plugins").split(","),
-            nickserv = get_conf_key(lalaconfig, "nickserv_password")
+            plugins=get_conf_key(cfg, "plugins").split(","),
+            nickserv = get_conf_key(cfg, "nickserv_password")
             )
     signal.signal(signal.SIGTERM,
                   bot._handle_quit)
@@ -82,8 +82,8 @@ def main():
 
 def get_conf_key(conf, key):
     try:
-        return conf[key]
-    except KeyError:
+        return conf.get("base",key)
+    except ConfigParser.NoOptionError:
         return CONFIG_DEFAULTS[key]
 
 if __name__ == '__main__':
