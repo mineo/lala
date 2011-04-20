@@ -4,7 +4,6 @@ import sys
 import os
 import socket
 import logging
-import signal
 
 from lala import Bot, config
 from os.path import join
@@ -75,8 +74,6 @@ def main():
             plugins=get_conf_key(cfg, "plugins").split(","),
             nickserv = get_conf_key(cfg, "nickserv_password")
             )
-    signal.signal(signal.SIGTERM,
-                  bot._handle_quit)
     bot.mainloop()
 
 def get_conf_key(conf, key):
