@@ -1,7 +1,6 @@
 import codecs
 import lala.config
 
-from lurklib.exceptions import _Exceptions
 from lala.util import _BOT, command, msg
 from os.path import join
 
@@ -19,9 +18,4 @@ def last(user, channel, text):
         _lines = _file.readlines()
     lines = min(lines, len(_lines))
     for line in _lines[-lines:]:
-        try:
-            msg(user, line.replace("\n", ""), log=False)
-        except (_Exceptions.ErrorneusNickname,
-                _Exceptions.NoSuchNick), e:
-            # The user left, we shoulnd't try to send further lines
-            return
+        msg(user, line.replace("\n", ""), log=False)

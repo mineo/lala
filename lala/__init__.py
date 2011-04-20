@@ -175,6 +175,14 @@ class Bot(lurklib.Client):
     def _handle_quit(self, sig, frame):
         self.quit("Somebody pushed the big red button!")
 
+    def mainloop(self):
+        try:
+            lurklib.Client.mainloop(self)
+        except lurklib.exceptions._Exceptions.IRCError, e:
+            logging.warning(e)
+            self.on_connect = None
+            self.mainloop()
+
 if __name__ == '__main__':
     bot = Bot()
     bot.mainloop()
