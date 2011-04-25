@@ -3,6 +3,7 @@ import lala.config
 
 from lala.util import _BOT, command, msg
 from os.path import join
+from time import sleep
 
 @command
 def last(user, channel, text):
@@ -19,3 +20,4 @@ def last(user, channel, text):
     lines = min(lines, len(_lines))
     for line in _lines[-lines:]:
         msg(user, line.replace("\n", ""), log=False)
+        sleep(1)
