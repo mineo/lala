@@ -98,10 +98,13 @@ def searchquote( user, channel, text):
                     " ".join(s_text[1:]),
                     "%"))]
             ).fetchall()
-        for (id, quote) in quotes:
-            msg(channel, "[%s] %s" % (id, quote))
-            # TODO get rid of this ugly thing
-            sleep(1)
+        if len(quotes) > 5:
+            msg(channel, "Too many results, please refine your search")
+        else:
+            for (id, quote) in quotes:
+                msg(channel, "[%s] %s" % (id, quote))
+                # TODO get rid of this ugly thing
+                sleep(1)
 
 @on_join
 def join( event):
