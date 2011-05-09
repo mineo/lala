@@ -48,8 +48,6 @@ class Bot(lurklib.Client):
                 channels=[],
                 version="lala 0.1.4",
                 debug=True,
-                debugformat=
-                "%(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s",
                 plugins=['last', 'quotes', 'base'],
                 nickserv=None
                 ):
@@ -72,6 +70,8 @@ class Bot(lurklib.Client):
 
         self._logger = logging.getLogger("MessageLog")
 
+        debugformat=
+            "%(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s"
         if debug:
             logging.basicConfig(format=debugformat, level=logging.DEBUG)
 
