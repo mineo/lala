@@ -53,6 +53,22 @@ class Bot(lurklib.Client):
                 plugins=['last', 'quotes', 'base'],
                 nickserv=None
                 ):
+        """ Create a new :py:class:`lala.Bot` instance
+
+        :param server: Server to connect to
+        :param port: Server port
+        :param nick: The Bots nick
+        :param user: User to specify in the *USER* message
+        :param real_name: Real name
+        :param password: Server password
+        :param tls: Whether or not to use TLS
+        :param tls_verify: Whether or not to verify the TLS certificate
+        :param encoding: Encoding to use
+        :param channels: List of channels to join after connecting
+        :param version: Version of the bot. Will be used in *CTCP VERSION*
+        replies
+        :param plugins: List of plugins to load
+        """
 
         self._logger = logging.getLogger("MessageLog")
 

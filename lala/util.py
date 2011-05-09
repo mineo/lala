@@ -3,42 +3,96 @@ import logging
 import lala.config as config
 
 from types import FunctionType
+from inspect import getargspec
 
 _BOT = None
 
 class command(object):
-    """Decorator to register a command"""
+    """Decorator to register a command. The name of the command is the
+       `__name__` attribute of the decorated function.
+       Example::
+
+           @command
+           def heyiamacommand(user, channel, text):
+               pass
+
+       You can also pass a ``command`` parameter to overwrite the name of the
+       command::
+
+           @command("yetanothercommand")
+           def command_with_a_really_stupid_or_insanely_long_name(user,
+           channel, text):
+               pass
+
+    """
     def __init__(self, command=None):
         """docstring for __init__"""
         if isinstance(command, FunctionType):
-            _BOT.register_callback(command.__name__, command)
-            return
-        self.cmd = command
+            if _check_args(command):
+                _BOT.register_callback(command.__name__, command)
+            else:
+                raise TypeError(
+                    "A callback function should take exactly 3 arguments")
+        elif not (isinstance(command, str) or isinstance(command, unicode)):
+            raise TypeError("The command should be either a str or unicode")
+        else:
+            self.cmd = command
 
     def __call__(self, func):
         _BOT.register_callback(self.cmd, func)
 
 def on_join(f):
-    """Decorator for functions reacting to joins"""
+    """Decorator for functions reacting to joins
+
+    :param f: The function which should be called on joins."""
     _BOT.register_join_callback(f)
 
 class regex(object):
-    """Decorator to register a regex"""
+    """Decorator to register a regex. Example::
+
+           regexp = re.compile("(https?://.+)\s?")
+           @regex(regexp)
+           def somefunc(user, channel, text, match_obj):
+               pass
+
+       ``match_obj`` is a :py:class:`re.MatchObject`.
+
+       :param regex: A :py:class:`re.RegexObject`
+    """
     def __init__(self, regex):
         """docstring for __init__"""
         self.re = regex
 
     def __call__(self, func):
         """docstring for __call__"""
-        _BOT.register_regex(self.re, func)
+        if _check_args(func):
+            _BOT.register_regex(self.re, func)
+        else:
+            raise TypeError(
+                "A callback function should take exactly 3 arguments")
 
 def initplz(f):
-    f()
+    """ Call ``f`` once. This can be used to set values of global variables or
+    some other setup stuff."""
+    if callable(f):
+        f()
+    else:
+        raise TypeError("Expected a callable object")
 
 def is_admin(user):
-    """docstring for is_admin"""
+    """Check whether ``user`` is an admin"""
     return user in config._get("base", "admins")
 
 def msg(target, message, log=True):
-    """Send a message to a target"""
+    """Send a message to a target
+
+    :param message: The message to send
+    :param log: Whether or not to log the message
+    """
     _BOT.privmsg(target, message, log)
+
+def _check_args(f, count=3):
+    args, varargs, varkw, defaults = getargspec(f)
+    if defaults:
+        args = args[:-defaults]
+    return len(args) == count
