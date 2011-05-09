@@ -48,7 +48,7 @@ class Bot(lurklib.Client):
                 channels=[],
                 version="lala 0.1.4",
                 debug=True,
-                plugins=['last', 'quotes', 'base'],
+                plugins=[],
                 nickserv=None
                 ):
         """ Create a new :py:class:`lala.Bot` instance
