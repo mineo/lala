@@ -1,8 +1,6 @@
 #!/usr/bin/python2
 import ConfigParser
-import sys
 import os
-import socket
 import logging
 
 from lala import Bot, config

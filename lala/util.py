@@ -1,5 +1,4 @@
 """Helpers to be used with plugins"""
-import logging
 import lala.config as config
 
 from types import FunctionType
