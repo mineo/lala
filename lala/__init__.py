@@ -7,7 +7,7 @@ import logging
 import logging.handlers
 import os
 
-from os.path import basename, join
+from os.path import basename
 from lala import util
 
 
@@ -42,7 +42,8 @@ class Bot(lurklib.Client):
                 password=None,
                 tls=False,
                 tls_verify=False,
-                encoding='UTF-8',
+                encoding='utf-8',
+                fallback_encoding='utf-8',
                 hide_called_events=True,
                 UTC=False,
                 channels=[],
@@ -70,7 +71,7 @@ class Bot(lurklib.Client):
 
         self._logger = logging.getLogger("MessageLog")
 
-        debugformat=
+        debugformat=\
             "%(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s"
         if debug:
             logging.basicConfig(format=debugformat, level=logging.DEBUG)
@@ -96,6 +97,7 @@ class Bot(lurklib.Client):
                 hide_called_events = hide_called_events,
                 UTC = UTC
                 )
+        self.fallback_encoding = fallback_encoding
         util._BOT = self
         for plugin in plugins:
             self.plugger.load_plugin(plugin)

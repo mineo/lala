@@ -16,7 +16,9 @@ CONFIG_DEFAULTS = {
         "channels": "",
         "plugins": "",
         "nickserv_password": None,
-        "log_folder": os.path.expanduser("~/.lala/logs")
+        "log_folder": os.path.expanduser("~/.lala/logs"),
+        "encoding" : "utf-8",
+        "fallback_encoding" : "utf-8"
         }
 
 def main():
@@ -70,7 +72,9 @@ def main():
             channels=get_conf_key(cfg, "channels").split(","),
             debug=args.debug,
             plugins=get_conf_key(cfg, "plugins").split(","),
-            nickserv = get_conf_key(cfg, "nickserv_password")
+            nickserv = get_conf_key(cfg, "nickserv_password"),
+            encoding = get_conf_key(cfg, "encoding"),
+            fallback_encoding = get_conf_key(cfg, "fallback_encoding")
             )
     bot.mainloop()
 
