@@ -4,6 +4,7 @@ lala bot
 Dependencies
 ------------
 Depends on lurklib, which can be found at https://github.com/LK-/lurklib
+You'll need at least version 0.8
 
 Setup
 -----
