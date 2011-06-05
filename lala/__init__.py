@@ -105,7 +105,7 @@ class Bot(lurklib.Client):
 
     def on_connect(self):
         for channel in self._channels:
-            self.join(channel)
+            self.join_(channel)
 
         if self._nickserv_password:
             logging.debug("Identifying with %s" % self._nickserv_password)

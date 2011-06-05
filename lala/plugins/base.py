@@ -28,7 +28,7 @@ def join(user, channel, text):
         chan = text.split()[1]
         try:
             logging.debug("Joining %s" % chan)
-            _BOT.join(chan)
+            _BOT.join_(chan)
         except _Exceptions.ChannelIsFull, e:
             msg(channel, "Sorry, %s is full." % chan)
         except _Exceptions.NoSuchChannel, e:
