@@ -200,7 +200,3 @@ class Bot(lurklib.Client):
             logging.warning(e)
             self.on_connect = None
             self.mainloop()
-
-if __name__ == '__main__':
-    bot = Bot()
-    bot.mainloop()
