@@ -27,13 +27,20 @@ def main():
         parser.add_argument("-c", "--config", help="Configuration file location")
         parser.add_argument("-d", "--debug", help="Enable debugging",
                             action="store_true", default=False)
+        parser.add_argument("-n", "--no-daemon", help="Do not daemonize",
+                            action="store_true", default=False)
         args = parser.parse_args()
     else:
         parser = optparse.OptionParser()
         parser.add_option("-c", "--config", help="Configuration file location")
         parser.add_option("-d", "--debug", help="Enable debugging",
                             action="store_true", default=False)
+        parser.add_option("-n", "--no-daemon", help="Do not daemonize",
+                            action="store_true", default=False)
         (args, options) = parser.parse_args()
+
+    if args.debug:
+        args.no_daemon = True
 
     cfg = ConfigParser.SafeConfigParser()
     if args.config is None:
@@ -64,7 +71,24 @@ def main():
                               "%Y-%m-%d %H:%m"))
     logger.addHandler(handler)
 
-    bot = Bot(
+
+    if not args.no_daemon:
+        import daemon
+        with daemon.DaemonContext():
+            bot = Bot(
+                server=get_conf_key(cfg,"server"),
+                port=int(get_conf_key(cfg,"port")),
+                nick=get_conf_key(cfg,"nick"),
+                channels=get_conf_key(cfg, "channels").split(","),
+                debug=args.debug,
+                plugins=get_conf_key(cfg, "plugins").split(","),
+                nickserv = get_conf_key(cfg, "nickserv_password"),
+                encoding = get_conf_key(cfg, "encoding"),
+                fallback_encoding = get_conf_key(cfg, "fallback_encoding")
+            )
+            bot.mainloop()
+    else:
+        bot = Bot(
             server=get_conf_key(cfg,"server"),
             port=int(get_conf_key(cfg,"port")),
             nick=get_conf_key(cfg,"nick"),
@@ -74,8 +98,8 @@ def main():
             nickserv = get_conf_key(cfg, "nickserv_password"),
             encoding = get_conf_key(cfg, "encoding"),
             fallback_encoding = get_conf_key(cfg, "fallback_encoding")
-            )
-    bot.mainloop()
+        )
+        bot.mainloop()
 
 def get_conf_key(conf, key):
     try:
