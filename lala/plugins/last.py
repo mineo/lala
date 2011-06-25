@@ -1,7 +1,7 @@
 import codecs
 import lala.config
 
-from lala.util import _BOT, command, msg
+from lala.util import command, msg
 from os.path import join
 from time import sleep
 
@@ -12,7 +12,7 @@ def last(user, channel, text):
     s_text = text.split()
     try:
         lines = min(max_lines, int(s_text[1]))
-    except IndexError, e:
+    except IndexError:
         lines = max_lines
     logfile = join(lala.config._get("base", "log_folder"), "lala.log")
     with codecs.open(logfile, "r", "utf-8") as _file:
