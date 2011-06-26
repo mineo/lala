@@ -4,6 +4,7 @@ import os
 
 from time import sleep
 from lala.util import command, initplz, msg, on_join, is_admin
+from lala.config import get
 
 db_connection = None
 
@@ -91,6 +92,7 @@ def searchquote( user, channel, text):
     """Search for a quote"""
     s_text = text.split()
     logging.debug(s_text[1:])
+    max_quotes = int(get("max_quotes", 5))
     with db_connection:
         quotes = db_connection.execute("SELECT rowid, quote FROM quotes\
         WHERE quote LIKE (?)", [
@@ -98,7 +100,7 @@ def searchquote( user, channel, text):
                     " ".join(s_text[1:]),
                     "%"))]
             ).fetchall()
-        if len(quotes) > 5:
+        if len(quotes) > max_quotes:
             msg(channel, "Too many results, please refine your search")
         else:
             for (id, quote) in quotes:
