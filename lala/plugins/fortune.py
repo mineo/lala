@@ -13,3 +13,14 @@ def fortune(user, channel, text):
         msg(channel,"%s: %s" % (user, result.replace("\n","")))
     except OSError, e:
         logging.error("Error while calling fortune: %s" % e)
+
+@command
+def ofortune(user, channel, text):
+    """Show a random, hopefully interesting, offensive adage"""
+    try:
+        p = subprocess.Popen(["fortune", "-o"],
+                stdout=subprocess.PIPE)
+        result = p.communicate()[0]
+        msg(channel,"%s: %s" % (user, result.replace("\n","")))
+    except OSError, e:
+        logging.error("Error while calling fortune: %s" % e)
