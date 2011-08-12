@@ -1,13 +1,11 @@
 #!/usr/bin/python2
 # coding: utf-8
 import lurklib
-import glob
 import sys
 import logging
 import logging.handlers
 import os
 
-from os.path import basename
 from lala import util
 
 
@@ -18,18 +16,9 @@ class Plugger(object):
             sys.path.append(os.path.join(os.path.dirname(__file__),path))
         self.path = path
 
-    def load_plugins(self):
-        for plugin in glob.glob("%s/*.py" % self.path):
-            logging.debug("Loading %s" % plugin)
-            self.load_plugin(basename(plugin), py=True)
-
-    def load_plugin(self, name, py=False):
-        # Is there ".py in name?
-        if not py:
-            name = name + ".py"
-
+    def load_plugin(self, name):
         logging.debug("Trying to load %s" % name)
-        plug = __import__(name[:-3])
+        __import__(os.path.splitext(name)[0])
 
 
 class Bot(lurklib.Client):
