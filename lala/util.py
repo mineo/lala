@@ -92,11 +92,15 @@ def msg(target, message, log=True):
     try:
         if not isinstance(message, basestring):
             for _message in iter(message):
+                if _message == u"":
+                    continue
                 _BOT.privmsg(target, _message, log)
                 sleep(0.5)
         else:
             _BOT.privmsg(target, message, log)
     except TypeError:
+        if message == u"":
+            return
         _BOT.privmsg(target, message, log)
 
 def _check_args(f, count=3):

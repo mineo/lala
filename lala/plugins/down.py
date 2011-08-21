@@ -6,7 +6,7 @@ from httplib import HTTPException
 
 DFEOOJM_URL = "http://www.downforeveryoneorjustme.com/%s"
 
-@command 
+@command
 def isitdown(user, channel, text):
     website = DFEOOJM_URL % " ".join(text.split()[1:])
     logging.debug("Trying to open %s" % website)
