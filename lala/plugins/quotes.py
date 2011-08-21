@@ -2,7 +2,6 @@ import sqlite3
 import logging
 import os
 
-from time import sleep
 from lala.util import command, initplz, msg, on_join, is_admin
 from lala.config import get
 
@@ -103,10 +102,8 @@ def searchquote( user, channel, text):
         if len(quotes) > max_quotes:
             msg(channel, "Too many results, please refine your search")
         else:
-            for (id, quote) in quotes:
-                msg(channel, "[%s] %s" % (id, quote))
-                # TODO get rid of this ugly thing
-                sleep(1)
+            messages = ["[%s] %s" % (id, quote) for (id, quote) in quotes]
+            msg(channel, messages)
 
 @on_join
 def join( event):

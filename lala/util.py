@@ -3,6 +3,7 @@ import lala.config as config
 
 from types import FunctionType
 from inspect import getargspec
+from time import sleep
 
 _BOT = None
 
@@ -83,12 +84,20 @@ def is_admin(user):
     return user in config._get("base", "admins")
 
 def msg(target, message, log=True):
-    """Send a message to a target
+    """Send a message to a target.
 
-    :param message: The message to send
+    :param message: One or more messages to send
     :param log: Whether or not to log the message
     """
-    _BOT.privmsg(target, message, log)
+    try:
+        if not isinstance(message, basestring):
+            for _message in iter(message):
+                _BOT.privmsg(target, _message, log)
+                sleep(0.5)
+        else:
+            _BOT.privmsg(target, message, log)
+    except TypeError:
+        _BOT.privmsg(target, message, log)
 
 def _check_args(f, count=3):
     args, varargs, varkw, defaults = getargspec(f)
