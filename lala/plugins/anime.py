@@ -18,7 +18,12 @@ def get_anime(user, channel, text):
     except IndexError:
         return
     logging.debug("Querying AniDb for information about %i" % aid)
-    anime = anidb.query(anidb.QUERY_ANIME, aid, proxies={"http": "proxy:3128"})
+    try:
+        anime = anidb.query(anidb.QUERY_ANIME, aid, proxies={"http": "proxy:3128"})
+    except anidb.exceptions.BannedException:
+        msg(channel, "%s: Sorry, looks like I'm banned from using the HTTP api"
+                % user)
+        return
     if anime is None:
         logging.debug("No data")
         msg(channel, "%s: Sorry, no data could be retrieved" % user)
