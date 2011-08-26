@@ -85,7 +85,11 @@ def asearch(user, channel, text):
     logging.debug(name)
     results = anidb.search(name)
     max_results = int(get("max_search_results", 5))
-    results = results[:max_results]
+
+    if len(results) > max_results:
+        msg(channel, "%s: Too many results, please refine your search" % user)
+        return
+
     result_strings = []
     for anime in results:
         titles = []
