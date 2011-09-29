@@ -18,7 +18,7 @@ def isitdown(user, channel, text):
         "%s: An error occured. Please check the log for more details" % user)
         return
 
-    if "just you" in content:
+    if "It's just you" in content:
         msg(channel, "%s: It's just you!" % user)
     else:
         msg(channel, "%s: It's not just you!" % user)
