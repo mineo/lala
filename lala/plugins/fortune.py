@@ -10,7 +10,8 @@ def fortune(user, channel, text):
         p = subprocess.Popen(["fortune", "fortunes"],
                 stdout=subprocess.PIPE)
         result = p.communicate()[0]
-        msg(channel,"%s: %s" % (user, result.replace("\n","")))
+        if p.returncode == 0:
+            msg(channel,"%s: %s" % (user, result.replace("\n","")))
     except OSError, e:
         logging.error("Error while calling fortune: %s" % e)
 
@@ -21,6 +22,7 @@ def ofortune(user, channel, text):
         p = subprocess.Popen(["fortune", "-o"],
                 stdout=subprocess.PIPE)
         result = p.communicate()[0]
-        msg(channel,"%s: %s" % (user, result.replace("\n","")))
+        if p.returncode == 0:
+            msg(channel,"%s: %s" % (user, result.replace("\n","")))
     except OSError, e:
         logging.error("Error while calling fortune: %s" % e)
