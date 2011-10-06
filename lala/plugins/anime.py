@@ -14,16 +14,16 @@ def get_anime(user, channel, text):
     except ValueError:
         msg(channel, "%s: %s can't be parsed into an anime id" % (user,
             text.split()[1]))
-        return
+        return None
     except IndexError:
-        return
+        return None
     logging.debug("Querying AniDb for information about %i" % aid)
     try:
         anime = anidb.query(anidb.QUERY_ANIME, aid)
     except anidb.exceptions.BannedException:
         msg(channel, "%s: Sorry, looks like I'm banned from using the HTTP api"
                 % user)
-        return
+        return None
     if anime is None:
         logging.debug("No data")
         msg(channel, "%s: Sorry, no data could be retrieved" % user)
