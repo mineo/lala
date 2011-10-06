@@ -8,7 +8,10 @@ DFEOOJM_URL = "http://www.downforeveryoneorjustme.com/%s"
 
 @command
 def isitdown(user, channel, text):
-    website = DFEOOJM_URL % " ".join(text.split()[1:])
+    s_text = text.split()
+    if len(s_text) <= 1:
+        return
+    website = DFEOOJM_URL % " ".join(s_text[1:])
     logging.debug("Trying to open %s" % website)
     try:
         content = urllib2.urlopen(website).read()
