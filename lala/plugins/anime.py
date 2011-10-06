@@ -19,7 +19,7 @@ def get_anime(user, channel, text):
         return
     logging.debug("Querying AniDb for information about %i" % aid)
     try:
-        anime = anidb.query(anidb.QUERY_ANIME, aid, proxies={"http": "proxy:3128"})
+        anime = anidb.query(anidb.QUERY_ANIME, aid)
     except anidb.exceptions.BannedException:
         msg(channel, "%s: Sorry, looks like I'm banned from using the HTTP api"
                 % user)
