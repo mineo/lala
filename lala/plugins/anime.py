@@ -30,7 +30,6 @@ def get_anime(user, channel, text):
         return None
     return anime
 
-
 @command
 def atags(user, channel, text):
     """Show the tags of an anime. Parameters: an aid"""

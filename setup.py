@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from distutils.core import setup
+from lala import __version__
 setup(name="lala",
-        version="0.1.5",
+        version=__version__,
         author="Wieland Hoffmann",
         author_email="themineo@gmail.com",
         scripts=["run-lala.py"],

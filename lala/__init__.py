@@ -8,6 +8,7 @@ import os
 
 from lala import util
 
+__version__ = "0.1.5~git"
 
 class Plugger(object):
     def __init__(self, bot, path):
@@ -36,7 +37,7 @@ class Bot(lurklib.Client):
                 hide_called_events=True,
                 UTC=False,
                 channels=[],
-                version="lala 0.1.4",
+                version="lala " + __version__,
                 debug=True,
                 plugins=[],
                 nickserv=None
