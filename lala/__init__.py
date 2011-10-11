@@ -74,6 +74,7 @@ class Bot(lurklib.Client):
         self.__version__ = version
         self._nickserv_password = nickserv
         self.plugger = Plugger(self, "plugins")
+        self.do_reconnect = True
 
         lurklib.Client.__init__(self,
                 server = server,
@@ -179,14 +180,3 @@ class Bot(lurklib.Client):
         if log:
             self._logger.info("%s: %s" % (self.current_nick, message))
         lurklib.Client.privmsg(self, target, message)
-
-    def _handle_quit(self, sig, frame):
-        self.quit("Somebody pushed the big red button!")
-
-    def mainloop(self):
-        try:
-            lurklib.Client.mainloop(self)
-        except lurklib.exceptions._Exceptions.IRCError, e:
-            logging.warning(e)
-            self.on_connect = None
-            self.mainloop()

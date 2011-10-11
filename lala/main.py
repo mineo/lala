@@ -5,6 +5,8 @@ import logging
 from lala import Bot, config
 from os.path import join
 from sys import version_info
+from socket import error
+from time import sleep
 
 if version_info >= (2,7):
     import argparse
@@ -72,34 +74,43 @@ def main():
     logger.addHandler(handler)
 
 
-    if not args.no_daemon:
-        import daemon
-        with daemon.DaemonContext():
-            bot = Bot(
-                server=get_conf_key(cfg,"server"),
-                port=int(get_conf_key(cfg,"port")),
-                nick=get_conf_key(cfg,"nick"),
-                channels=get_conf_key(cfg, "channels").split(","),
-                debug=args.debug,
-                plugins=get_conf_key(cfg, "plugins").split(","),
-                nickserv = get_conf_key(cfg, "nickserv_password"),
-                encoding = get_conf_key(cfg, "encoding"),
-                fallback_encoding = get_conf_key(cfg, "fallback_encoding")
-            )
-            bot.mainloop()
-    else:
-        bot = Bot(
-            server=get_conf_key(cfg,"server"),
-            port=int(get_conf_key(cfg,"port")),
-            nick=get_conf_key(cfg,"nick"),
-            channels=get_conf_key(cfg, "channels").split(","),
-            debug=args.debug,
-            plugins=get_conf_key(cfg, "plugins").split(","),
-            nickserv = get_conf_key(cfg, "nickserv_password"),
-            encoding = get_conf_key(cfg, "encoding"),
-            fallback_encoding = get_conf_key(cfg, "fallback_encoding")
-        )
-        bot.mainloop()
+    while True:
+        try:
+            if not args.no_daemon:
+                import daemon
+                with daemon.DaemonContext():
+                    bot = Bot(
+                        server=get_conf_key(cfg,"server"),
+                        port=int(get_conf_key(cfg,"port")),
+                        nick=get_conf_key(cfg,"nick"),
+                        channels=get_conf_key(cfg, "channels").split(","),
+                        debug=args.debug,
+                        plugins=get_conf_key(cfg, "plugins").split(","),
+                        nickserv = get_conf_key(cfg, "nickserv_password"),
+                        encoding = get_conf_key(cfg, "encoding"),
+                        fallback_encoding = get_conf_key(cfg, "fallback_encoding")
+                    )
+                    bot.mainloop()
+                    if not bot.do_reconnect:
+                        break
+            else:
+                bot = Bot(
+                    server=get_conf_key(cfg,"server"),
+                    port=int(get_conf_key(cfg,"port")),
+                    nick=get_conf_key(cfg,"nick"),
+                    channels=get_conf_key(cfg, "channels").split(","),
+                    debug=args.debug,
+                    plugins=get_conf_key(cfg, "plugins").split(","),
+                    nickserv = get_conf_key(cfg, "nickserv_password"),
+                    encoding = get_conf_key(cfg, "encoding"),
+                    fallback_encoding = get_conf_key(cfg, "fallback_encoding")
+                )
+                bot.mainloop()
+                if not bot.do_reconnect:
+                    break
+            sleep(5)
+        except error:
+            sleep(5)
 
 def get_conf_key(conf, key):
     try:

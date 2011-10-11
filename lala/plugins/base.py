@@ -44,6 +44,14 @@ def join(user, channel, text):
 def quit(user, channel, text):
     if is_admin(user):
         logging.debug("Quitting")
+        _BOT.do_reconnect=False
+        _BOT.quit("leaving")
+
+@command
+def reconnect(user, channel, text):
+    if is_admin(user):
+        logging.debug("Reconnecting")
+        _BOT.do_reconnect=True
         _BOT.quit("leaving")
 
 @command
