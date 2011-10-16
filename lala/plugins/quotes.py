@@ -115,4 +115,4 @@ def join(user, channel):
         except IndexError, e:
             # There's no matching quote,
             return
-        msg(channel, "[%s] %s" % (id, quote))
+        msg(channel, "[%s] %s" % (id, quote), log=False)

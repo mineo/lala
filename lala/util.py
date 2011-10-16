@@ -3,7 +3,6 @@ import lala.config as config
 
 from types import FunctionType
 from inspect import getargspec
-from time import sleep
 
 _BOT = None
 _PM = None
@@ -95,14 +94,14 @@ def msg(target, message, log=True):
             for _message in iter(message):
                 if _message == u"":
                     continue
-                _BOT.privmsg(target, _message, log)
-                sleep(0.5)
+                message = _message.encode("utf-8")
+                _BOT.msg(target, _message, log)
         else:
-            _BOT.privmsg(target, message, log)
+            _BOT.msg(target, message.encode("utf-8"), log)
     except TypeError:
         if message == u"":
             return
-        _BOT.privmsg(target, message, log)
+        _BOT.msg(target, message.encode("utf-8"), log)
 
 def _check_args(f, count=3):
     args, varargs, varkw, defaults = getargspec(f)

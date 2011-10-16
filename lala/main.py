@@ -1,13 +1,13 @@
 import ConfigParser
 import os
 import logging
+import logging.handlers
 
-from lala import Bot, config, util
-from lala.pluginmanager import PluginManager
+from lala import config
+from lala.factory import LalaFactory
 from os.path import join
 from sys import version_info
-from socket import error
-from time import sleep
+from twisted.internet import reactor
 
 if version_info >= (2,7):
     import argparse
@@ -55,12 +55,6 @@ def main():
     else:
         files = cfg.read(args.config)
 
-    util._PM = PluginManager("plugins")
-    util._PM.load_plugin("base")
-
-    for plugin in get_conf_key(cfg, "plugins").split(","):
-        util._PM.load_plugin(plugin)
-
     config._CFG = cfg
     config._FILENAME = files[0]
 
@@ -80,42 +74,33 @@ def main():
                               "%Y-%m-%d %H:%m"))
     logger.addHandler(handler)
 
+    debugformat=\
+        "%(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s"
 
-    while True:
-        try:
-            if not args.no_daemon:
-                import daemon
-                with daemon.DaemonContext():
-                    bot = Bot(
-                        server=get_conf_key(cfg,"server"),
-                        port=int(get_conf_key(cfg,"port")),
-                        nick=get_conf_key(cfg,"nick"),
-                        channels=get_conf_key(cfg, "channels").split(","),
-                        debug=args.debug,
-                        nickserv = get_conf_key(cfg, "nickserv_password"),
-                        encoding = get_conf_key(cfg, "encoding"),
-                        fallback_encoding = get_conf_key(cfg, "fallback_encoding")
-                    )
-                    bot.mainloop()
-                    if not bot.do_reconnect:
-                        break
-            else:
-                bot = Bot(
-                    server=get_conf_key(cfg,"server"),
-                    port=int(get_conf_key(cfg,"port")),
-                    nick=get_conf_key(cfg,"nick"),
-                    channels=get_conf_key(cfg, "channels").split(","),
-                    debug=args.debug,
-                    nickserv = get_conf_key(cfg, "nickserv_password"),
-                    encoding = get_conf_key(cfg, "encoding"),
-                    fallback_encoding = get_conf_key(cfg, "fallback_encoding")
-                )
-                bot.mainloop()
-                if not bot.do_reconnect:
-                    break
-            sleep(5)
-        except error:
-            sleep(5)
+    if args.debug:
+        logging.basicConfig(format=debugformat, level=logging.DEBUG)
+
+    if not args.no_daemon:
+        import daemon
+        with daemon.DaemonContext():
+            f = LalaFactory(get_conf_key(cfg, "channels"),
+                    get_conf_key(cfg, "nick"),
+                    get_conf_key(cfg,"plugins").split(","),
+                    logger)
+            reactor.connectTCP(get_conf_key(cfg, "server"),
+                    int(get_conf_key(cfg, "port")),
+                    f)
+            reactor.run()
+    else:
+            f = LalaFactory(get_conf_key(cfg, "channels"),
+                    get_conf_key(cfg, "nick"),
+                    get_conf_key(cfg,"plugins").split(","),
+                    logger)
+            reactor.connectTCP(get_conf_key(cfg, "server"),
+                    int(get_conf_key(cfg, "port")),
+                    f)
+            reactor.run()
+
 
 def get_conf_key(conf, key):
     try:
