@@ -1,23 +1,21 @@
 import logging
 import lala.config as config
+import lala.util as util
 
 from lurklib.exceptions import _Exceptions
-from lala.util import _BOT, command, msg, is_admin
+from lala.util import command, msg, is_admin, _PM
 
-@command
-def load(user, channel, text):
-    if is_admin(user):
-        try:
-            _BOT.plugger.load_plugin(text.split()[1])
-        except exceptions.NoSuchPlugin:
-            msg(channel, "%s could not be found" % text[1])
+#@command
+#def load(user, channel, text):
+    #if is_admin(user):
+        #util._BOT.plugger.load_plugin(text.split()[1])
 
 @command
 def part(user, channel, text):
     if is_admin(user):
         try:
             logging.debug("Parting %s" % text.split()[1])
-            _BOT.part(text.split()[1])
+            util._BOT.part(text.split()[1])
         except _Exceptions.NotInChannel, e:
             msg(channel, "Sorry, %s, I'm not in %s" % (user,
                 text.split()[1]))
@@ -28,7 +26,7 @@ def join(user, channel, text):
         chan = text.split()[1]
         try:
             logging.debug("Joining %s" % chan)
-            _BOT.join_(chan)
+            util._BOT.join_(chan)
         except _Exceptions.ChannelIsFull, e:
             msg(channel, "Sorry, %s is full." % chan)
         except _Exceptions.NoSuchChannel, e:
@@ -44,26 +42,26 @@ def join(user, channel, text):
 def quit(user, channel, text):
     if is_admin(user):
         logging.debug("Quitting")
-        _BOT.do_reconnect=False
-        _BOT.quit("leaving")
+        util._BOT.do_reconnect=False
+        util._BOT.quit("leaving")
 
 @command
 def reconnect(user, channel, text):
     if is_admin(user):
         logging.debug("Reconnecting")
-        _BOT.do_reconnect=True
-        _BOT.quit("leaving")
+        util._BOT.do_reconnect=True
+        util._BOT.quit("leaving")
 
 @command
 def server(user, channel, text):
-    """Shows the server the _BOT is connected to"""
-    msg(user, _BOT.server)
+    """Shows the server the util._BOT is connected to"""
+    msg(user, util._BOT.server)
 
 @command
 def commands(user, channel, text):
     """Prints all available callbacks"""
     msg(channel, "I know the following commands:")
-    s = "!" + " !".join(_BOT._callbacks)
+    s = "!" + " !".join(_PM._callbacks)
     msg(channel, s)
 
 @command
@@ -104,7 +102,7 @@ def help(user, channel, text):
     """Show the help for a command"""
     cmd = text.split()[1]
     try:
-        func = _BOT._callbacks[cmd]
+        func = _PM._callbacks[cmd]
     except KeyError, e:
         msg(channel, "%s is not a command I know" % cmd)
         return

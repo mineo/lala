@@ -1,30 +1,16 @@
 #!/usr/bin/python2
 # coding: utf-8
 import lurklib
-import sys
 import logging
 import logging.handlers
-import os
 
 from lala import util
 
-__version__ = "0.1.5~git"
-
-class Plugger(object):
-    def __init__(self, bot, path):
-        self.bot = bot
-        if not path in sys.path:
-            sys.path.append(os.path.join(os.path.dirname(__file__),path))
-        self.path = path
-
-    def load_plugin(self, name):
-        logging.debug("Trying to load %s" % name)
-        __import__(os.path.splitext(name)[0])
-
+__version__ = "0.1.6~git"
 
 class Bot(lurklib.Client):
     def __init__(self,
-                server,
+               server,
                 port=None,
                 nick='lalal',
                 user='lalala',
@@ -39,7 +25,6 @@ class Bot(lurklib.Client):
                 channels=[],
                 version="lala " + __version__,
                 debug=True,
-                plugins=[],
                 nickserv=None
                 ):
         """ Create a new :py:class:`lala.Bot` instance
@@ -56,7 +41,6 @@ class Bot(lurklib.Client):
         :param channels: List of channels to join after connecting
         :param version: Version of the bot. Will be used in *CTCP VERSION*
         replies
-        :param plugins: List of plugins to load
         """
 
         self._logger = logging.getLogger("MessageLog")
@@ -73,7 +57,6 @@ class Bot(lurklib.Client):
         self._cbprefix = "!"
         self.__version__ = version
         self._nickserv_password = nickserv
-        self.plugger = Plugger(self, "plugins")
         self.do_reconnect = True
 
         lurklib.Client.__init__(self,
@@ -88,11 +71,9 @@ class Bot(lurklib.Client):
                 hide_called_events = hide_called_events,
                 UTC = UTC
                 )
+
         self.fallback_encoding = fallback_encoding
         util._BOT = self
-        for plugin in plugins:
-            self.plugger.load_plugin(plugin)
-        self.plugger.load_plugin("base")
 
     def on_connect(self):
         for channel in self._channels:
@@ -112,22 +93,7 @@ class Bot(lurklib.Client):
             channel = event[1]
         self._logger.info("%s: %s" % (user, text))
         try:
-            if text.startswith(self._cbprefix):
-                command = text.split()[0].replace(self._cbprefix, "")
-                if command in self._callbacks:
-                    self._callbacks[command](
-                        user,
-                        channel,  # channel
-                        text)
-
-            for regex in self._regexes:
-                match = regex.search(text)
-                if match is not None:
-                    self._regexes[regex](
-                            user,
-                            channel,
-                            text,
-                            match)
+            util._PM._handle_message(user, channel, text)
         except (lurklib.exceptions._Exceptions.NotInChannel,
                 lurklib.exceptions._Exceptions.NotOnChannel):
             # Some plugin tried to send to a channel it's not in
@@ -145,8 +111,7 @@ class Bot(lurklib.Client):
 
     def on_join(self, event):
         self._logger.info("%s joined" % event[0][0])
-        for cb in self._join_callbacks:
-            cb(event)
+        util._PM.on_join(event[0][0], event[1])
 
     def on_ctcp(self, event):
         if event[2] == "VERSION":
@@ -164,17 +129,6 @@ class Bot(lurklib.Client):
         user = event[0][0]
         reason = event[1]
         self._logger.info("%s left: %s" % (user, reason))
-
-    def register_callback(self, trigger, func):
-        """ Adds func to the callbacks for trigger """
-        logging.debug("Registering callback for %s" % trigger)
-        self._callbacks[trigger] = func
-
-    def register_join_callback(self, func):
-        self._join_callbacks.append(func)
-
-    def register_regex(self, regex, func):
-        self._regexes[regex] = func
 
     def privmsg(self, target, message, log=True):
         if log:

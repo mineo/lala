@@ -2,7 +2,8 @@ import ConfigParser
 import os
 import logging
 
-from lala import Bot, config
+from lala import Bot, config, util
+from lala.pluginmanager import PluginManager
 from os.path import join
 from sys import version_info
 from socket import error
@@ -54,6 +55,12 @@ def main():
     else:
         files = cfg.read(args.config)
 
+    util._PM = PluginManager("plugins")
+    util._PM.load_plugin("base")
+
+    for plugin in get_conf_key(cfg, "plugins").split(","):
+        util._PM.load_plugin(plugin)
+
     config._CFG = cfg
     config._FILENAME = files[0]
 
@@ -85,7 +92,6 @@ def main():
                         nick=get_conf_key(cfg,"nick"),
                         channels=get_conf_key(cfg, "channels").split(","),
                         debug=args.debug,
-                        plugins=get_conf_key(cfg, "plugins").split(","),
                         nickserv = get_conf_key(cfg, "nickserv_password"),
                         encoding = get_conf_key(cfg, "encoding"),
                         fallback_encoding = get_conf_key(cfg, "fallback_encoding")
@@ -100,7 +106,6 @@ def main():
                     nick=get_conf_key(cfg,"nick"),
                     channels=get_conf_key(cfg, "channels").split(","),
                     debug=args.debug,
-                    plugins=get_conf_key(cfg, "plugins").split(","),
                     nickserv = get_conf_key(cfg, "nickserv_password"),
                     encoding = get_conf_key(cfg, "encoding"),
                     fallback_encoding = get_conf_key(cfg, "fallback_encoding")
