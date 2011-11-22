@@ -1,6 +1,6 @@
 import logging
 from twisted.words.protocols.irc import IRCClient
-from lala import util
+from lala import util, config
 
 class Lala(IRCClient):
     __version__ = "0.2~git"
@@ -34,11 +34,11 @@ class Lala(IRCClient):
         user = user.split("!")[0]
         if channel == self.nickname:
             channel = user
-        self.factory.logger.info("%s: %s" % (user, message))
         try:
             message = message.decode("utf-8")
         except Exception:
-            message = message.decode(cfg._get("base", "fallback_encoding"))
+            message = message.decode(config._get("base", "fallback_encoding"))
+        self.factory.logger.info("%s: %s" % (user, message))
         util._PM._handle_message(user, channel, message)
 
     def msg(self, channel, message, log, length=None):
