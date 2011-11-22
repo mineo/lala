@@ -18,6 +18,10 @@ class Lala(IRCClient):
     def signedOn(self):
         logging.debug("Joining %s" % self.factory.channel)
         self.join(self.factory.channel)
+        if self.factory.nspassword is not None:
+            logging.info("Identifying with Nickserv")
+            self.msg("Nickserv", "identify %s" % self.factory.nspassword,
+                    log=False)
 
     def joined(self, channel):
         logging.debug("Successfully joined %s" % channel)
