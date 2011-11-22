@@ -35,7 +35,10 @@ class Lala(IRCClient):
         if channel == self.nickname:
             channel = user
         self.factory.logger.info("%s: %s" % (user, message))
-        message = message.decode("utf-8")
+        try:
+            message = message.decode("utf-8")
+        except Exception:
+            message = message.decode(cfg._get("base", "fallback_encoding"))
         util._PM._handle_message(user, channel, message)
 
     def msg(self, channel, message, log, length=None):
