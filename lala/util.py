@@ -94,14 +94,13 @@ def msg(target, message, log=True):
             for _message in iter(message):
                 if _message == u"":
                     continue
-                message = _message.encode("utf-8")
                 _BOT.msg(target, _message, log)
         else:
-            _BOT.msg(target, message.encode("utf-8"), log)
+            _BOT.msg(target, message, log)
     except TypeError:
         if message == u"":
             return
-        _BOT.msg(target, message.encode("utf-8"), log)
+        _BOT.msg(target, message, log)
 
 def _check_args(f, count=3):
     args, varargs, varkw, defaults = getargspec(f)
