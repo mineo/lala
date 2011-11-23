@@ -3,7 +3,7 @@ lala bot
 
 Dependencies
 ------------
-* tiwsted
+* twisted
 * python-daemon (optional, use **-n** to not daemonize)
 
 Setup
