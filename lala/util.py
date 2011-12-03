@@ -71,14 +71,6 @@ class regex(object):
             raise TypeError(
                 "A callback function should take exactly 3 arguments")
 
-def initplz(f):
-    """ Call ``f`` once. This can be used to set values of global variables or
-    some other setup stuff."""
-    if callable(f):
-        f()
-    else:
-        raise TypeError("Expected a callable object")
-
 def is_admin(user):
     """Check whether ``user`` is an admin"""
     return user in config._get("base", "admins")

@@ -1,12 +1,10 @@
 import anidb
 import logging
 
-from lala.util import command, msg, initplz
+from lala.util import command, msg
 from lala.config import get
 
-@initplz
-def setup():
-    anidb.set_client("pyanihttp", 1)
+anidb.set_client("pyanihttp", 1)
 
 def get_anime(user, channel, text):
     try:

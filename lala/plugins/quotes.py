@@ -2,20 +2,17 @@ import sqlite3
 import logging
 import os
 
-from lala.util import command, initplz, msg, on_join, is_admin
+from lala.util import command, msg, on_join, is_admin
 from lala.config import get
 
 db_connection = None
 
-@initplz
-def setup():
-    global db_connection
-    db_connection =  sqlite3.connect(
-                os.path.join(os.path.expanduser("~/.lala"),"quotes.sqlite3"))
-    db_connection.execute("CREATE TABLE IF NOT EXISTS quotes(\
-        quote TEXT);")
-    db_connection.commit()
-    db_connection.text_factory = sqlite3.OptimizedUnicode
+db_connection =  sqlite3.connect(
+            os.path.join(os.path.expanduser("~/.lala"),"quotes.sqlite3"))
+db_connection.execute("CREATE TABLE IF NOT EXISTS quotes(\
+    quote TEXT);")
+db_connection.commit()
+db_connection.text_factory = sqlite3.OptimizedUnicode
 
 
 @command
