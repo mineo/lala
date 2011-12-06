@@ -37,7 +37,7 @@ def atags(user, channel, text):
     anime.tags.sort(cmp=lambda x,y: cmp(int(x.count), int(y.count)))
     anime.tags.reverse()
     tags = [tag.name for tag in anime.tags]
-    msg(channel, "Anime %s is tagged %s" % (anime.id, 
+    msg(channel, "Anime %s is tagged %s" % (anime.id,
             ", ".join(tags[:int(get("max_tags", 5))])))
 
 @command
