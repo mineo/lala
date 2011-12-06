@@ -11,12 +11,14 @@ from lala.util import command, msg, is_admin
 
 @command
 def part(user, channel, text):
+    """Part a channel"""
     if is_admin(user):
         logging.debug("Parting %s" % text.split()[1])
         util._BOT.part(text.split()[1])
 
 @command
 def join(user, channel, text):
+    """Join a channel"""
     if is_admin(user):
         chan = text.split()[1]
         logging.debug("Joining %s" % chan)
@@ -36,7 +38,7 @@ def reconnect(user, channel, text):
 
 @command
 def server(user, channel, text):
-    """Shows the server the util._BOT is connected to"""
+    """Shows the server the bot is connected to"""
     msg(user, util._BOT.server)
 
 @command
@@ -60,7 +62,7 @@ def addadmin(user, channel, text):
 
 @command
 def admins(user, channel, text):
-    """Print the list of admins"""
+    """Show the list of admins"""
     if is_admin(user):
         msg(channel, config.get("admins"))
 
