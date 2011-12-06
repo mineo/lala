@@ -12,7 +12,7 @@ class LalaFactory(protocol.ReconnectingClientFactory):
         util._PM = pluginmanager.PluginManager("plugins")
         try:
             self.nspassword = config._get("base", "nickserv_password")
-        except Exception, e:
+        except Exception:
             self.nspassword = None
         for plugin in plugins:
             util._PM.load_plugin(plugin)
