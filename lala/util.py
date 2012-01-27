@@ -4,8 +4,10 @@ import lala.config as config
 from types import FunctionType
 from inspect import getargspec
 
+
 _BOT = None
 _PM = None
+
 
 class command(object):
     """Decorator to register a command. The name of the command is the
@@ -40,6 +42,7 @@ class command(object):
 
     def __call__(self, func):
         _PM.register_callback(self.cmd, func)
+
 
 def on_join(f):
     """Decorator for functions reacting to joins

@@ -7,8 +7,8 @@ from lala.config import get
 
 db_connection = None
 
-db_connection =  sqlite3.connect(
-            os.path.join(os.path.expanduser("~/.lala"),"quotes.sqlite3"))
+db_connection = sqlite3.connect(
+            os.path.join(os.path.expanduser("~/.lala"), "quotes.sqlite3"))
 db_connection.execute("CREATE TABLE IF NOT EXISTS quotes(\
     quote TEXT);")
 db_connection.commit()
@@ -16,7 +16,7 @@ db_connection.text_factory = sqlite3.OptimizedUnicode
 
 
 @command
-def getquote( user, channel, text):
+def getquote(user, channel, text):
     """Show the quote with a specified number"""
     s_text = text.split()
     if len(s_text) > 1:
@@ -32,7 +32,7 @@ def getquote( user, channel, text):
                     quotenumber))
 
 @command
-def addquote( user, channel, text):
+def addquote(user, channel, text):
     """Add a quote"""
     s_text = text.split()
     if len(s_text) > 1:
@@ -46,7 +46,7 @@ def addquote( user, channel, text):
         msg(channel, "%s: You didn't give me any text to quote " % user)
 
 @command
-def delquote( user, channel, text):
+def delquote(user, channel, text):
     """Delete a quote with a specified number"""
     s_text = text.split()
     if is_admin(user):
@@ -62,7 +62,7 @@ def delquote( user, channel, text):
                 quotenumber))
 
 @command
-def lastquote( user, channel, text):
+def lastquote(user, channel, text):
     """Show the last quote"""
     with db_connection:
         try:
@@ -73,7 +73,7 @@ def lastquote( user, channel, text):
         msg(channel, "[%s] %s" % (id, quote))
 
 @command
-def randomquote( user, channel, text):
+def randomquote(user, channel, text):
     """Show a random quote"""
     with db_connection:
         try:
@@ -84,7 +84,7 @@ def randomquote( user, channel, text):
         msg(channel, "[%s] %s" % (id, quote))
 
 @command
-def searchquote( user, channel, text):
+def searchquote(user, channel, text):
     """Search for a quote"""
     s_text = text.split()
     logging.debug(s_text[1:])

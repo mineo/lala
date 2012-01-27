@@ -9,7 +9,7 @@ from os.path import join
 from sys import version_info
 from twisted.internet import reactor
 
-if version_info >= (2,7):
+if version_info >= (2, 7):
     import argparse
 else:
     import optparse
@@ -19,13 +19,14 @@ CONFIG_DEFAULTS = {
         "plugins": "",
         "nickserv_password": None,
         "log_folder": os.path.expanduser("~/.lala/logs"),
-        "encoding" : "utf-8",
-        "fallback_encoding" : "utf-8"
+        "encoding": "utf-8",
+        "fallback_encoding": "utf-8"
         }
+
 
 def main():
     """Main method"""
-    if version_info >= (2,7):
+    if version_info >= (2, 7):
         parser = argparse.ArgumentParser()
         parser.add_argument("-c", "--config", help="Configuration file location")
         parser.add_argument("-d", "--debug", help="Enable debugging",
@@ -48,9 +49,9 @@ def main():
     cfg = ConfigParser.SafeConfigParser()
     if args.config is None:
         try:
-            configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),"lala","config")
+            configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"), "lala", "config")
         except AttributeError:
-            configfile = os.path.join(os.getenv("HOME"),".lala","config")
+            configfile = os.path.join(os.getenv("HOME"), ".lala", "config")
         files = cfg.read([configfile, "/etc/lala.config"])
     else:
         files = cfg.read(args.config)
@@ -59,7 +60,7 @@ def main():
     config._FILENAME = files[0]
 
     log_folder = get_conf_key(cfg, "log_folder")
-    config._CFG.set("base","log_folder", log_folder)
+    config._CFG.set("base", "log_folder", log_folder)
     logfile = join(log_folder, "lala.log")
     if not os.path.exists(log_folder):
         os.makedirs(log_folder)
@@ -75,7 +76,7 @@ def main():
     logger.addHandler(handler)
 
     debugformat=\
-        "%(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s"
+        "%(levelname)s %(filename)s: %(funcName)s: %(lineno)d %(message)s"
 
     if args.debug:
         logging.basicConfig(format=debugformat, level=logging.DEBUG)
@@ -85,7 +86,7 @@ def main():
         with daemon.DaemonContext():
             f = LalaFactory(get_conf_key(cfg, "channels"),
                     get_conf_key(cfg, "nick"),
-                    get_conf_key(cfg,"plugins").split(","),
+                    get_conf_key(cfg, "plugins").split(","),
                     logger)
             reactor.connectTCP(get_conf_key(cfg, "server"),
                     int(get_conf_key(cfg, "port")),
@@ -94,7 +95,7 @@ def main():
     else:
             f = LalaFactory(get_conf_key(cfg, "channels"),
                     get_conf_key(cfg, "nick"),
-                    get_conf_key(cfg,"plugins").split(","),
+                    get_conf_key(cfg, "plugins").split(","),
                     logger)
             reactor.connectTCP(get_conf_key(cfg, "server"),
                     int(get_conf_key(cfg, "port")),
@@ -104,6 +105,6 @@ def main():
 
 def get_conf_key(conf, key):
     try:
-        return conf.get("base",key)
+        return conf.get("base", key)
     except ConfigParser.NoOptionError:
         return CONFIG_DEFAULTS[key]

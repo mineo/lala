@@ -1,6 +1,8 @@
 import logging
+
 from twisted.words.protocols.irc import IRCClient
 from lala import util, config
+
 
 class Lala(IRCClient):
     __version__ = "0.2~git"
@@ -11,7 +13,6 @@ class Lala(IRCClient):
 
     def _get_nick(self):
         return self.factory.nickname
-
 
     nickname = property(_get_nick)
 

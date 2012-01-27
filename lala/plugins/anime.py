@@ -34,7 +34,7 @@ def atags(user, channel, text):
     anime = get_anime(user, channel, text)
     if anime is None:
         return
-    anime.tags.sort(cmp=lambda x,y: cmp(int(x.count), int(y.count)))
+    anime.tags.sort(cmp=lambda x, y: cmp(int(x.count), int(y.count)))
     anime.tags.reverse()
     tags = [tag.name for tag in anime.tags]
     msg(channel, "Anime %s is tagged %s" % (anime.id,

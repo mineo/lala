@@ -2,6 +2,7 @@ from twisted.internet import protocol
 from lala.bot import Lala
 from lala import pluginmanager, util, config
 
+
 class LalaFactory(protocol.ReconnectingClientFactory):
     protocol = Lala
 

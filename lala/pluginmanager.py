@@ -2,10 +2,11 @@ import sys
 import logging
 import os
 
+
 class PluginManager(object):
     def __init__(self, path):
         if not path in sys.path:
-            sys.path.append(os.path.join(os.path.dirname(__file__),path))
+            sys.path.append(os.path.join(os.path.dirname(__file__), path))
         self.path = path
         self._callbacks = {}
         self._join_callbacks = list()
