@@ -19,5 +19,5 @@ setup(name="lala",
             "Natural Language :: English",
             "Operating System :: OS Independent",
             "Programming Language :: Python :: 2.7"],
-        data_files=[("/usr/share/doc/lala", ["config.example"])]
+        data_files=[("usr/share/doc/lala", ["config.example"])]
         )
