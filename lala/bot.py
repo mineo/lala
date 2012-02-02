@@ -45,5 +45,5 @@ class Lala(IRCClient):
     def msg(self, channel, message, log, length=None):
         if log:
             self.factory.logger.info("%s: %s" % (self.nickname, message))
-        message = message.encode("utf-8")
+        message = message.rstrip().encode("utf-8")
         IRCClient.msg(self, channel, message, length)
