@@ -73,9 +73,8 @@ def lastquote(user, channel, text):
             msg(channel, "[%s] %s" % (id, quote))
         except IndexError, e:
             return
-    with db_connection:
-            run_query("SELECT rowid, quote FROM quotes ORDER BY rowid DESC\
-            LIMIT 1;", [], callback)
+    run_query("SELECT rowid, quote FROM quotes ORDER BY rowid DESC\
+    LIMIT 1;", [], callback)
 
 @command
 def randomquote(user, channel, text):
