@@ -54,6 +54,8 @@ def ainfo(user, channel, text):
     if anime.enddate is not None:
         info_s += " to: %i/%i/%i" % (anime.enddate.year,
                 anime.enddate.month, anime.enddate.day)
+    msg(channel, info_s)
+
     rating_s = u"Ratings:"
     for i in ("permanent", "temporary"):
         if anime.ratings[i]["count"] is not None:
@@ -61,6 +63,7 @@ def ainfo(user, channel, text):
                 (i,
                  anime.ratings[i]["rating"],
                  anime.ratings[i]["count"])
+    msg(channel, rating_s)
     titles = []
     for lang in ("ja", "x-jat", "en", "de"):
         try:
@@ -70,7 +73,7 @@ def ainfo(user, channel, text):
             # There are no titles for that language
             pass
     title_s = "Known as: %s" % ", ".join(titles)
-    msg(channel, [info_s, title_s, rating_s])
+    msg(channel, title_s)
 
 @command
 def asearch(user, channel, text):
