@@ -90,6 +90,9 @@ def help(user, channel, text):
     except KeyError, e:
         msg(channel, "%s is not a command I know" % cmd)
         return
+    except IndexError, e:
+        msg(channel, "Please specify a command")
+        return
     else:
         if func.__doc__ is not None:
             msg(channel, "%s: %s" % (cmd, func.__doc__))
