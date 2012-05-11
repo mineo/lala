@@ -3,6 +3,7 @@ import lala.config as config
 import lala.util as util
 
 from lala.util import command, msg, is_admin
+from twisted.internet import reactor
 
 #@command
 #def load(user, channel, text):
@@ -29,6 +30,7 @@ def quit(user, channel, text):
     if is_admin(user):
         logging.debug("Quitting")
         util._BOT.quit("leaving")
+        reactor.stop()
 
 @command
 def reconnect(user, channel, text):
