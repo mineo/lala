@@ -83,7 +83,7 @@ def main():
 
     if not args.no_daemon:
         import daemon
-        with daemon.DaemonContext():
+        with daemon.DaemonContext(files_preserve=[handler.stream.fileno()]):
             f = LalaFactory(get_conf_key(cfg, "channels"),
                     get_conf_key(cfg, "nick"),
                     get_conf_key(cfg, "plugins").split(","),
