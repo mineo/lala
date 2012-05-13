@@ -14,6 +14,9 @@ class TestConfig(unittest.TestCase):
         config.set("key", "value")
         self.assertEqual("value", config.get("key"))
 
+    def test_default(self):
+        self.assertEqual("default", config.get("testkey", "default"))
+
     def test_raises(self):
         self.assertRaises(NoSectionError, config.get, "foo")
 
