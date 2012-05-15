@@ -20,7 +20,8 @@ CONFIG_DEFAULTS = {
         "nickserv_password": None,
         "log_folder": os.path.expanduser("~/.lala/logs"),
         "encoding": "utf-8",
-        "fallback_encoding": "utf-8"
+        "fallback_encoding": "utf-8",
+        "max_log_days": 2
         }
 
 
@@ -68,7 +69,8 @@ def main():
     handler = logging.handlers.TimedRotatingFileHandler(
             encoding="utf-8",
             filename=logfile,
-            when="midnight")
+            when="midnight",
+            backupCount=int(get_conf_key(cfg, "max_log_days")))
     logger.setLevel(logging.INFO)
     handler.setFormatter(
             logging.Formatter("%(asctime)s %(message)s",
@@ -83,7 +85,7 @@ def main():
 
     if not args.no_daemon:
         import daemon
-        with daemon.DaemonContext():
+        with daemon.DaemonContext(files_preserve=[handler.stream.fileno()]):
             f = LalaFactory(get_conf_key(cfg, "channels"),
                     get_conf_key(cfg, "nick"),
                     get_conf_key(cfg, "plugins").split(","),

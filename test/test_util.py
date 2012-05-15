@@ -40,3 +40,13 @@ class TestUtil(unittest.TestCase):
         util.msg("user", ["message1", "message2"])
         util._BOT.msg.assert_called_with("user", "message2", True)
         self.assertEqual(util._BOT.msg.call_args_list[1][0][1], "message1")
+
+    def test_empty_message(self):
+        util._BOT = mock.Mock()
+        util.msg("user", "message")
+        util._BOT.msg.assert_called_once_with("user", "message", True)
+
+        util.msg("user", ["message1", "" "message2"])
+        util._BOT.msg.assert_called_with("user", "message2", True)
+        self.assertEqual(len(util._BOT.msg.call_args_list), 3)
+        self.assertEqual(util._BOT.msg.call_args_list[1][0][1], "message1")

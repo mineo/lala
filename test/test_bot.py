@@ -1,5 +1,5 @@
 import unittest
-import lala.factory, lala.util, lala.pluginmanager
+import lala.factory, lala.util, lala.pluginmanager, lala.config
 import mock
 
 from twisted.test import proto_helpers
@@ -9,15 +9,24 @@ class TestBot(unittest.TestCase):
         self._old_pm = lala.pluginmanager.PluginManager
         lala.pluginmanager.PluginManager = mock.Mock(spec=lala.pluginmanager.PluginManager)
 
-        factory = lala.factory.LalaFactory("#test", "nick", [], mock.Mock())
-        self.proto = factory.buildProtocol(("127.0.0.1", ))
+        self.factory = lala.factory.LalaFactory("#test", "nick", [], mock.Mock())
+        self.proto = self.factory.buildProtocol(("127.0.0.1", ))
         self.tr = proto_helpers.StringTransport()
         self.proto.makeConnection(self.tr)
 
-    def test_pm_is_called(self):
+    def test_bot_calls_pm_on_join(self):
+        self.proto.userJoined("user", "channel")
+        lala.util._PM.on_join.assert_called_once_with("user", "channel")
+
+    def test_bot_calls_pm_on_privmsg(self):
         self.proto.privmsg("user", "channel", "message")
         lala.util._PM._handle_message.assert_called_once_with("user",
                 "channel", "message")
+
+    def test_bot_joins_channel_on_signon(self):
+        self.proto.join = mock.Mock()
+        self.proto.signedOn()
+        self.proto.join.assert_called_once_with("#test")
 
     def test_factory(self):
         lala.factory.LalaFactory("#test", "nick", ["testplugin"], mock.Mock())
