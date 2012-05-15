@@ -39,8 +39,11 @@ def getquote(user, channel, text):
 @command
 def addquote(user, channel, text):
     """Add a quote"""
-    def callback(c):
+    def msgcallback(c):
         msg(channel, "New quote: %s" % c[0])
+
+    def addcallback(c):
+        run_query("SELECT max(rowid) FROM quotes;", [], msgcallback)
 
     s_text = text.split()
     if len(s_text) > 1:
@@ -48,8 +51,7 @@ def addquote(user, channel, text):
         logging.debug("Adding quote: %s" % text)
         run_query("INSERT INTO quotes (quote) values (?);",
                   [text],
-                  None)
-        run_query("SELECT max(rowid) FROM quotes;", [], callback)
+                  addcallback)
     else:
         msg(channel, "%s: You didn't give me any text to quote " % user)
 
