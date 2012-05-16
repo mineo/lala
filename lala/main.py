@@ -9,10 +9,7 @@ from os.path import join
 from sys import version_info
 from twisted.internet import reactor
 
-if version_info >= (2, 7):
-    import argparse
-else:
-    import optparse
+import optparse
 
 CONFIG_DEFAULTS = {
         "channels": "",
@@ -27,22 +24,13 @@ CONFIG_DEFAULTS = {
 
 def main():
     """Main method"""
-    if version_info >= (2, 7):
-        parser = argparse.ArgumentParser()
-        parser.add_argument("-c", "--config", help="Configuration file location")
-        parser.add_argument("-d", "--debug", help="Enable debugging",
-                            action="store_true", default=False)
-        parser.add_argument("-n", "--no-daemon", help="Do not daemonize",
-                            action="store_true", default=False)
-        args = parser.parse_args()
-    else:
-        parser = optparse.OptionParser()
-        parser.add_option("-c", "--config", help="Configuration file location")
-        parser.add_option("-d", "--debug", help="Enable debugging",
-                            action="store_true", default=False)
-        parser.add_option("-n", "--no-daemon", help="Do not daemonize",
-                            action="store_true", default=False)
-        (args, options) = parser.parse_args()
+    parser = optparse.OptionParser()
+    parser.add_option("-c", "--config", help="Configuration file location")
+    parser.add_option("-d", "--debug", help="Enable debugging",
+                        action="store_true", default=False)
+    parser.add_option("-n", "--no-daemon", help="Do not daemonize",
+                        action="store_true", default=False)
+    (args, options) = parser.parse_args()
 
     if args.debug:
         args.no_daemon = True
