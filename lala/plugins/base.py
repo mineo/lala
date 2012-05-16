@@ -15,7 +15,7 @@ def part(user, channel, text):
     """Part a channel"""
     if is_admin(user):
         logging.debug("Parting %s" % text.split()[1])
-        util._BOT.part(text.split()[1])
+        util._BOT.part(text.split()[1].encode("utf-8"))
 
 @command
 def join(user, channel, text):
