@@ -6,7 +6,7 @@ import logging.handlers
 from lala import config
 from lala.factory import LalaFactory
 from os.path import join
-from sys import version_info
+from sys import version_info, exit
 from twisted.internet import reactor
 
 import optparse
@@ -16,6 +16,7 @@ CONFIG_DEFAULTS = {
         "plugins": "",
         "nickserv_password": None,
         "log_folder": os.path.expanduser("~/.lala/logs"),
+        "log_file": os.path.expanduser("~/.lala/lala.log"),
         "encoding": "utf-8",
         "fallback_encoding": "utf-8",
         "max_log_days": 2
@@ -30,7 +31,12 @@ def main():
                         action="store_true", default=False)
     parser.add_option("-n", "--no-daemon", help="Do not daemonize",
                         action="store_true", default=False)
+    parser.add_option("-s", "--stdout", help="Log to stdout",
+                        action="store_true", default=False)
     (args, options) = parser.parse_args()
+
+    if args.stdout and not args.no_daemon:
+        exit("--stdout can not be used when daemonizing")
 
     if args.debug:
         args.no_daemon = True
@@ -54,26 +60,39 @@ def main():
     if not os.path.exists(log_folder):
         os.makedirs(log_folder)
     logger = logging.getLogger("MessageLog")
-    handler = logging.handlers.TimedRotatingFileHandler(
+    chathandler = logging.handlers.TimedRotatingFileHandler(
             encoding="utf-8",
             filename=logfile,
             when="midnight",
             backupCount=int(get_conf_key(cfg, "max_log_days")))
     logger.setLevel(logging.INFO)
-    handler.setFormatter(
+    chathandler.setFormatter(
             logging.Formatter("%(asctime)s %(message)s",
                               "%Y-%m-%d %H:%m"))
-    logger.addHandler(handler)
+    logger.propagate = False
+    logger.addHandler(chathandler)
+
+    handler = None
+
+    if not args.stdout:
+        handler = logging.FileHandler(filename=get_conf_key(cfg,"log_file"),
+                                          encoding="utf-8")
+    else:
+        handler = logging.StreamHandler()
+
+    logging.getLogger("").addHandler(handler)
 
     debugformat=\
         "%(levelname)s %(filename)s: %(funcName)s: %(lineno)d %(message)s"
+    handler.setFormatter(logging.Formatter(debugformat))
 
     if args.debug:
-        logging.basicConfig(format=debugformat, level=logging.DEBUG)
+        logging.getLogger("").setLevel(logging.DEBUG)
 
     if not args.no_daemon:
         import daemon
-        with daemon.DaemonContext(files_preserve=[handler.stream.fileno()]):
+        with daemon.DaemonContext(files_preserve=[handler.stream.fileno(),
+                                  chathandler.stream.fileno()]):
             f = LalaFactory(get_conf_key(cfg, "channels"),
                     get_conf_key(cfg, "nick"),
                     get_conf_key(cfg, "plugins").split(","),
