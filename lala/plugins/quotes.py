@@ -1,3 +1,4 @@
+# coding: utf-8
 import logging
 import os
 
@@ -10,8 +11,15 @@ db_connection = None
 db_connection = adbapi.ConnectionPool("sqlite3",
             os.path.join(os.path.expanduser("~/.lala"), "quotes.sqlite3"),
             check_same_thread=False)
-db_connection.runOperation("CREATE TABLE IF NOT EXISTS quotes(\
-    quote TEXT);")
+
+def setup_db():
+    db_connection.runOperation("CREATE TABLE IF NOT EXISTS quotes(\
+        quote TEXT,\
+        author INTEGER NOT NULL REFERENCES authors(rowid));")
+    db_connection.runOperation("CREATE TABLE IF NOT EXISTS authors(\
+        name TEXT NOT NULL UNIQUE);")
+
+setup_db()
 
 def run_query(query, values, callback):
     res = db_connection.runQuery(query, values)
@@ -43,15 +51,25 @@ def addquote(user, channel, text):
         msg(channel, "New quote: %s" % c[0])
 
     def addcallback(c):
-        run_query("SELECT max(rowid) FROM quotes;", [], msgcallback)
+        # TODO This might not be the rowid we're looking for in all cases…
+        run_query("SELECT max(rowid) FROM quotes", [], msgcallback);
 
     s_text = text.split()
     if len(s_text) > 1:
         text = " ".join(s_text[1:])
-        logging.debug("Adding quote: %s" % text)
-        run_query("INSERT INTO quotes (quote) values (?);",
-                  [text],
-                  addcallback)
+
+        def add(c):
+            logging.debug("Adding quote: %s" % text)
+            run_query("INSERT INTO quotes (quote, author)\
+                            SELECT (?), rowid\
+                            FROM authors WHERE name = (?);",
+                      [text , user],
+                      addcallback)
+
+        logging.debug("Adding author %s" % user)
+        run_query("INSERT OR IGNORE INTO authors (name) values (?)",
+                [user],
+                add)
     else:
         msg(channel, "%s: You didn't give me any text to quote " % user)
 

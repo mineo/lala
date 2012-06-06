@@ -14,3 +14,8 @@ Setup
 * Edit the file you just copied to your liking
 * Use run-lala to start the bot
     * If you want debugging output, use **-d**
+
+Update notice for version 0.2
+-----------------------------
+In version 0.2 the quotes plugin will also record who added a quote. To update
+your database use `sqlite3 quotes.sqlite3 < misc/add-author-to-quotes.sql`.
