@@ -1,12 +1,10 @@
 import logging
 
 from twisted.words.protocols.irc import IRCClient
-from lala import util, config
+from lala import util, config, __version__
 
 
 class Lala(IRCClient):
-    __version__ = "0.2~git"
-
     versionName = "lala"
     versionNum = __version__
     lineRate = 1
