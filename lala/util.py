@@ -48,7 +48,10 @@ def on_join(f):
     """Decorator for functions reacting to joins
 
     :param f: The function which should be called on joins."""
-    _PM.register_join_callback(f)
+    if _check_args(f, 2):
+        _PM.register_join_callback(f)
+    else:
+        raise TypeError("A callback function should takes exactly 2 arguments")
 
 class regex(object):
     """Decorator to register a regex. Example::
@@ -86,13 +89,15 @@ def msg(target, message, log=True):
     try:
         if not isinstance(message, basestring):
             for _message in iter(message):
-                if _message == u"":
+                if _message == "":
                     continue
                 _BOT.msg(target, _message, log)
         else:
+            if message == "":
+                return
             _BOT.msg(target, message, log)
     except TypeError:
-        if message == u"":
+        if message == "":
             return
         _BOT.msg(target, message, log)
 

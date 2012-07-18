@@ -37,5 +37,12 @@ class TestBot(unittest.TestCase):
     def test_nick(self):
         self.assertEqual(self.proto.nickname, "nick")
 
+    def test_nickserv(self):
+        self.factory.nspassword = "test"
+        self.proto.msg = mock.Mock()
+        self.proto.signedOn()
+        self.proto.msg.assert_called_once_with("Nickserv", "identify test",
+                log=False)
+
     def tearDown(self):
         lala.pluginmanager.PluginManager = self._old_pm

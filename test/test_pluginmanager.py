@@ -7,15 +7,18 @@ from re import compile
 def f(user, channel, text):
     pass
 
+def f2(arg1, arg2):
+    pass
+
 class TestUtil(unittest.TestCase):
     def setUp(self):
         util._PM = pluginmanager.PluginManager("/dev/null")
 
     def test_on_join(self):
         self.assertEqual(len(util._PM._join_callbacks), 0)
-        util.on_join(f)
+        util.on_join(f2)
         self.assertEqual(len(util._PM._join_callbacks), 1)
-        self.assertTrue(f in util._PM._join_callbacks)
+        self.assertTrue(f2 in util._PM._join_callbacks)
 
     def test_command(self):
         self.assertEqual(len(util._PM._callbacks), 0)
@@ -48,6 +51,12 @@ class TestUtil(unittest.TestCase):
         util._PM.register_callback("test", mocked_f)
         util._PM._handle_message("user", "channel", "!test")
         mocked_f.assert_called_once_with("user", "channel", "!test")
+
+    def test_on_join_called(self):
+        mocked_f = mock.Mock(spec=f2)
+        util._PM.register_join_callback(mocked_f)
+        util._PM.on_join("user", "channel")
+        mocked_f.assert_called_once_with("user", "channel")
 
     def test_regex_called(self):
         mocked_f = mock.Mock(spec=f)
