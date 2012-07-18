@@ -15,6 +15,9 @@ class Lala(IRCClient):
     nickname = property(_get_nick)
 
     def signedOn(self):
+        """ Called after a connection to the server has been established.
+
+        Joins all configured channels and identifies with Nickserv."""
         logging.debug("Joining %s" % self.factory.channel)
         self.join(self.factory.channel)
         if self.factory.nspassword is not None:
@@ -23,15 +26,19 @@ class Lala(IRCClient):
                     log=False)
 
     def joined(self, channel):
+        """ Called after joining a channel."""
         logging.debug("Successfully joined %s" % channel)
 
     def userJoined(self, user, channel):
+        """ Handles join events."""
         logging.debug("%s joined %s" % (user, channel))
         util._PM.on_join(user, channel)
 
     def privmsg(self, user, channel, message):
+        """ Handles received messages."""
         user = user.split("!")[0]
         if channel == self.nickname:
+            # This is true if the bot was queried
             channel = user
         try:
             message = message.decode("utf-8")
@@ -41,6 +48,11 @@ class Lala(IRCClient):
         util._PM._handle_message(user, channel, message)
 
     def msg(self, channel, message, log, length=None):
+        """ Sends ``message`` to ``channel``.
+
+        Depending on ``log``, the message will be logged or not.
+
+        Do not use this method from plugins, use :meth:`lala.util.msg` instead."""
         if log:
             self.factory.logger.info("%s: %s" % (self.nickname, message))
         message = message.rstrip().encode("utf-8")

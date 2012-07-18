@@ -18,14 +18,17 @@ class PluginManager(object):
         __import__(os.path.splitext(name)[0])
 
     def register_callback(self, trigger, func):
-        """ Adds func to the callbacks for trigger """
+        """ Adds ``func`` to the callbacks for ``trigger``."""
         logging.debug("Registering callback for %s" % trigger)
         self._callbacks[trigger] = func
 
     def register_join_callback(self, func):
+        """ Registers ``func`` as a callback for join events."""
         self._join_callbacks.append(func)
 
     def register_regex(self, regex, func):
+        """ Registers ``func`` as a callback for every message that matches
+        ``regex``."""
         self._regexes[regex] = func
 
     def _handle_message(self, user, channel, message):
@@ -47,5 +50,8 @@ class PluginManager(object):
                         match)
 
     def on_join(self, user, channel):
+        """ Calls all callbacks for on_join events that were previously
+        registered with :meth:`lala.util.on_join`.
+        """
         for cb in self._join_callbacks:
             cb(user, channel)

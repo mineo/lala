@@ -63,11 +63,9 @@ class regex(object):
        :param regex: A :py:class:`re.RegexObject`
     """
     def __init__(self, regex):
-        """docstring for __init__"""
         self.re = regex
 
     def __call__(self, func):
-        """docstring for __call__"""
         if _check_args(func):
             _PM.register_regex(self.re, func)
         else:
@@ -99,6 +97,8 @@ def msg(target, message, log=True):
         _BOT.msg(target, message, log)
 
 def _check_args(f, count=3):
+    """ Checks whether the number of arguments ``f`` takes equals
+    ``count``."""
     args, varargs, varkw, defaults = getargspec(f)
     if defaults:
         args = args[:-defaults]
