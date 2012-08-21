@@ -10,6 +10,12 @@ def f(user, channel, text):
 def f2(arg1, arg2):
     pass
 
+def f3(user, channel, text):
+    raise ValueError("I have been called, something is wrong")
+
+def regex_f(user, channel, text, regex):
+    raise ValueError("I have been called, something is wrong")
+
 class TestUtil(unittest.TestCase):
     def setUp(self):
         util._PM = pluginmanager.PluginManager()
@@ -37,14 +43,54 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(len(util._PM._callbacks), 1)
         self.assertTrue("command" in util._PM._callbacks)
 
+    def test_disabled_command(self):
+        c = util.command("command")
+        c(f3)
+
+        util._PM.disable("command")
+        self.assertFalse(util._PM._callbacks["command"]["enabled"])
+        util._PM._handle_message("user", "channel", "!command")
+
+
+    def test_reenabled_command(self):
+        c = util.command("command")
+        c(f3)
+
+        util._PM.disable("command")
+        util._PM.enable("command")
+        self.assertTrue(util._PM._callbacks["command"]["enabled"])
+        self.assertRaises(ValueError, util._PM._handle_message, "user",
+        "channel", "!command")
+
     def test_regex(self):
         self.assertEqual(len(util._PM._regexes), 0)
 
         r = util.regex(".*")
-        r(f)
+        r(regex_f)
 
         self.assertEqual(len(util._PM._regexes), 1)
         self.assertTrue(".*" in util._PM._regexes)
+
+    def test_disabled_regex(self):
+        regex = compile("command")
+        c = util.regex(regex)
+        c(regex_f)
+
+        util._PM.disable(regex.pattern)
+        self.assertFalse(util._PM._regexes[regex]["enabled"])
+        util._PM._handle_message("user", "channel", "command")
+
+
+    def test_reenabled_regex(self):
+        regex = compile("command")
+        c = util.regex(regex)
+        c(regex_f)
+
+        util._PM.disable(regex.pattern)
+        util._PM.enable(regex.pattern)
+        self.assertTrue(util._PM._regexes[regex]["enabled"])
+        self.assertRaises(ValueError, util._PM._handle_message, "user",
+        "channel", "command")
 
     def test_message_called(self):
         mocked_f = mock.Mock(spec=f)

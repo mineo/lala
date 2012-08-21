@@ -100,3 +100,20 @@ def help(user, channel, text):
             msg(channel, "%s: %s" % (cmd, func.__doc__))
         else:
             msg(channel, "There is no help available for %s" % cmd)
+
+@command
+def enable(user, channel, text):
+    """Enables a command or regular expression
+    """
+    command = text.split()[1]
+    logging.info("Enabling %s" % command)
+    util._PM.enable(command)
+
+
+@command
+def disable(user, channel, text):
+    """disables a command.
+    """
+    command = text.split()[1]
+    logging.info("Disabling %s" % command)
+    util._PM.disable(command)
