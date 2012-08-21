@@ -83,7 +83,7 @@ def main():
     logging.getLogger("").addHandler(handler)
 
     debugformat=\
-        "%(levelname)s %(filename)s: %(funcName)s: %(lineno)d %(message)s"
+        "%(asctime)s %(levelname)s %(filename)s: %(funcName)s: %(lineno)d %(message)s"
     handler.setFormatter(logging.Formatter(debugformat))
 
     if args.debug:
