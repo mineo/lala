@@ -10,7 +10,7 @@ class LalaFactory(protocol.ReconnectingClientFactory):
         self.channel = channel
         self.nickname = nickname
         self.logger = logger
-        util._PM = pluginmanager.PluginManager("plugins")
+        util._PM = pluginmanager.PluginManager()
         try:
             self.nspassword = config._get("base", "nickserv_password")
         except Exception:

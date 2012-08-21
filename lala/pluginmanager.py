@@ -4,18 +4,17 @@ import os
 
 
 class PluginManager(object):
-    def __init__(self, path):
-        if not path in sys.path:
-            sys.path.append(os.path.join(os.path.dirname(__file__), path))
-        self.path = path
+    def __init__(self):
         self._callbacks = {}
         self._join_callbacks = list()
         self._regexes = {}
         self._cbprefix = "!"
 
+
     def load_plugin(self, name):
         logging.debug("Trying to load %s" % name)
-        __import__(os.path.splitext(name)[0])
+        name = "lala.plugins.%s" % name
+        __import__(name)
 
     def register_callback(self, trigger, func):
         """ Adds ``func`` to the callbacks for ``trigger``."""

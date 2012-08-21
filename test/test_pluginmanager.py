@@ -12,7 +12,7 @@ def f2(arg1, arg2):
 
 class TestUtil(unittest.TestCase):
     def setUp(self):
-        util._PM = pluginmanager.PluginManager("/dev/null")
+        util._PM = pluginmanager.PluginManager()
 
     def test_on_join(self):
         self.assertEqual(len(util._PM._join_callbacks), 0)
