@@ -9,6 +9,9 @@ def f(user, channel, text):
 def f2(arg1, arg2):
     pass
 
+def regex_f(arg1, arg2, arg3, arg4):
+    pass
+
 class TestUtil(unittest.TestCase):
     def setUp(self):
         util._PM = mock.Mock(spec=pluginmanager.PluginManager)
@@ -32,8 +35,8 @@ class TestUtil(unittest.TestCase):
 
     def test_regex(self):
         r = util.regex(".*")
-        r(f)
-        util._PM.register_regex.assert_called_once_with(".*", f)
+        r(regex_f)
+        util._PM.register_regex.assert_called_once_with(".*", regex_f)
 
     def test_argcheck(self):
         self.assertFalse(util._check_args(f, 2))

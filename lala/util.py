@@ -69,11 +69,11 @@ class regex(object):
         self.re = regex
 
     def __call__(self, func):
-        if _check_args(func):
+        if _check_args(func, 4):
             _PM.register_regex(self.re, func)
         else:
             raise TypeError(
-                "A callback function should take exactly 3 arguments")
+                "A regex callback function should take exactly 4 arguments")
 
 def is_admin(user):
     """Check whether ``user`` is an admin"""
