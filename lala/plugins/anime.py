@@ -49,11 +49,9 @@ def ainfo(user, channel, text):
     info_s = "Anime #%i: %i episodes." % (anime.id,
             anime.episodecount)
     if anime.startdate is not None:
-        info_s += " Airing from: %i/%i/%i" % (anime.startdate.year,
-                anime.startdate.month, anime.startdate.day)
+        info_s += " Airing from: %s" % (anime.startdate)
     if anime.enddate is not None:
-        info_s += " to: %i/%i/%i" % (anime.enddate.year,
-                anime.enddate.month, anime.enddate.day)
+        info_s += " to: %s" % (anime.enddate)
     msg(channel, info_s)
 
     rating_s = u"Ratings:"
