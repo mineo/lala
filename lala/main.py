@@ -5,8 +5,7 @@ import logging.handlers
 
 from lala import config
 from lala.factory import LalaFactory
-from os.path import join
-from sys import version_info, exit
+from sys import exit
 from twisted.internet import reactor
 
 import optparse
@@ -56,33 +55,18 @@ def main():
 
     log_folder = get_conf_key(cfg, "log_folder")
     config._CFG.set("base", "log_folder", log_folder)
-    logfile = join(log_folder, "lala.log")
     if not os.path.exists(log_folder):
         os.makedirs(log_folder)
-    logger = logging.getLogger("MessageLog")
-    chathandler = logging.handlers.TimedRotatingFileHandler(
-            encoding="utf-8",
-            filename=logfile,
-            when="midnight",
-            backupCount=int(get_conf_key(cfg, "max_log_days")))
-    logger.setLevel(logging.INFO)
-    chathandler.setFormatter(
-            logging.Formatter("%(asctime)s %(message)s",
-                              "%Y-%m-%d %H:%m"))
-    logger.propagate = False
-    logger.addHandler(chathandler)
-
-    handler = None
 
     if not args.stdout:
-        handler = logging.FileHandler(filename=get_conf_key(cfg,"log_file"),
+        handler = logging.FileHandler(filename=get_conf_key(cfg, "log_file"),
                                           encoding="utf-8")
     else:
         handler = logging.StreamHandler()
 
     logging.getLogger("").addHandler(handler)
 
-    debugformat=\
+    debugformat = \
         "%(asctime)s %(levelname)s %(filename)s: %(funcName)s: %(lineno)d %(message)s"
     handler.setFormatter(logging.Formatter(debugformat))
 
@@ -91,12 +75,10 @@ def main():
 
     if not args.no_daemon:
         import daemon
-        with daemon.DaemonContext(files_preserve=[handler.stream.fileno(),
-                                  chathandler.stream.fileno()]):
+        with daemon.DaemonContext(files_preserve=[handler.stream.fileno()]):
             f = LalaFactory(get_conf_key(cfg, "channels"),
                     get_conf_key(cfg, "nick"),
-                    get_conf_key(cfg, "plugins").split(","),
-                    logger)
+                    get_conf_key(cfg, "plugins").split(","))
             reactor.connectTCP(get_conf_key(cfg, "server"),
                     int(get_conf_key(cfg, "port")),
                     f)
@@ -104,8 +86,7 @@ def main():
     else:
             f = LalaFactory(get_conf_key(cfg, "channels"),
                     get_conf_key(cfg, "nick"),
-                    get_conf_key(cfg, "plugins").split(","),
-                    logger)
+                    get_conf_key(cfg, "plugins").split(","))
             reactor.connectTCP(get_conf_key(cfg, "server"),
                     int(get_conf_key(cfg, "port")),
                     f)

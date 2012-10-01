@@ -9,7 +9,7 @@ class TestBot(unittest.TestCase):
         self._old_pm = lala.pluginmanager.PluginManager
         lala.pluginmanager.PluginManager = mock.Mock(spec=lala.pluginmanager.PluginManager)
 
-        self.factory = lala.factory.LalaFactory("#test", "nick", [], mock.Mock())
+        self.factory = lala.factory.LalaFactory("#test", "nick", [])
         self.proto = self.factory.buildProtocol(("127.0.0.1", ))
         self.tr = proto_helpers.StringTransport()
         self.proto.makeConnection(self.tr)
@@ -29,7 +29,7 @@ class TestBot(unittest.TestCase):
         self.proto.join.assert_called_once_with("#test")
 
     def test_factory(self):
-        lala.factory.LalaFactory("#test", "nick", ["testplugin"], mock.Mock())
+        lala.factory.LalaFactory("#test", "nick", ["testplugin"])
         self.assertTrue(("base", ) in lala.util._PM.load_plugin.call_args)
         self.assertTrue((("testplugin", ), {}) in
                 lala.util._PM.load_plugin.call_args_list)

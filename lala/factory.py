@@ -6,10 +6,9 @@ from lala import pluginmanager, util, config
 class LalaFactory(protocol.ReconnectingClientFactory):
     protocol = Lala
 
-    def __init__(self, channel, nickname, plugins, logger):
+    def __init__(self, channel, nickname, plugins):
         self.channel = channel
         self.nickname = nickname
-        self.logger = logger
         util._PM = pluginmanager.PluginManager()
         try:
             self.nspassword = config._get("base", "nickserv_password")

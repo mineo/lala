@@ -44,7 +44,7 @@ class Lala(IRCClient):
             message = message.decode("utf-8")
         except Exception:
             message = message.decode(config._get("base", "fallback_encoding"))
-        self.factory.logger.info("%s: %s" % (user, message))
+        logging.info("%s: %s" % (user, message))
         util._PM._handle_message(user, channel, message)
 
     def msg(self, channel, message, log, length=None):
@@ -54,6 +54,6 @@ class Lala(IRCClient):
 
         Do not use this method from plugins, use :meth:`lala.util.msg` instead."""
         if log:
-            self.factory.logger.info("%s: %s" % (self.nickname, message))
+            logging.info("%s: %s" % (self.nickname, message))
         message = message.rstrip().encode("utf-8")
         IRCClient.msg(self, channel, message, length)
