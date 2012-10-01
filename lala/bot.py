@@ -57,3 +57,17 @@ class Lala(IRCClient):
             logging.info("%s: %s" % (self.nickname, message))
         message = message.rstrip().encode("utf-8")
         IRCClient.msg(self, channel, message, length)
+
+    def action(self, user, channel, data):
+        """ Called when a user performs an ACTION on a channel."""
+        user = user.split("!")[0]
+        logging.info("ACTION: %s %s" % (user, data))
+
+    def noticed(self, user, channel, message):
+        """ Same as :py:meth:`lala.bot.Lala.privmsg` for NOTICEs."""
+        user = user.split("!")[0]
+        try:
+            message = message.decode("utf-8")
+        except Exception:
+            message = message.decode(config._get("base", "fallback_encoding"))
+        logging.info("NOTICE: %s: %s" % (user, message))
