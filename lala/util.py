@@ -3,6 +3,7 @@ import lala.config as config
 
 from types import FunctionType
 from inspect import getargspec
+from re import compile
 
 
 _BOT = None
@@ -53,6 +54,7 @@ def on_join(f):
     else:
         raise TypeError("A callback function should takes exactly 2 arguments")
 
+
 class regex(object):
     """Decorator to register a regex. Example::
 
@@ -63,9 +65,12 @@ class regex(object):
 
        ``match_obj`` is a :py:class:`re.MatchObject`.
 
-       :param regex: A :py:class:`re.RegexObject`
+       :param regex: A :py:class:`re.RegexObject` or a string representing a
+                     regular expression.
     """
     def __init__(self, regex):
+        if not hasattr(regex, "match") and isinstance(regex, basestring):
+            regex = compile(regex)
         self.re = regex
 
     def __call__(self, func):
@@ -75,9 +80,11 @@ class regex(object):
             raise TypeError(
                 "A regex callback function should take exactly 4 arguments")
 
+
 def is_admin(user):
     """Check whether ``user`` is an admin"""
     return user in config._get("base", "admins")
+
 
 def msg(target, message, log=True):
     """Send a message to a target.
@@ -100,6 +107,7 @@ def msg(target, message, log=True):
         if message == "":
             return
         _BOT.msg(target, message, log)
+
 
 def _check_args(f, count=3):
     """ Checks whether the number of arguments ``f`` takes equals

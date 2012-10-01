@@ -2,15 +2,20 @@ import unittest
 import mock
 
 from lala import util, pluginmanager, config
+from re import compile
+
 
 def f(user, channel, text):
     pass
 
+
 def f2(arg1, arg2):
     pass
 
+
 def regex_f(arg1, arg2, arg3, arg4):
     pass
+
 
 class TestUtil(unittest.TestCase):
     def setUp(self):
@@ -34,9 +39,10 @@ class TestUtil(unittest.TestCase):
         self.assertRaises(TypeError, util.command, object())
 
     def test_regex(self):
-        r = util.regex(".*")
+        regex = compile(".*")
+        r = util.regex(regex)
         r(regex_f)
-        util._PM.register_regex.assert_called_once_with(".*", regex_f)
+        util._PM.register_regex.assert_called_once_with(regex, regex_f)
 
     def test_argcheck(self):
         self.assertFalse(util._check_args(f, 2))

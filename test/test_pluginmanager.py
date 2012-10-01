@@ -4,17 +4,22 @@ import mock
 from lala import util, pluginmanager
 from re import compile
 
+
 def f(user, channel, text):
     pass
+
 
 def f2(arg1, arg2):
     pass
 
+
 def f3(user, channel, text):
     raise ValueError("I have been called, something is wrong")
 
+
 def regex_f(user, channel, text, regex):
     raise ValueError("I have been called, something is wrong")
+
 
 class TestUtil(unittest.TestCase):
     def setUp(self):
@@ -51,7 +56,6 @@ class TestUtil(unittest.TestCase):
         self.assertFalse(util._PM._callbacks["command"]["enabled"])
         util._PM._handle_message("user", "channel", "!command")
 
-
     def test_reenabled_command(self):
         c = util.command("command")
         c(f3)
@@ -65,11 +69,12 @@ class TestUtil(unittest.TestCase):
     def test_regex(self):
         self.assertEqual(len(util._PM._regexes), 0)
 
-        r = util.regex(".*")
+        regex = compile(".*")
+        r = util.regex(regex)
         r(regex_f)
 
         self.assertEqual(len(util._PM._regexes), 1)
-        self.assertTrue(".*" in util._PM._regexes)
+        self.assertTrue(regex in util._PM._regexes)
 
     def test_disabled_regex(self):
         regex = compile("command")
@@ -79,7 +84,6 @@ class TestUtil(unittest.TestCase):
         util._PM.disable(regex.pattern)
         self.assertFalse(util._PM._regexes[regex]["enabled"])
         util._PM._handle_message("user", "channel", "command")
-
 
     def test_reenabled_regex(self):
         regex = compile("command")
