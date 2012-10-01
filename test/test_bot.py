@@ -1,8 +1,12 @@
 import unittest
-import lala.factory, lala.util, lala.pluginmanager, lala.config
+import lala.factory
+import lala.util
+import lala.pluginmanager
+import lala.config
 import mock
 
 from twisted.test import proto_helpers
+
 
 class TestBot(unittest.TestCase):
     def setUp(self):
