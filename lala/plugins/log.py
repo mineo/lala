@@ -40,7 +40,7 @@ def setup_log():
             backupCount=int(lala.config.get("max_log_days")))
     chatlogger.setLevel(logging.INFO)
     chathandler.setFormatter(
-            logging.Formatter("%(asctime)s %(message)s", "%Y-%m-%d %H:%m"))
+            logging.Formatter("%(asctime)s %(message)s", "%Y-%m-%d %H:%M"))
     chatlogger.propagate = False
     chatlogger.addHandler(chathandler)
 
