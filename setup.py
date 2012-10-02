@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import os, subprocess, re
 from distutils.core import setup, Command
 from distutils.command.sdist import sdist as _sdist
@@ -16,24 +17,24 @@ __version__ = '%s'
 
 def update_version_py():
     if not os.path.isdir(".git"):
-        print "This does not appear to be a Git repository."
+        print("This does not appear to be a Git repository.")
         return
     try:
         p = subprocess.Popen(["git", "describe",
                               "--tags", "--dirty", "--always"],
                              stdout=subprocess.PIPE)
     except EnvironmentError:
-        print "unable to run git, leaving lala/__init__.py alone"
+        print("unable to run git, leaving lala/__init__.py alone")
         return
     stdout = p.communicate()[0]
     if p.returncode != 0:
-        print "unable to run git, leaving lala/__init__.py alone"
+        print("unable to run git, leaving lala/__init__.py alone")
         return
     ver = stdout.strip()
     f = open("lala/__init__.py", "w")
     f.write(VERSION_PY % ver)
     f.close()
-    print "set lala/__init__.py to '%s'" % ver
+    print("set lala/__init__.py to '%s'" % ver)
 
 def get_version():
     try:
@@ -57,7 +58,7 @@ class Version(Command):
         pass
     def run(self):
         update_version_py()
-        print "Version is now", get_version()
+        print("Version is now", get_version())
 
 class sdist(_sdist):
     def run(self):
