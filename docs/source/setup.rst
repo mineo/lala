@@ -14,7 +14,7 @@ Git
 ---
 
 If you want the latest code or even feel like contributing, the code is
-available on `Github <https://github.com/mineo/lala`_.
+available on `Github <https://github.com/mineo/lala>`_.
 
 You can easily clone the code with git::
 
