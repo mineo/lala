@@ -52,7 +52,7 @@ def addquote(user, channel, text):
 
     def addcallback(c):
         # TODO This might not be the rowid we're looking for in all cases…
-        run_query("SELECT max(rowid) FROM quotes", [], msgcallback);
+        run_query("SELECT max(rowid) FROM quotes;", [], msgcallback)
 
     s_text = text.split()
     if len(s_text) > 1:
