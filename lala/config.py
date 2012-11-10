@@ -9,6 +9,18 @@ _CFG = None
 _FILENAME = None
 
 
+def _find_current_plugin_name():
+    """Tries to find the filename of the current plugin. This is essentially
+    the first filename different from the filename of this file ("config.py")
+    on the stack
+    """
+    for elem in stack():
+        frameinfo = getframeinfo(elem[0])
+        filename = frameinfo.filename
+        if filename != __file__:
+            return basename(filename.replace(".py", ""))
+
+
 def get(key, default=None):
     """Returns the value of a config option.
     The section is the name of the calling file.
@@ -18,7 +30,7 @@ def get(key, default=None):
 
     :param key: The key to lookup
     :param default: Default value to return in case ``key`` does not exist"""
-    plugin = basename(getframeinfo(stack()[1][0]).filename.replace(".py", ""))
+    plugin = _find_current_plugin_name()
     logging.debug("%s wants to get the value of %s" % (plugin, key))
     try:
         return _CFG.get(plugin, key)
@@ -38,7 +50,7 @@ _get = lambda section, key: _CFG.get(section, key)
 def set(key, value):
     """Sets the ``value`` of ``key``.
     The section is the name of the calling file."""
-    plugin = basename(getframeinfo(stack()[1][0]).filename.replace(".py", ""))
+    plugin = _find_current_plugin_name()
     logging.debug("%s wants to set the value of %s to %s" % (plugin, key, value))
     _set(plugin, key, value)
 
