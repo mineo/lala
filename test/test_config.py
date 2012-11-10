@@ -17,6 +17,22 @@ class TestConfig(unittest.TestCase):
     def test_default(self):
         self.assertEqual("default", config.get("testkey", "default"))
 
+    def test_converter_int_setandget(self):
+        config.set("intkey", "2")
+        self.assertTrue(isinstance(config.get_int("intkey"), int))
+
+    def test_converter_int_get_with_default(self):
+        self.assertTrue(isinstance(config.get_int("intkey2", 3), int))
+
+    def test_converter_list_setandget(self):
+        config.set_list("listkey", ["foo", "bar", "baz"])
+        self.assertItemsEqual(config.get_list("listkey"),
+                              ["foo", "bar", "baz"])
+
+    def test_converter_list_get_with_default(self):
+        self.assertItemsEqual(config.get_list("listkey2", [1, 2, 3]),
+                              ["1", "2", "3"])
+
     def test_raises(self):
         self.assertRaises(NoSectionError, config.get, "foo")
 
