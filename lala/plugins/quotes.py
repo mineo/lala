@@ -115,7 +115,7 @@ def randomquote(user, channel, text):
 def searchquote(user, channel, text):
     """Search for a quote"""
     def callback(quotes):
-        max_quotes = int(get("max_quotes"))
+        max_quotes = get_int("max_quotes")
         if len(quotes) > max_quotes:
             msg(channel, "Too many results, please refine your search")
         else:

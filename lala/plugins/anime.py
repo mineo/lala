@@ -39,7 +39,7 @@ def atags(user, channel, text):
     anime.tags.reverse()
     tags = [tag.name for tag in anime.tags]
     msg(channel, "Anime %s is tagged %s" % (anime.id,
-            ", ".join(tags[:int(get("max_tags"))])))
+            ", ".join(tags[:get_int("max_tags"))]))
 
 @command
 def ainfo(user, channel, text):
@@ -83,7 +83,7 @@ def asearch(user, channel, text):
         pass
     logging.debug(name)
     results = anidb.search(name)
-    max_results = int(get("max_search_results"))
+    max_results = get_int("max_search_results")
 
     if len(results) > max_results:
         msg(channel, "%s: Too many results, please refine your search" % user)
