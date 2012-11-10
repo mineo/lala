@@ -3,8 +3,10 @@ import logging
 import os
 
 from lala.util import command, msg, on_join, is_admin
-from lala.config import get
+from lala.config import get, set_default_options
 from twisted.enterprise import adbapi
+
+set_default_options(max_quotes=5)
 
 db_connection = None
 
@@ -113,7 +115,7 @@ def randomquote(user, channel, text):
 def searchquote(user, channel, text):
     """Search for a quote"""
     def callback(quotes):
-        max_quotes = int(get("max_quotes", 5))
+        max_quotes = int(get("max_quotes"))
         if len(quotes) > max_quotes:
             msg(channel, "Too many results, please refine your search")
         else:

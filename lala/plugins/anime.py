@@ -2,9 +2,10 @@ import anidb
 import logging
 
 from lala.util import command, msg
-from lala.config import get
+from lala.config import get, set_default_options
 
 anidb.set_client("pyanihttp", 1)
+set_default_options(max_tags=5, max_search_results=5)
 
 def get_anime(user, channel, text):
     try:
@@ -38,7 +39,7 @@ def atags(user, channel, text):
     anime.tags.reverse()
     tags = [tag.name for tag in anime.tags]
     msg(channel, "Anime %s is tagged %s" % (anime.id,
-            ", ".join(tags[:int(get("max_tags", 5))])))
+            ", ".join(tags[:int(get("max_tags"))])))
 
 @command
 def ainfo(user, channel, text):
@@ -82,7 +83,7 @@ def asearch(user, channel, text):
         pass
     logging.debug(name)
     results = anidb.search(name)
-    max_results = int(get("max_search_results", 5))
+    max_results = int(get("max_search_results"))
 
     if len(results) > max_results:
         msg(channel, "%s: Too many results, please refine your search" % user)

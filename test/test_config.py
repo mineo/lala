@@ -14,15 +14,23 @@ class TestConfig(unittest.TestCase):
         config.set("key", "value")
         self.assertEqual("value", config.get("key"))
 
-    def test_default(self):
-        self.assertEqual("default", config.get("testkey", "default"))
+    def test_set_default_options(self):
+        config.set_default_options(stringkey="foo", defaultintkey="1")
+        self.assertEqual(config.get("stringkey"), "foo")
+        self.assertEqual(config.get_int("defaultintkey"), 1)
+
+    def test_set_default_options_list(self):
+        config.set_default_options(defaultlisttest=["foo", "bar"])
+        self.assertItemsEqual(config.get_list("defaultlisttest"), ["foo", "bar"])
+
+    def test_default_doesnt_overwrite(self):
+        config.set("not_overwritten_key", 1)
+        config.set_default_options(not_overwritten_key=2)
+        self.assertEquals(config.get_int("not_overwritten_key"), 1)
 
     def test_converter_int_setandget(self):
-        config.set("intkey", "2")
+        config.set("intkey", 2)
         self.assertTrue(isinstance(config.get_int("intkey"), int))
-
-    def test_converter_int_get_with_default(self):
-        self.assertTrue(isinstance(config.get_int("intkey2", 3), int))
 
     def test_converter_list_setandget(self):
         config.set_list("listkey", ["foo", "bar", "baz"])
@@ -30,8 +38,8 @@ class TestConfig(unittest.TestCase):
                               ["foo", "bar", "baz"])
 
     def test_converter_list_get_with_default(self):
-        self.assertItemsEqual(config.get_list("listkey2", [1, 2, 3]),
-                              ["1", "2", "3"])
+        config.set_list("listkey2", ["1", "2", "3"])
+        self.assertItemsEqual(config.get_list("listkey2"), ["1", "2", "3"])
 
     def test_raises(self):
         self.assertRaises(NoSectionError, config.get, "foo")

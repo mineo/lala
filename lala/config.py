@@ -33,7 +33,7 @@ def _set(section, key, value):
         _CFG.write(fp)
 
 
-def get(key, default=None, converter=None, setter=_set):
+def get(key, converter=None):
     """Returns the value of a config option.
     The section is the name of the calling file.
 
@@ -41,21 +41,11 @@ def get(key, default=None, converter=None, setter=_set):
     be saved for later calls and returned.
 
     :param key: The key to lookup
-    :param default: Default value to return in case ``key`` does not exist"""
+    """
     plugin = _find_current_plugin_name()
     logging.debug("%s wants to get the value of %s" % (plugin, key))
     value = None
-    try:
-        value = _CFG.get(plugin, key)
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
-        logging.info("%s is missing in config section '%s'" % (key, plugin))
-        if default is not None:
-            logging.info("Using %s" % default)
-            setter(plugin, key, str(default))
-            value = default
-        else:
-            raise
-
+    value = _CFG.get(plugin, key)
     if converter is not None:
         value = converter(value)
     return value
@@ -77,6 +67,8 @@ def set(key, value, plugin=None):
     """Sets the ``value`` of ``key``.
     The section is the name of the calling file."""
     plugin = _find_current_plugin_name()
+    if not isinstance(value, basestring):
+        value = str(value)
     logging.debug("%s wants to set the value of %s to %s" % (plugin, key, value))
     _set(plugin, key, value)
 
@@ -96,7 +88,7 @@ def get_list(*args):
     :param *args: See :meth:`lala.config.get`
     :rtype: list of strings
     """
-    value = get(*args, converter=_list_converter, setter=set_list)
+    value = get(*args, converter=_list_converter)
     return value.split(_LIST_SEPARATOR)
 
 
@@ -114,3 +106,15 @@ def set_list(key, value, *args):
     """
     value = _list_converter(value)
     set(key, value, *args)
+
+
+def set_default_options(**kwargs):
+    """Sets the default options for a plugin.
+    """
+    plugin = _find_current_plugin_name()
+    for key, value in kwargs.iteritems():
+        if not _CFG.has_option(plugin, key):
+            if not isinstance(value, list):
+                _set(plugin, key, value)
+            else:
+                set_list(key, value, plugin)
