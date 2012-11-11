@@ -37,10 +37,6 @@ class TestConfig(unittest.TestCase):
         self.assertItemsEqual(config.get_list("listkey"),
                               ["foo", "bar", "baz"])
 
-    def test_converter_list_get_with_default(self):
-        config.set_list("listkey2", ["1", "2", "3"])
-        self.assertItemsEqual(config.get_list("listkey2"), ["1", "2", "3"])
-
     def test_raises(self):
         self.assertRaises(NoSectionError, config.get, "foo")
 
