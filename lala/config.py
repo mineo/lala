@@ -19,7 +19,7 @@ def _find_current_plugin_name():
     for elem in stack():
         frameinfo = getframeinfo(elem[0])
         filename = frameinfo.filename
-        if filename != __file__:
+        if not __file__.startswith(filename):
             return basename(filename.replace(".py", ""))
 
 
