@@ -1,6 +1,6 @@
 """Config module"""
 import logging
-import ConfigParser
+
 
 from inspect import getframeinfo, stack
 from os.path import basename
@@ -10,6 +10,7 @@ _FILENAME = None
 
 #: Used as a separator when storing lists of values in the config file
 _LIST_SEPARATOR = ","
+
 
 def _find_current_plugin_name():
     """Tries to find the filename of the current plugin. This is essentially
@@ -43,7 +44,7 @@ def get(key, converter=None):
     :param key: The key to lookup
     """
     plugin = _find_current_plugin_name()
-    logging.debug("%s wants to get the value of %s" % (plugin, key))
+    logging.info("%s wants to get the value of %s" % (plugin, key))
     value = None
     value = _CFG.get(plugin, key)
     if converter is not None:
@@ -69,7 +70,7 @@ def set(key, value, plugin=None):
     plugin = _find_current_plugin_name()
     if not isinstance(value, basestring):
         value = str(value)
-    logging.debug("%s wants to set the value of %s to %s" % (plugin, key, value))
+    logging.info("%s wants to set the value of %s to %s" % (plugin, key, value))
     _set(plugin, key, value)
 
 

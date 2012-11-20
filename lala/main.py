@@ -1,14 +1,13 @@
 import ConfigParser
-import os
 import logging
-import logging.handlers
+import os
 
 from lala import config
 from lala.factory import LalaFactory
-from sys import exit
-from twisted.internet import reactor
+from twisted.application import service, internet
+from twisted.python import log
+from twisted.python.usage import Options
 
-import optparse
 
 CONFIG_DEFAULTS = {
         "channels": "",
@@ -18,83 +17,55 @@ CONFIG_DEFAULTS = {
         "log_file": os.path.expanduser("~/.lala/lala.log"),
         "encoding": "utf-8",
         "fallback_encoding": "utf-8",
-        "max_log_days": 2
-        }
+        "max_log_days": 2,
+}
 
 
-def main():
-    """Main method"""
-    parser = optparse.OptionParser()
-    parser.add_option("-c", "--config", help="Configuration file location")
-    parser.add_option("-d", "--debug", help="Enable debugging",
-                        action="store_true", default=False)
-    parser.add_option("-n", "--no-daemon", help="Do not daemonize",
-                        action="store_true", default=False)
-    parser.add_option("-s", "--stdout", help="Log to stdout",
-                        action="store_true", default=False)
-    (args, options) = parser.parse_args()
+class LalaOptions(Options):
+    optFlags = [
+        ["verbose", "v", "Log debugging information"]
+    ]
 
-    if args.stdout and not args.no_daemon:
-        exit("--stdout can not be used when daemonizing")
 
-    if args.debug:
-        args.no_daemon = True
+def getService(options):
+    observer = log.PythonLoggingObserver(loggerName="")
+    observer.start()
 
-    cfg = ConfigParser.SafeConfigParser()
-    if args.config is None:
-        try:
-            configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"), "lala", "config")
-        except AttributeError:
-            configfile = os.path.join(os.getenv("HOME"), ".lala", "config")
-        files = cfg.read([configfile, "/etc/lala.config"])
-    else:
-        files = cfg.read(args.config)
+    # Set up the config
+    cfg = ConfigParser.SafeConfigParser(CONFIG_DEFAULTS)
+    try:
+        configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"), "lala", "config")
+    except AttributeError:
+        configfile = os.path.join(os.getenv("HOME"), ".lala", "config")
+    files = cfg.read([configfile, "/etc/lala.config"])
 
     config._CFG = cfg
     config._FILENAME = files[0]
 
-    log_folder = get_conf_key(cfg, "log_folder")
-    config._CFG.set("base", "log_folder", log_folder)
-    if not os.path.exists(log_folder):
-        os.makedirs(log_folder)
-
-    if not args.stdout:
-        handler = logging.FileHandler(filename=get_conf_key(cfg, "log_file"),
-                                          encoding="utf-8")
+    # Set up logging
+    handler = logging.FileHandler(filename=config._get("base", "log_file"),
+                                  encoding="utf-8")
+    if options["verbose"]:
+        handler.setFormatter(logging.Formatter(
+            "%(asctime)s %(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s"))
     else:
-        handler = logging.StreamHandler()
-
+        handler.setFormatter(logging.Formatter("%(message)s"))
     logging.getLogger("").addHandler(handler)
+    logging.getLogger("").setLevel(logging.DEBUG)
 
-    debugformat = \
-        "%(asctime)s %(levelname)s %(filename)s: %(funcName)s: %(lineno)d %(message)s"
-    handler.setFormatter(logging.Formatter(debugformat))
+    f = LalaFactory(cfg.get("base", "channels"),
+            cfg.get("base", "nick"),
+            cfg.get("base", "plugins").split(","))
 
-    if args.debug:
-        logging.getLogger("").setLevel(logging.DEBUG)
-
-    if not args.no_daemon:
-        import daemon
-        with daemon.DaemonContext(files_preserve=[handler.stream.fileno()]):
-            f = LalaFactory(get_conf_key(cfg, "channels"),
-                    get_conf_key(cfg, "nick"),
-                    get_conf_key(cfg, "plugins").split(","))
-            reactor.connectTCP(get_conf_key(cfg, "server"),
-                    int(get_conf_key(cfg, "port")),
-                    f)
-            reactor.run()
-    else:
-            f = LalaFactory(get_conf_key(cfg, "channels"),
-                    get_conf_key(cfg, "nick"),
-                    get_conf_key(cfg, "plugins").split(","))
-            reactor.connectTCP(get_conf_key(cfg, "server"),
-                    int(get_conf_key(cfg, "port")),
-                    f)
-            reactor.run()
+    return internet.TCPClient(cfg.get("base", "server"),
+            int(cfg.get("base", "port")),
+            f)
 
 
-def get_conf_key(conf, key):
-    try:
-        return conf.get("base", key)
-    except ConfigParser.NoOptionError:
-        return CONFIG_DEFAULTS[key]
+def getApplication():
+    application = service.Application("lala")
+
+    _service = getService(LalaOptions())
+
+    _service.setServiceParent(application)
+    return application

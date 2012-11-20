@@ -1,6 +1,6 @@
-import logging
 import lala.config as config
 import lala.util as util
+import logging
 
 from lala.util import command, msg
 from twisted.internet import reactor
@@ -13,25 +13,25 @@ from twisted.internet import reactor
 @command(admin_only=True)
 def part(user, channel, text):
     """Part a channel"""
-    logging.debug("Parting %s" % text.split()[1])
+    logging.info("Parting %s" % text.split()[1])
     util._BOT.part(text.split()[1].encode("utf-8"))
 
 @command(admin_only=True)
 def join(user, channel, text):
     """Join a channel"""
     chan = text.split()[1]
-    logging.debug("Joining %s" % chan)
+    logging.info("Joining %s" % chan)
     util._BOT.join_(chan)
 
 @command(admin_only=True)
 def quit(user, channel, text):
-    logging.debug("Quitting")
+    logging.info("Quitting")
     util._BOT.quit("leaving")
     reactor.stop()
 
 @command(admin_only=True)
 def reconnect(user, channel, text):
-    logging.debug("Reconnecting")
+    logging.info("Reconnecting")
     util._BOT.quit("leaving")
 
 @command

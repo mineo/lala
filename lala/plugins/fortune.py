@@ -13,7 +13,7 @@ def fortune(user, channel, text):
         if p.returncode == 0:
             msg(channel,"%s: %s" % (user, result.replace("\n","")))
     except OSError, e:
-        logging.error("Error while calling fortune: %s" % e)
+        logging.error(e)
 
 @command
 def ofortune(user, channel, text):
@@ -25,4 +25,4 @@ def ofortune(user, channel, text):
         if p.returncode == 0:
             msg(channel,"%s: %s" % (user, result.replace("\n","")))
     except OSError, e:
-        logging.error("Error while calling fortune: %s" % e)
+        logging.error(e)

@@ -28,7 +28,7 @@ class TestUtil(unittest.TestCase):
 
     def test_command(self):
         util.command(f)
-        util._PM.register_callback.assert_called_once_with("f", f)
+        util._PM.register_callback.assert_called_once_with("f", f, False)
 
     def test_named_command(self):
         c = util.command("command")

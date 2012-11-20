@@ -75,7 +75,7 @@ class TestBase(PluginTestCase):
 
     def test_addadmin(self):
         lala.util._PM._handle_message("user", "#channel", "!addadmin user3")
-        lala.util.config._CFG.set.assert_called_once_with("base", "admins",
+        lala.config._CFG.set.assert_called_once_with("base", "admins",
                                                           "user,user2,user3")
 
     def test_addadmin_already_admin(self):
@@ -91,7 +91,7 @@ class TestBase(PluginTestCase):
 
     def test_deladmin(self):
         lala.util._PM._handle_message("user", "#channel", "!deladmin user2")
-        lala.util.config._CFG.set.assert_called_once_with("base", "admins",
+        lala.config._CFG.set.assert_called_once_with("base", "admins",
                                                           "user")
 
     def test_deladmin_is_no_admin(self):

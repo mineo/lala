@@ -1,5 +1,6 @@
 import logging
 
+
 from twisted.words.protocols.irc import IRCClient
 from lala import util, config, __version__
 
@@ -18,7 +19,7 @@ class Lala(IRCClient):
         """ Called after a connection to the server has been established.
 
         Joins all configured channels and identifies with Nickserv."""
-        logging.debug("Joining %s" % self.factory.channel)
+        logging.info("Joining %s" % self.factory.channel)
         self.join(self.factory.channel)
         if self.factory.nspassword is not None:
             logging.info("Identifying with Nickserv")
@@ -27,7 +28,7 @@ class Lala(IRCClient):
 
     def joined(self, channel):
         """ Called after joining a channel."""
-        logging.debug("Successfully joined %s" % channel)
+        logging.info("Successfully joined %s" % channel)
 
     def userJoined(self, user, channel):
         """ Handles join events."""
@@ -44,7 +45,7 @@ class Lala(IRCClient):
             message = message.decode("utf-8")
         except Exception:
             message = message.decode(config._get("base", "fallback_encoding"))
-        logging.debug("%s: %s" % (user, message))
+        logging.info("%s: %s" % (user, message))
         util._PM._handle_message(user, channel, message)
 
     def msg(self, channel, message, log, length=None):
@@ -54,7 +55,7 @@ class Lala(IRCClient):
 
         Do not use this method from plugins, use :meth:`lala.util.msg` instead."""
         if log:
-            logging.info("%s: %s" % (self.nickname, message))
+            logging.debug("%s: %s" % (self.nickname, message))
         message = message.rstrip().encode("utf-8")
         IRCClient.msg(self, channel, message, length)
 

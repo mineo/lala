@@ -1,5 +1,6 @@
 import logging
 
+
 from lala.config import _get, _list_converter
 from lala.util import msg
 
@@ -19,15 +20,14 @@ class PluginManager(object):
         """Check whether ``user`` is an admin"""
         return user in _list_converter(_get("base", "admins"))
 
-
     def load_plugin(self, name):
-        logging.debug("Trying to load %s" % name)
+        logging.info("Trying to load %s" % name)
         name = "lala.plugins.%s" % name
         __import__(name)
 
     def register_callback(self, trigger, func, admin_only=False):
         """ Adds ``func`` to the callbacks for ``trigger``."""
-        logging.debug("Registering callback for %s" % trigger)
+        logging.info("Registering callback for %s" % trigger)
         self._callbacks[trigger] = _make_pluginfunc(func, admin_only)
 
     def register_join_callback(self, func):
@@ -44,7 +44,8 @@ class PluginManager(object):
             command = message.split()[0].replace(self._cbprefix, "")
             funcdict = self._callbacks.get(command)
             if funcdict is not None:
-                logging.debug(funcdict)
+                logging.info("Calling %s with user: %s, channel: %s, message: %s" %
+                    (command, user, channel, message))
                 if funcdict["enabled"] and \
                     ((funcdict["admin_only"] and self.is_admin(user)) or \
                             not funcdict["admin_only"]):

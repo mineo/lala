@@ -1,5 +1,3 @@
-import logging
-
 from random import choice
 from lala.util import command, msg
 

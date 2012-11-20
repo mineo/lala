@@ -1,7 +1,10 @@
 """Helpers to be used with plugins"""
-from types import FunctionType
+import logging
+
+
 from inspect import getargspec
 from re import compile
+from types import FunctionType
 
 
 _BOT = None
@@ -37,17 +40,29 @@ class command(object):
         """docstring for __init__"""
         if isinstance(command, FunctionType):
             if _check_args(command):
-                _PM.register_callback(command.__name__, command)
+                _PM.register_callback(command.__name__, command, admin_only)
             else:
                 raise TypeError(
                     "A callback function should take exactly 3 arguments")
+
+        elif command is None:
+            # This happens when only admin_only is set when decorating a
+            # function like
+            # @command(admin_only=True):
+            # def foo(user, channel, text):
+            #   pass
+            self.cmd = None
+            self.admin_only = admin_only
         elif not (isinstance(command, str) or isinstance(command, unicode)):
-            raise TypeError("The command should be either a str or unicode")
+            raise TypeError(
+                    "The command should be either a str or unicode but it's %s"
+                    % type(command))
         else:
             self.cmd = command
-            self.admin_only = admin_only
+            self.admin_only=admin_only
 
     def __call__(self, func):
+        self.cmd = self.cmd or func.__name__
         _PM.register_callback(self.cmd, func, self.admin_only)
 
 
