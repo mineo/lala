@@ -5,7 +5,7 @@ from lala.util import command, msg
 from lala.config import get, set_default_options
 
 anidb.set_client("pyanihttp", 1)
-set_default_options(max_tags=5, max_search_results=5)
+set_default_options(max_tags="5", max_search_results="5")
 
 def get_anime(user, channel, text):
     try:
