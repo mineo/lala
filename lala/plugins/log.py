@@ -1,6 +1,7 @@
 import codecs
 import lala.config
 import logging
+import logging.handlers
 
 from lala.util import command, msg, regex
 
@@ -8,10 +9,13 @@ from lala.util import command, msg, regex
 chatlogger = None
 
 
+lala.config.set_default_options(max_lines="30")
+
+
 @command
 def last(user, channel, text):
     """Show the last lines from the log"""
-    max_lines = int(lala.config.get("max_lines", default=30))
+    max_lines = lala.config.get_int("max_lines")
     s_text = text.split()
     try:
         lines = min(max_lines, int(s_text[1]))
@@ -37,7 +41,7 @@ def setup_log():
             encoding="utf-8",
             filename=logfile,
             when="midnight",
-            backupCount=int(lala.config.get("max_log_days")))
+            backupCount=lala.config.get_int("max_log_days"))
     chatlogger.setLevel(logging.INFO)
     chathandler.setFormatter(
             logging.Formatter("%(asctime)s %(message)s", "%Y-%m-%d %H:%M"))
