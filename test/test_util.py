@@ -70,7 +70,10 @@ class TestUtil(unittest.TestCase):
         self.assertFalse(util._BOT.msg.called)
 
     def test_is_admin(self):
+        old_get = config._get
         config._get = mock.Mock(return_value=["superman", "bofh"])
 
         self.assertTrue(util.is_admin("superman"))
         self.assertFalse(util.is_admin("i'm-no-superman"))
+
+        config._get = old_get

@@ -5,10 +5,14 @@ from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
 from os import remove
 
 class TestConfig(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         config._CFG = SafeConfigParser()
         config._FILENAME = "foobar.txt"
-        config._CFG.read(config._FILENAME)
+
+    def setUp(self):
+        for section in config._CFG.sections():
+            config._CFG.remove_section(section)
 
     def test_exists(self):
         config.set("key", "value")
@@ -40,9 +44,6 @@ class TestConfig(unittest.TestCase):
 
     def test_raises(self):
         self.assertRaises(NoSectionError, config.get, "foo")
-
-        config._CFG.add_section("testsection")
-        self.assertRaises(NoOptionError, config._get, "testsection", "foo")
 
     @classmethod
     def tearDownClass(cls):

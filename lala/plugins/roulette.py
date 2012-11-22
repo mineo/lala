@@ -8,7 +8,7 @@ class revolver:
     def reload(self):
         self.bullet = random.randint(1,6)
         self.chamber = 1
-        
+
     def shoot(self, user, channel, text):
         if (self.chamber >= 5) and (self.chamber != self.bullet):
             msg(channel, "%s: Chamber %s of 6: *click*" % (user, self.chamber))
