@@ -133,7 +133,7 @@ class TestBase(PluginTestCase):
 
     def test_enable(self):
         lala.util._PM._handle_message("user", "#channel", "!enable command")
-        lala.util._PM.disable.assert_called_once_with("command")
+        lala.util._PM.enable.assert_called_once_with("command")
 
     def test_join(self):
         lala.util._PM._handle_message("user", "#channel", "!join #channel")
@@ -162,6 +162,8 @@ class TestBase(PluginTestCase):
         super(TestBase, self).tearDown()
         lala.util._BOT.msg.reset_mock()
         lala.util._BOT.quit.reset_mock()
+        lala.util._PM.disable.reset_mock()
+        lala.util._PM.enable.reset_mock()
         lala.config._CFG.set.reset_mock()
 
 
