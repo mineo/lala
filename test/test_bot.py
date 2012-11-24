@@ -11,7 +11,8 @@ from twisted.test import proto_helpers
 class TestBot(unittest.TestCase):
     def setUp(self):
         self._old_pm = lala.pluginmanager.PluginManager
-        lala.pluginmanager.PluginManager = mock.Mock(spec=lala.pluginmanager.PluginManager)
+        lala.pluginmanager.PluginManager = mock.Mock(
+            spec=lala.pluginmanager.PluginManager)
 
         self.factory = lala.factory.LalaFactory("#test", "nick", [])
         self.proto = self.factory.buildProtocol(("127.0.0.1", ))

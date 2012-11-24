@@ -1,8 +1,9 @@
 import unittest
 
 from lala import config
-from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
+from ConfigParser import SafeConfigParser, NoSectionError
 from os import remove
+
 
 class TestConfig(unittest.TestCase):
     @classmethod
@@ -26,7 +27,8 @@ class TestConfig(unittest.TestCase):
     def test_set_default_options_list(self):
         items = ["foo", "bar", "baz"]
         config.set_default_options(defaultlisttest=items)
-        self.assertEqual(sorted(config.get_list("defaultlisttest")), sorted(items))
+        self.assertEqual(sorted(config.get_list("defaultlisttest")),
+                sorted(items))
 
     def test_default_doesnt_overwrite(self):
         config.set("not_overwritten_key", 1)
