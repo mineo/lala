@@ -8,6 +8,8 @@ from twisted.enterprise import adbapi
 
 set_default_options(max_quotes="5")
 
+MESSAGE_TEMPLATE = "[%s] %s"
+
 db_connection = None
 
 db_connection = adbapi.ConnectionPool("sqlite3",
@@ -33,7 +35,7 @@ def getquote(user, channel, text):
     """Show the quote with a specified number"""
     def callback(quotes):
         if len(quotes) > 0:
-            msg(channel, "[%s] %s" % (quotenumber, quotes[0][0]))
+            _send_quote_to_channel(quotes[0])
         else:
             msg(channel, "%s: There's no quote #%s" % (user,
                 quotenumber))
@@ -42,7 +44,7 @@ def getquote(user, channel, text):
     if len(s_text) > 1:
         quotenumber = s_text[1]
         logging.debug("Trying to get quote number %s" % quotenumber)
-        run_query("SELECT quote FROM quotes WHERE rowid = ?;",
+        run_query("SELECT rowid, quote FROM quotes WHERE rowid = ?;",
                 [quotenumber],
                 callback)
 
@@ -89,27 +91,14 @@ def delquote(user, channel, text):
 @command
 def lastquote(user, channel, text):
     """Show the last quote"""
-    def callback(quotes):
-        try:
-            (id, quote) = quotes[0]
-            msg(channel, "[%s] %s" % (id, quote))
-        except IndexError, e:
-            return
     run_query("SELECT rowid, quote FROM quotes ORDER BY rowid DESC\
-    LIMIT 1;", [], callback)
+    LIMIT 1;", [], _single_quote_callback)
 
 @command
 def randomquote(user, channel, text):
     """Show a random quote"""
-    def callback(quotes):
-        try:
-            (id, quote) = quotes[0]
-            msg(channel, "[%s] %s" % (id, quote))
-        except IndexError, e:
-            return
-
     run_query("SELECT rowid, quote FROM quotes ORDER BY random() DESC\
-    LIMIT 1;", [], callback)
+    LIMIT 1;", [], _single_quote_callback)
 
 @command
 def searchquote(user, channel, text):
@@ -119,8 +108,8 @@ def searchquote(user, channel, text):
         if len(quotes) > max_quotes:
             msg(channel, "Too many results, please refine your search")
         else:
-            messages = ["[%s] %s" % (id, quote) for (id, quote) in quotes]
-            msg(channel, messages)
+            for quote in quotes:
+                _send_quote_to_channel(channel, quote)
 
     s_text = text.split()
     logging.debug(s_text[1:])
@@ -135,10 +124,19 @@ def searchquote(user, channel, text):
 def join(user, channel):
     def callback(quotes):
         try:
-            (id, quote) = quotes[0]
-            msg(channel, "[%s] %s" % (id, quote), log=False)
+            _send_quote_to_channel(channel, quotes[0])
         except IndexError, e:
             return
 
     run_query("SELECT rowid, quote FROM quotes where quote LIKE (?)\
     ORDER BY random() LIMIT 1;", ["".join(["%", user, "%"])], callback)
+
+def _single_quote_callback(quotes):
+    try:
+        _send_quote_to_channel(channel, quotes[0])
+    except IndexError, e:
+        return
+
+def _send_quote_to_channel(channel, quote):
+    (id, quote) = quote
+    msg(channel, MESSAGE_TEMPLATE % (id, quote))
