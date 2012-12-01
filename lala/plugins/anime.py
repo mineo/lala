@@ -2,7 +2,7 @@ import anidb
 import logging
 
 from lala.util import command, msg
-from lala.config import get, set_default_options
+from lala.config import get_int, set_default_options
 
 anidb.set_client("pyanihttp", 1)
 set_default_options(max_tags="5", max_search_results="5")
@@ -39,7 +39,7 @@ def atags(user, channel, text):
     anime.tags.reverse()
     tags = [tag.name for tag in anime.tags]
     msg(channel, "Anime %s is tagged %s" % (anime.id,
-            ", ".join(tags[:get_int("max_tags"))]))
+            ", ".join(tags[:get_int("max_tags")])))
 
 @command
 def ainfo(user, channel, text):
