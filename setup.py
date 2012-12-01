@@ -39,6 +39,11 @@ def update_version_py():
 def get_version():
     try:
         f = open("lala/__init__.py")
+    except IOError, e:
+        import errno
+        if e.errno == errno.ENOENT:
+            update_version_py()
+            return get_version()
     except EnvironmentError:
         return None
     for line in f.readlines():
