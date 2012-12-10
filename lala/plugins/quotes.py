@@ -2,6 +2,7 @@
 import logging
 import os
 
+from functools import partial
 from lala.util import command, msg, on_join, is_admin
 from lala.config import get_int, set_default_options
 from twisted.enterprise import adbapi
@@ -35,7 +36,7 @@ def getquote(user, channel, text):
     """Show the quote with a specified number"""
     def callback(quotes):
         if len(quotes) > 0:
-            _send_quote_to_channel(quotes[0])
+            _send_quote_to_channel(channel, quotes[0])
         else:
             msg(channel, "%s: There's no quote #%s" % (user,
                 quotenumber))
@@ -91,14 +92,16 @@ def delquote(user, channel, text):
 @command
 def lastquote(user, channel, text):
     """Show the last quote"""
+    callback = partial(_single_quote_callback, channel)
     run_query("SELECT rowid, quote FROM quotes ORDER BY rowid DESC\
-    LIMIT 1;", [], _single_quote_callback)
+    LIMIT 1;", [], callback)
 
 @command
 def randomquote(user, channel, text):
     """Show a random quote"""
+    callback = partial(_single_quote_callback, channel)
     run_query("SELECT rowid, quote FROM quotes ORDER BY random() DESC\
-    LIMIT 1;", [], _single_quote_callback)
+    LIMIT 1;", [], callback)
 
 @command
 def searchquote(user, channel, text):
@@ -131,7 +134,7 @@ def join(user, channel):
     run_query("SELECT rowid, quote FROM quotes where quote LIKE (?)\
     ORDER BY random() LIMIT 1;", ["".join(["%", user, "%"])], callback)
 
-def _single_quote_callback(quotes):
+def _single_quote_callback(channel, quotes):
     try:
         _send_quote_to_channel(channel, quotes[0])
     except IndexError, e:
