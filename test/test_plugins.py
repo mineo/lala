@@ -6,6 +6,8 @@ import mock
 import subprocess
 import unittest
 
+from . import _helpers
+
 
 class DeferredHelper(object):
     def __init__(self, fire_callback=True, fire_errback=False, data=None):
@@ -281,3 +283,42 @@ class TestQuotes(PluginTestCase):
         lala.util._PM._handle_message("user", "#channel", "!searchquote test")
         lala.util.msg.assert_called_once_with("#channel",
                 "Too many results, please refine your search")
+
+
+class TestBirthday(PluginTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(TestBirthday, cls).setUpClass()
+        import lala.plugins.birthday
+
+    def setUp(self):
+        super(TestBirthday, self).setUp()
+        lala.plugins.birthday.msg = lala.util.msg
+        lala.plugins.birthday.date = _helpers.NewDate
+
+    def test_join_birthday(self):
+        lala.util._PM._handle_message("user", "#channel", "!my_birthday_is 10.12.")
+        lala.util._PM.on_join("user", "#channel")
+        lala.plugins.birthday.msg.assert_called_once_with("#channel",
+            "\o\ Happy birthday, user /o/")
+
+    def test_join_not_birthday(self):
+        lala.util._PM._handle_message("user", "#channel", "!my_birthday_is 09.12.")
+        lala.util._PM.on_join("user", "#channel")
+        self.assertFalse(lala.plugins.birthday.msg.called)
+
+    def test_past_birthday(self):
+        lala.config._set("birthday", "user", "09.12.2012")
+        lala.util._PM.on_join("user", "#channel")
+        self.assertEqual(lala.config._get("birthday", "user"), "09.12.2013")
+
+    def test_set_birthday_not_yet(self):
+        """Tests setting a birthday that has not already happened this year."""
+        lala.util._PM._handle_message("user", "#channel", "!my_birthday_is 11.12.")
+        self.assertEqual(lala.config._get("birthday", "user"), "11.12.2012")
+
+    def test_set_birthday_already(self):
+        """Tests setting a birthday that has already happened this year."""
+        lala.util._PM._handle_message("user", "#channel", "!my_birthday_is 09.12.")
+        self.assertEqual(lala.config._get("birthday", "user"), "09.12.2013")
+
