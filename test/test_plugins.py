@@ -6,35 +6,7 @@ import mock
 import subprocess
 import unittest
 
-
-class DeferredHelper(object):
-    def __init__(self, fire_callback=True, fire_errback=False, data=None):
-        self.callback = None
-        self.errback = None
-        self.fire_callback = fire_callback
-        self.fire_errback = fire_errback
-        self.data = data
-        self.args = None
-
-    def _fire(self):
-        if self.fire_callback and self.callback is not None:
-            self.callback(self.data)
-
-        if self.fire_errback and self.errback is not None:
-            self.errback(self.data)
-
-    def addCallback(self, callback):
-        self.callback = callback
-        self._fire()
-
-    def addCallbacks(self, callback, errback):
-        self.callback = callback
-        self.errback = errback
-        self._fire()
-
-    def __call__(self, *args):
-        self.args = args
-        return self
+from . import _helpers
 
 
 class PluginTestCase(unittest.TestCase):
@@ -179,21 +151,21 @@ class TestHTTPTitle(PluginTestCase):
 
     def test_title(self):
         url = "http://example.com"
-        lala.plugins.httptitle.getPage = DeferredHelper(
+        lala.plugins.httptitle.getPage = _helpers.DeferredHelper(
                 data="<html><head><title>title</title></head></html>")
         lala.util._PM._handle_message("user", "#channel", url)
         self.assertTrue(url in lala.plugins.httptitle.getPage.args)
         lala.util.msg.assert_called_once_with("#channel", "Title: title")
 
     def test_notitle(self):
-        lala.plugins.httptitle.getPage = DeferredHelper(
+        lala.plugins.httptitle.getPage = _helpers.DeferredHelper(
                 data="<html></html>")
         lala.util._PM._handle_message("user", "#channel", "http://example.com")
         self.assertFalse(lala.util.msg.called)
 
     def test_errback(self):
         url = "http://example.com"
-        lala.plugins.httptitle.getPage = DeferredHelper(fire_callback=False,
+        lala.plugins.httptitle.getPage = _helpers.DeferredHelper(fire_callback=False,
                 fire_errback=True)
         lala.util._PM._handle_message("user", "#channel", url)
         lala.util.msg.assert_called_once_with("#channel",
@@ -251,13 +223,13 @@ class TestQuotes(PluginTestCase):
         lala.plugins.quotes.msg = lala.util.msg
 
     def test_on_join(self):
-        lala.plugins.quotes.db_connection.runQuery = DeferredHelper(
+        lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(
             data=[[1, "testquote"]])
         lala.util._PM.on_join("user", "#channel")
         lala.util.msg.assert_called_once_with("#channel", "[1] testquote")
 
     def test_on_join_no_quote(self):
-        lala.plugins.quotes.db_connection.runQuery = DeferredHelper(data=[])
+        lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=[])
         lala.util._PM.on_join("user", "#channel")
         self.assertFalse(lala.util.msg.called)
 
@@ -266,7 +238,7 @@ class TestQuotes(PluginTestCase):
         data = []
         for i in xrange(max_quotes):
             data.append([i, "testquote %i" % i])
-        lala.plugins.quotes.db_connection.runQuery = DeferredHelper(data=data)
+        lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.util._PM._handle_message("user", "#channel", "!searchquote test")
         for i in data:
             lala.util.msg.assert_any_call("#channel",
@@ -277,7 +249,46 @@ class TestQuotes(PluginTestCase):
         data = []
         for i in xrange(max_quotes):
             data.append([i, "testquote %i" % i])
-        lala.plugins.quotes.db_connection.runQuery = DeferredHelper(data=data)
+        lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.util._PM._handle_message("user", "#channel", "!searchquote test")
         lala.util.msg.assert_called_once_with("#channel",
                 "Too many results, please refine your search")
+
+
+class TestBirthday(PluginTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(TestBirthday, cls).setUpClass()
+        import lala.plugins.birthday
+
+    def setUp(self):
+        super(TestBirthday, self).setUp()
+        lala.plugins.birthday.msg = lala.util.msg
+        lala.plugins.birthday.date = _helpers.NewDate
+
+    def test_join_birthday(self):
+        lala.util._PM._handle_message("user", "#channel", "!my_birthday_is 10.12.")
+        lala.util._PM.on_join("user", "#channel")
+        lala.plugins.birthday.msg.assert_called_once_with("#channel",
+            "\o\ Happy birthday, user /o/")
+
+    def test_join_not_birthday(self):
+        lala.util._PM._handle_message("user", "#channel", "!my_birthday_is 09.12.")
+        lala.util._PM.on_join("user", "#channel")
+        self.assertFalse(lala.plugins.birthday.msg.called)
+
+    def test_past_birthday(self):
+        lala.config._set("birthday", "user", "09.12.2012")
+        lala.util._PM.on_join("user", "#channel")
+        self.assertEqual(lala.config._get("birthday", "user"), "09.12.2013")
+
+    def test_set_birthday_not_yet(self):
+        """Tests setting a birthday that has not already happened this year."""
+        lala.util._PM._handle_message("user", "#channel", "!my_birthday_is 11.12.")
+        self.assertEqual(lala.config._get("birthday", "user"), "11.12.2012")
+
+    def test_set_birthday_already(self):
+        """Tests setting a birthday that has already happened this year."""
+        lala.util._PM._handle_message("user", "#channel", "!my_birthday_is 09.12.")
+        self.assertEqual(lala.config._get("birthday", "user"), "09.12.2013")
+
