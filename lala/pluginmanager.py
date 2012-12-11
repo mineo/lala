@@ -1,11 +1,11 @@
-import sys
 import logging
-import os
 
 from lala.util import msg
 
+
 def _make_pluginfunc(func):
     return {'enabled': True, 'func': func}
+
 
 class PluginManager(object):
     def __init__(self):
@@ -14,7 +14,6 @@ class PluginManager(object):
         self._regexes = {}
         self._cbprefix = "!"
 
-
     def load_plugin(self, name):
         logging.debug("Trying to load %s" % name)
         name = "lala.plugins.%s" % name
@@ -22,7 +21,7 @@ class PluginManager(object):
 
     def register_callback(self, trigger, func):
         """ Adds ``func`` to the callbacks for ``trigger``."""
-        logging.debug("Registering callback for %s" % trigger)
+        logging.info("Registering callback for %s" % trigger)
         self._callbacks[trigger] = _make_pluginfunc(func)
 
     def register_join_callback(self, func):
@@ -41,6 +40,7 @@ class PluginManager(object):
             if funcdict is not None:
                 logging.debug(funcdict)
                 if funcdict["enabled"]:
+                    logging.info("Calling %s with '%s'" % (command, message))
                     self._callbacks[command]["func"](
                         user,
                         channel,
@@ -55,6 +55,7 @@ class PluginManager(object):
             if match is not None:
                 funcdict = self._regexes[regex]
                 if funcdict["enabled"]:
+                    logging.info("%s matched %s" % (message, regex))
                     self._regexes[regex]["func"](
                             user,
                             channel,
@@ -73,8 +74,8 @@ class PluginManager(object):
     def disable(self, trigger):
         """Disables `trigger`.
 
-        :trigger: The trigger to disable. Can be a key for a callback or a        regular expression
-
+        :trigger: The trigger to disable. Can be a key for a callback or a
+        regular expression
         """
         if trigger in self._callbacks:
             self._callbacks[trigger]["enabled"] = False
@@ -87,7 +88,8 @@ class PluginManager(object):
     def enable(self, trigger):
         """Enables `trigger`.
 
-        :trigger: The trigger to enable. Can be a key for a callback or a        regular expression
+        :trigger: The trigger to enable. Can be a key for a callback or a
+        regular expression
 
         """
         if trigger in self._callbacks:
