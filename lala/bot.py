@@ -44,7 +44,7 @@ class Lala(IRCClient):
             message = message.decode("utf-8")
         except Exception:
             message = message.decode(config._get("base", "fallback_encoding"))
-        logging.info("%s: %s" % (user, message))
+        logging.debug("%s: %s" % (user, message))
         util._PM._handle_message(user, channel, message)
 
     def msg(self, channel, message, log, length=None):
