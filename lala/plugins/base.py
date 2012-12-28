@@ -2,7 +2,7 @@ import logging
 import lala.config as config
 import lala.util as util
 
-from lala.util import command, msg, is_admin
+from lala.util import command, msg
 from twisted.internet import reactor
 
 #@command
@@ -10,33 +10,29 @@ from twisted.internet import reactor
     #if is_admin(user):
         #util._BOT.plugger.load_plugin(text.split()[1])
 
-@command
+@command(admin_only=True)
 def part(user, channel, text):
     """Part a channel"""
-    if is_admin(user):
-        logging.debug("Parting %s" % text.split()[1])
-        util._BOT.part(text.split()[1].encode("utf-8"))
+    logging.debug("Parting %s" % text.split()[1])
+    util._BOT.part(text.split()[1].encode("utf-8"))
 
-@command
+@command(admin_only=True)
 def join(user, channel, text):
     """Join a channel"""
-    if is_admin(user):
-        chan = text.split()[1]
-        logging.debug("Joining %s" % chan)
-        util._BOT.join_(chan)
+    chan = text.split()[1]
+    logging.debug("Joining %s" % chan)
+    util._BOT.join_(chan)
 
-@command
+@command(admin_only=True)
 def quit(user, channel, text):
-    if is_admin(user):
-        logging.debug("Quitting")
-        util._BOT.quit("leaving")
-        reactor.stop()
+    logging.debug("Quitting")
+    util._BOT.quit("leaving")
+    reactor.stop()
 
-@command
+@command(admin_only=True)
 def reconnect(user, channel, text):
-    if is_admin(user):
-        logging.debug("Reconnecting")
-        util._BOT.quit("leaving")
+    logging.debug("Reconnecting")
+    util._BOT.quit("leaving")
 
 @command
 def server(user, channel, text):
@@ -50,38 +46,35 @@ def commands(user, channel, text):
     s = "!" + " !".join(util._PM._callbacks)
     msg(channel, s)
 
-@command
+@command(admin_only=True)
 def addadmin(user, channel, text):
     """Add a user to the list of admins"""
     admin = text.split()[1]
-    if is_admin(user):
-        if admin in config.get("admins"):
-            msg(channel, "%s already is an admin" % admin)
-        else:
-            config.set("admins", "%s,%s" % (config.get("admins"), admin))
-            msg(channel,
-                        "%s has been added to the list of admins" % admin)
+    if admin in config.get("admins"):
+        msg(channel, "%s already is an admin" % admin)
+    else:
+        config.set("admins", "%s,%s" % (config.get("admins"), admin))
+        msg(channel,
+                    "%s has been added to the list of admins" % admin)
 
 @command
 def admins(user, channel, text):
     """Show the list of admins"""
-    if is_admin(user):
-        msg(channel, config.get("admins"))
+    msg(channel, config.get("admins"))
 
-@command
+@command(admin_only=True)
 def deladmin(user, channel, text):
     """Remove a user from the list of admins"""
     admin = text.split()[1]
-    if is_admin(user):
-        if admin in config.get("admins"):
-            admins = config.get("admins").split(",")
-            admins.remove(admin)
-            config.set("admins", ",".join(admins))
-            msg(channel,
-                        "%s has been removed from the list of admins" %
-                        admin)
-        else:
-            msg(channel, "Sorry, %s is not even an admin" % admin)
+    if admin in config.get("admins"):
+        admins = config.get("admins").split(",")
+        admins.remove(admin)
+        config.set("admins", ",".join(admins))
+        msg(channel,
+                    "%s has been removed from the list of admins" %
+                    admin)
+    else:
+        msg(channel, "Sorry, %s is not even an admin" % admin)
 
 @command
 def help(user, channel, text):
@@ -101,7 +94,7 @@ def help(user, channel, text):
         else:
             msg(channel, "There is no help available for %s" % cmd)
 
-@command
+@command(admin_only=True)
 def enable(user, channel, text):
     """Enables a command or regular expression
     """
@@ -110,7 +103,7 @@ def enable(user, channel, text):
     util._PM.enable(command)
 
 
-@command
+@command(admin_only=True)
 def disable(user, channel, text):
     """disables a command.
     """

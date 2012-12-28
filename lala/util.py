@@ -1,6 +1,4 @@
 """Helpers to be used with plugins"""
-import lala.config as config
-
 from types import FunctionType
 from inspect import getargspec
 from re import compile
@@ -11,38 +9,54 @@ _PM = None
 
 
 class command(object):
-    """Decorator to register a command. The name of the command is the
-       `__name__` attribute of the decorated function.
-       Example::
+    """ Decorator to register a command. The name of the command is the
+        `__name__` attribute of the decorated function.
+        Example::
 
-           @command
-           def heyiamacommand(user, channel, text):
-               pass
+            @command
+            def heyiamacommand(user, channel, text):
+                pass
 
-       You can also pass a ``command`` parameter to overwrite the name of the
-       command::
+        You can also pass a ``command`` parameter to overwrite the name of the
+        command::
 
-           @command("yetanothercommand")
-           def command_with_a_really_stupid_or_insanely_long_name(user,
-           channel, text):
-               pass
+            @command(command="yetanothercommand")
+            def command_with_a_really_stupid_or_insanely_long_name(user,
+            channel, text):
+                pass
 
+
+        An additional argument, ``admin_only`` can be used to make a function
+        available to admins only::
+
+            @command(admin_only=True)
+            def give_me_the_one_ring(user, channel, text):
+                pass
     """
-    def __init__(self, command=None):
+    def __init__(self, command=None, admin_only=False):
         """docstring for __init__"""
+        self.admin_only = admin_only
         if isinstance(command, FunctionType):
             if _check_args(command):
-                _PM.register_callback(command.__name__, command)
+                _PM.register_callback(command.__name__, command, self.admin_only)
             else:
                 raise TypeError(
                     "A callback function should take exactly 3 arguments")
+        elif command is None:
+            # This happens when only admin_only is set when decorating a
+            # function like
+            # @command(admin_only=True)
+            # def foo(user, channel, text):
+            #   pass
+            self.cmd = None
         elif not (isinstance(command, str) or isinstance(command, unicode)):
             raise TypeError("The command should be either a str or unicode")
         else:
             self.cmd = command
 
     def __call__(self, func):
-        _PM.register_callback(self.cmd, func)
+        self.cmd = self.cmd or func.__name__
+        _PM.register_callback(self.cmd, func, self.admin_only)
 
 
 def on_join(f):
@@ -79,11 +93,6 @@ class regex(object):
         else:
             raise TypeError(
                 "A regex callback function should take exactly 4 arguments")
-
-
-def is_admin(user):
-    """Check whether ``user`` is an admin"""
-    return user in config._get("base", "admins")
 
 
 def msg(target, message, log=True):
