@@ -1,7 +1,7 @@
 import unittest
 import mock
 
-from lala import util, pluginmanager
+from lala import util, pluginmanager, config
 from re import compile
 
 
@@ -21,7 +21,7 @@ def regex_f(user, channel, text, regex):
     raise ValueError("I have been called, something is wrong")
 
 
-class TestUtil(unittest.TestCase):
+class TestPluginmanager(unittest.TestCase):
     def setUp(self):
         util._PM = pluginmanager.PluginManager()
 
@@ -115,3 +115,17 @@ class TestUtil(unittest.TestCase):
         self.assertFalse(mocked_f.called)
         util._PM._handle_message("user", "channel", "test foobar")
         self.assertTrue(mocked_f.called)
+
+    @mock.patch("lala.pluginmanager._get")
+    def test_is_admin(self, mock):
+        mock.return_value = "superman,gandalf"
+        self.assertTrue(pluginmanager.PluginManager.is_admin("superman"))
+        self.assertFalse(pluginmanager.PluginManager.is_admin("i'm-no-superman"))
+
+    @mock.patch("lala.pluginmanager._get")
+    def test_admin_only_command_as_non_admin(self, mock):
+        mock.return_value = "superman"
+        func_mock = mock.Mock()
+        util.command(command="mock", admin_only=True)(func_mock)
+        util._PM._handle_message("gandalf", "#channel", "!mock")
+        self.assertFalse(func_mock.called)

@@ -3,7 +3,7 @@ import logging
 import os
 
 from functools import partial
-from lala.util import command, msg, on_join, is_admin
+from lala.util import command, msg, on_join
 from lala.config import get_int, set_default_options
 from twisted.enterprise import adbapi
 

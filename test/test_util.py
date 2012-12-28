@@ -33,7 +33,7 @@ class TestUtil(unittest.TestCase):
     def test_named_command(self):
         c = util.command("command")
         c(f)
-        util._PM.register_callback.assert_called_once_with("command", f)
+        util._PM.register_callback.assert_called_once_with("command", f, False)
 
     def test_command_str(self):
         self.assertRaises(TypeError, util.command, object())
@@ -69,11 +69,3 @@ class TestUtil(unittest.TestCase):
         util.msg("user", ["", ""])
         self.assertFalse(util._BOT.msg.called)
 
-    def test_is_admin(self):
-        old_get = config._get
-        config._get = mock.Mock(return_value=["superman", "bofh"])
-
-        self.assertTrue(util.is_admin("superman"))
-        self.assertFalse(util.is_admin("i'm-no-superman"))
-
-        config._get = old_get
