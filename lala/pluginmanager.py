@@ -2,7 +2,7 @@ import logging
 import lala.util
 
 from lala.config import _get, _LIST_SEPARATOR
-from lala.util import msg
+
 
 def _make_pluginfunc(func, admin_only=False):
     return {'enabled': True, 'func': func, 'admin_only': admin_only}
@@ -54,13 +54,16 @@ class PluginManager(object):
             funcdict = self._callbacks.get(command)
             if funcdict is not None:
                 logging.debug(funcdict)
-                if funcdict["enabled"] and \
-                    ((funcdict["admin_only"] and self.is_admin(user))
+                if funcdict["enabled"]:
+                    if ((funcdict["admin_only"] and self.is_admin(user))
                             or not funcdict["admin_only"]):
-                    self._callbacks[command]["func"](
-                        user,
-                        channel,
-                        message)
+                        self._callbacks[command]["func"](
+                            user,
+                            channel,
+                            message)
+                    else:
+                        lala.util.msg(channel,
+                                      "Sorry %s, you're not allowed to do that" % user)
                 else:
                     lala.util.msg(channel, "%s is not enabled" % command)
                     logging.info("%s is not enabled" % command)
