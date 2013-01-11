@@ -1,6 +1,6 @@
 import logging
 
-from lala.config import _get, _list_converter
+from lala.config import _get, _LIST_SEPARATOR
 from lala.util import msg
 
 def _make_pluginfunc(func, admin_only=False):
@@ -17,8 +17,7 @@ class PluginManager(object):
     @staticmethod
     def is_admin(user):
         """Check whether ``user`` is an admin"""
-        return user in _list_converter(_get("base", "admins"))
-
+        return user in _get("base", "admins").split(_LIST_SEPARATOR)
 
     def load_plugin(self, name):
         logging.debug("Trying to load %s" % name)

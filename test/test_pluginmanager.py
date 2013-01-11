@@ -122,6 +122,12 @@ class TestPluginmanager(unittest.TestCase):
         self.assertTrue(pluginmanager.PluginManager.is_admin("superman"))
         self.assertFalse(pluginmanager.PluginManager.is_admin("i'm-no-superman"))
 
+
+    @mock.patch("lala.pluginmanager._get")
+    def test_is_admin_partial_match(self, mock):
+        mock.return_value = "superman,gandalf"
+        self.assertFalse(pluginmanager.PluginManager.is_admin("gandal"))
+
     @mock.patch("lala.pluginmanager._get")
     def test_admin_only_command_as_non_admin(self, mock):
         mock.return_value = "superman"
