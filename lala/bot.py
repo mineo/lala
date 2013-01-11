@@ -4,7 +4,7 @@ from twisted.words.protocols import irc
 from lala import util, config, __version__
 
 # From https://www.alien.net.au/irc/irc2numerics.html
-# This tells us a user has register
+# This tells us a user has registered and identified for his nick
 irc.symbolic_to_numeric["RPL_WHOISREGNICK"] = "307"
 irc.numeric_to_symbolic["307"] = "RPL_WHOISREGNICK"
 
