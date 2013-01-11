@@ -28,7 +28,8 @@ class TestBot(unittest.TestCase):
         lala.util._PM._handle_message.assert_called_once_with("user",
                 "channel", "message")
 
-    def test_bot_joins_channel_on_signon(self):
+    @mock.patch('lala.config._CFG')
+    def test_bot_joins_channel_on_signon(self, mock):
         self.proto.join = mock.Mock()
         self.proto.signedOn()
         self.proto.join.assert_called_once_with("#test")
@@ -42,7 +43,8 @@ class TestBot(unittest.TestCase):
     def test_nick(self):
         self.assertEqual(self.proto.nickname, "nick")
 
-    def test_nickserv(self):
+    @mock.patch('lala.config._CFG')
+    def test_nickserv(self, mock):
         self.factory.nspassword = "test"
         self.proto.msg = mock.Mock()
         self.proto.signedOn()

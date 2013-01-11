@@ -1,4 +1,5 @@
 import logging
+import lala.util
 
 from lala.config import _get, _LIST_SEPARATOR
 from lala.util import msg
@@ -16,8 +17,17 @@ class PluginManager(object):
 
     @staticmethod
     def is_admin(user):
-        """Check whether ``user`` is an admin"""
-        return user in _get("base", "admins").split(_LIST_SEPARATOR)
+        """Check whether ``user`` is an admin.
+
+        If a nickserv password is set, this will work by checking an internal
+        list of identified admins.
+
+        If not nickserv password is set, this simply checks if ``user`` is in
+        the "admins" option of the "base" section."""
+        if lala.util._BOT.factory.nspassword is not None:
+            return user in lala.util._BOT._identified_admins
+        else:
+            return user in _get("base", "admins").split(_LIST_SEPARATOR)
 
     def load_plugin(self, name):
         logging.debug("Trying to load %s" % name)
@@ -45,14 +55,14 @@ class PluginManager(object):
             if funcdict is not None:
                 logging.debug(funcdict)
                 if funcdict["enabled"] and \
-                    ((funcdict["admin_only"] and self.is_admin(user)) or \
-                            not funcdict["admin_only"]):
+                    ((funcdict["admin_only"] and self.is_admin(user))
+                            or not funcdict["admin_only"]):
                     self._callbacks[command]["func"](
                         user,
                         channel,
                         message)
                 else:
-                    msg(channel, "%s is not enabled" % command)
+                    lala.util.msg(channel, "%s is not enabled" % command)
                     logging.info("%s is not enabled" % command)
             return
 

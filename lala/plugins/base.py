@@ -110,3 +110,7 @@ def disable(user, channel, text):
     command = text.split()[1]
     logging.info("Disabling %s" % command)
     util._PM.disable(command)
+
+@command(admin_only=True)
+def whois(user, channel, text):
+    print util._BOT.whois(user)

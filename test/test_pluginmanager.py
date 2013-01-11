@@ -117,11 +117,19 @@ class TestPluginmanager(unittest.TestCase):
         self.assertTrue(mocked_f.called)
 
     @mock.patch("lala.pluginmanager._get")
-    def test_is_admin(self, mock):
+    def test_is_admin_no_nickserv(self, mock):
+        util._BOT.factory.nspassword= None
         mock.return_value = "superman,gandalf"
         self.assertTrue(pluginmanager.PluginManager.is_admin("superman"))
         self.assertFalse(pluginmanager.PluginManager.is_admin("i'm-no-superman"))
 
+    @mock.patch("lala.pluginmanager._get")
+    def test_is_admin_with_nickserv(self, mock):
+        util._BOT.factory.nspassword = "foobar"
+        util._BOT._identified_admins = ["superman"]
+        mock.return_value = "superman,gandalf"
+        self.assertTrue(pluginmanager.PluginManager.is_admin("superman"))
+        self.assertFalse(pluginmanager.PluginManager.is_admin("i'm-no-superman"))
 
     @mock.patch("lala.pluginmanager._get")
     def test_is_admin_partial_match(self, mock):
@@ -130,6 +138,7 @@ class TestPluginmanager(unittest.TestCase):
 
     @mock.patch("lala.pluginmanager._get")
     def test_admin_only_command_as_non_admin(self, mock):
+        util._BOT.factory.nspassword= None
         mock.return_value = "superman"
         func_mock = mock.Mock()
         util.command(command="mock", admin_only=True)(func_mock)
