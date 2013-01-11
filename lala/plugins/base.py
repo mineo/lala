@@ -111,6 +111,3 @@ def disable(user, channel, text):
     logging.info("Disabling %s" % command)
     util._PM.disable(command)
 
-@command(admin_only=True)
-def whois(user, channel, text):
-    print util._BOT.whois(user)
