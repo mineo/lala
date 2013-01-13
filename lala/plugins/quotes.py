@@ -79,16 +79,15 @@ def addquote(user, channel, text):
     else:
         msg(channel, "%s: You didn't give me any text to quote " % user)
 
-@command
+@command(admin_only=True)
 def delquote(user, channel, text):
     """Delete a quote with a specified number"""
     s_text = text.split()
-    if is_admin(user):
-        if len(s_text) > 1:
-            quotenumber = s_text[1]
-            logging.debug("Deleting quote: %s" % quotenumber)
-            run_query("DELETE FROM quotes where ROWID = (?);",
-                     [quotenumber], None)
+    if len(s_text) > 1:
+        quotenumber = s_text[1]
+        logging.debug("Deleting quote: %s" % quotenumber)
+        run_query("DELETE FROM quotes where ROWID = (?);",
+                    [quotenumber], None)
 
 @command
 def lastquote(user, channel, text):
