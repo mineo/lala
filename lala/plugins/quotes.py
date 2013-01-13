@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import division
 import logging
 import os
 
@@ -122,6 +123,33 @@ def searchquote(user, channel, text):
         ["".join(("%", " ".join(s_text[1:]), "%"))],
         callback
         )
+
+@command
+def quotestats(user, channel, text):
+    """Display statistics about all quotes."""
+    def quote_count_callback(channel, result):
+        quote_count = result[0][0]
+        logging.debug(quote_count)
+        msg(channel, "There are a total of %i quotes." % quote_count)
+        callback = partial(author_stats_callback, channel, quote_count)
+        run_query(
+            """
+            SELECT count(q.quote), a.name
+            FROM quotes q
+            JOIN authors a
+            ON q.author = a.rowid
+            GROUP BY author;
+            """,
+            [],
+            callback)
+
+    def author_stats_callback(channel, num_quotes, rows):
+        for count, author in rows:
+            msg(channel, "%s added %i quotes (%.2f%%)" %
+                (author, count, count/num_quotes))
+
+    quote_count_callback = partial(quote_count_callback, channel)
+    run_query("SELECT count(quote) from quotes;", [], quote_count_callback)
 
 @on_join
 def join(user, channel):

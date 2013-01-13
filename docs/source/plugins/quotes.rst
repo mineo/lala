@@ -28,6 +28,12 @@ It provides the following commands:
 
   Retrieve a random quote.
 
+- ``quotestats``
+
+  Display some stats about the quote database.
+  This is currently limited to the total number of quotes and the percentage
+  of quoter per author.
+
 - ``searchquote <text>``
 
   Search for a quote containing ``text``.
