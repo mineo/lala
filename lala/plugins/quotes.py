@@ -3,6 +3,7 @@ from __future__ import division
 import logging
 import os
 
+from collections import defaultdict
 from functools import partial
 from lala.util import command, msg, on_join
 from lala.config import get_int, set_default_options
@@ -133,19 +134,27 @@ def quotestats(user, channel, text):
         callback = partial(author_stats_callback, channel, quote_count)
         run_query(
             """
-            SELECT count(q.quote), a.name
+            SELECT count(q.quote) AS c, a.name
             FROM quotes q
             JOIN authors a
             ON q.author = a.rowid
-            GROUP BY author;
+            GROUP BY a.rowid;
             """,
             [],
             callback)
 
     def author_stats_callback(channel, num_quotes, rows):
+        count_author_dict = defaultdict(list)
         for count, author in rows:
-            msg(channel, "%s added %i quote(s) (%.2f%%)" %
-                (author, count, (count*100)/num_quotes))
+            count_author_dict[count].append(author)
+        for count, authors in sorted(count_author_dict.items(), reverse=True):
+            percentage = (count * 100)/num_quotes
+            if len(authors) > 1:
+                msg(channel, "%s each added %i quote(s) (%.2f%%)" %
+                    (", ".join(authors), count, percentage))
+            else:
+                msg(channel, "%s added %i quote(s) (%.2f%%)" %
+                    (authors[0], count, percentage))
 
     quote_count_callback = partial(quote_count_callback, channel)
     run_query("SELECT count(quote) from quotes;", [], quote_count_callback)
