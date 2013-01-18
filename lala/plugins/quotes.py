@@ -145,7 +145,7 @@ def quotestats(user, channel, text):
     def author_stats_callback(channel, num_quotes, rows):
         for count, author in rows:
             msg(channel, "%s added %i quotes (%.2f%%)" %
-                (author, count, count/num_quotes))
+                (author, count, (count*100)/num_quotes))
 
     quote_count_callback = partial(quote_count_callback, channel)
     run_query("SELECT count(quote) from quotes;", [], quote_count_callback)
