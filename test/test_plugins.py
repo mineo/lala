@@ -245,6 +245,11 @@ class TestQuotes(PluginTestCase):
             lala.util.msg.assert_any_call("#channel",
                     lala.plugins.quotes.MESSAGE_TEMPLATE % (i[0], i[1]))
 
+    def test_searchquote_none_found(self):
+        lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=[])
+        lala.util._PM._handle_message("user", "#channel", "!searchquote foo")
+        lala.util.msg.assert_called_once_with("#channel", "No matching quotes found")
+
     def test_searchquote_too_many(self):
         max_quotes = int(lala.config._get("quotes", "max_quotes")) + 1
         data = []

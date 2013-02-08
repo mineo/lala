@@ -112,6 +112,8 @@ def searchquote(user, channel, text):
         max_quotes = get_int("max_quotes")
         if len(quotes) > max_quotes:
             msg(channel, "Too many results, please refine your search")
+        elif len(quotes) == 0:
+            msg(channel, "No matching quotes found")
         else:
             for quote in quotes:
                 _send_quote_to_channel(channel, quote)
