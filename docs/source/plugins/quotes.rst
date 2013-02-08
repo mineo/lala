@@ -41,6 +41,10 @@ It provides the following commands:
 Options
 -------
 
+- ``database_path``
+
+  The path to the SQLite database file. Defaults to ``~/.lala/quotes.sqlite3``.
+
 - ``max_quotes``
 
   The maximum number of quotes to print while doing a search from

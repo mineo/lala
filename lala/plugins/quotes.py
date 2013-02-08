@@ -6,18 +6,19 @@ import os
 from collections import defaultdict
 from functools import partial
 from lala.util import command, msg, on_join
-from lala.config import get_int, set_default_options
+from lala.config import get, get_int, set_default_options
 from twisted.enterprise import adbapi
 
-set_default_options(max_quotes="5")
+set_default_options(database_path=os.path.join(os.path.expanduser("~/.lala"),
+                                               "quotes.sqlite3"),
+                    max_quotes="5")
 
 MESSAGE_TEMPLATE = "[%s] %s"
 
 db_connection = None
-
-db_connection = adbapi.ConnectionPool("sqlite3",
-            os.path.join(os.path.expanduser("~/.lala"), "quotes.sqlite3"),
-            check_same_thread=False)
+database_path = get("database_path")
+db_connection = adbapi.ConnectionPool("sqlite3", database_path,
+                                      check_same_thread=False)
 
 def setup_db():
     db_connection.runOperation("CREATE TABLE IF NOT EXISTS quotes(\

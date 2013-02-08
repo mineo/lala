@@ -19,6 +19,7 @@ class PluginTestCase(unittest.TestCase):
         cls._old_pm = lala.util._PM
         lala.util._PM = lala.pluginmanager.PluginManager()
         lala.config._CFG = ConfigParser.SafeConfigParser()
+        lala.config._set("quotes", "database_path", ":memory:")
 
     def setUp(self):
         msg_patcher = mock.patch('lala.util.msg')
