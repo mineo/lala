@@ -1,4 +1,8 @@
-import unittest
+try:
+    # Python < 2.7
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from lala import config
 from ConfigParser import SafeConfigParser, NoSectionError

@@ -1,4 +1,8 @@
-import unittest
+try:
+    # Python < 2.7
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import lala.factory
 import lala.util
 import lala.pluginmanager
@@ -10,9 +14,10 @@ from twisted.test import proto_helpers
 
 class TestBot(unittest.TestCase):
     def setUp(self):
-        self._old_pm = lala.pluginmanager.PluginManager
-        lala.pluginmanager.PluginManager = mock.Mock(
-            spec=lala.pluginmanager.PluginManager)
+        patcher = mock.patch("lala.pluginmanager.PluginManager",
+                             spec=lala.pluginmanager.PluginManager)
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
         self.factory = lala.factory.LalaFactory("#test", "nick", [])
         self.proto = self.factory.buildProtocol(("127.0.0.1", ))
@@ -50,6 +55,3 @@ class TestBot(unittest.TestCase):
         self.proto.signedOn()
         self.proto.msg.assert_called_once_with("Nickserv", "identify test",
                 log=False)
-
-    def tearDown(self):
-        lala.pluginmanager.PluginManager = self._old_pm

@@ -4,7 +4,11 @@ import lala.pluginmanager
 import lala.util
 import mock
 import subprocess
-import unittest
+try:
+    # Python < 2.7
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from . import _helpers
 
@@ -17,11 +21,9 @@ class PluginTestCase(unittest.TestCase):
         lala.config._CFG = ConfigParser.SafeConfigParser()
 
     def setUp(self):
-        self.old_msg = lala.util.msg
-        lala.util.msg = mock.Mock()
-
-    def tearDown(self):
-        lala.util.msg = self.old_msg
+        msg_patcher = mock.patch('lala.util.msg')
+        msg_patcher.start()
+        self.addCleanup(msg_patcher.stop)
 
 
 class TestFortune(PluginTestCase):
@@ -54,9 +56,6 @@ class TestFortune(PluginTestCase):
                                                  stdout=subprocess.PIPE)
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
 
-    def tearDown(self):
-        super(TestFortune, self).tearDown()
-
 
 class TestBase(PluginTestCase):
     @classmethod
@@ -77,7 +76,7 @@ class TestBase(PluginTestCase):
     def test_addadmin(self):
         lala.util._PM._handle_message("user", "#channel", "!addadmin user3")
         lala.config._CFG.set.assert_called_once_with("base", "admins",
-                                                          "user,user2,user3")
+                                                    "user,user2,user3")
 
     def test_addadmin_already_admin(self):
         lala.util._PM._handle_message("user", "#channel", "!addadmin user")

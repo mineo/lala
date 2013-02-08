@@ -1,4 +1,8 @@
-import unittest
+try:
+    # Python < 2.7
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import mock
 
 from lala import util, pluginmanager, config
@@ -19,8 +23,13 @@ def regex_f(arg1, arg2, arg3, arg4):
 
 class TestUtil(unittest.TestCase):
     def setUp(self):
-        util._PM = mock.Mock(spec=pluginmanager.PluginManager)
-        util._BOT = mock.Mock()
+        pm_patcher = mock.patch('lala.util._PM', spec=pluginmanager.PluginManager)
+        pm_patcher.start()
+        self.addCleanup(pm_patcher.stop)
+
+        bot_patcher = mock.patch('lala.util._BOT')
+        bot_patcher.start()
+        self.addCleanup(bot_patcher.stop)
 
     def test_on_join(self):
         util.on_join(f2)
