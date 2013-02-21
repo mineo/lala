@@ -35,27 +35,22 @@ class TestFortune(PluginTestCase):
 
     def setUp(self):
         super(TestFortune, self).setUp()
-        subprocess.Popen = mock.Mock(spec=subprocess.Popen)
-        popenreturnMock = mock.Mock()
-        communicateMock = mock.Mock(return_value=["fortune"])
-
-        popenreturnMock.returncode = 0
-        subprocess.Popen.return_value = popenreturnMock
-        popenreturnMock.communicate = communicateMock
-
         lala.plugins.fortune.msg = lala.util.msg
 
     def test_fortune(self):
+        lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
+                                                data="fortune")
         lala.util._PM._handle_message("user", "#channel", "!fortune")
-        subprocess.Popen.assert_called_once_with(["fortune", "fortunes"],
-                                                 stdout=subprocess.PIPE)
+        print lala.plugins.fortune.getProcessOutput.fire_callback
+        lala.plugins.fortune.getProcessOutput._fire()
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
 
     def test_ofortune(self):
+        lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
+                                                data="ofortune")
         lala.util._PM._handle_message("user", "#channel", "!ofortune")
-        subprocess.Popen.assert_called_once_with(["fortune", "-o"],
-                                                 stdout=subprocess.PIPE)
-        lala.util.msg.assert_called_once_with("#channel", "user: fortune")
+        lala.plugins.fortune.getProcessOutput._fire()
+        lala.util.msg.assert_called_once_with("#channel", "user: ofortune")
 
 
 class TestBase(PluginTestCase):
