@@ -155,6 +155,7 @@ class TestHTTPTitle(PluginTestCase):
         lala.plugins.httptitle.getPage = _helpers.DeferredHelper(
                 data="<html><head><title>title</title></head></html>")
         lala.util._PM._handle_message("user", "#channel", url)
+        lala.plugins.httptitle.getPage._fire()
         self.assertTrue(url in lala.plugins.httptitle.getPage.args)
         lala.util.msg.assert_called_once_with("#channel", "Title: title")
 
@@ -162,13 +163,15 @@ class TestHTTPTitle(PluginTestCase):
         lala.plugins.httptitle.getPage = _helpers.DeferredHelper(
                 data="<html></html>")
         lala.util._PM._handle_message("user", "#channel", "http://example.com")
+        lala.plugins.httptitle.getPage._fire()
         self.assertFalse(lala.util.msg.called)
 
     def test_errback(self):
         url = "http://example.com"
         lala.plugins.httptitle.getPage = _helpers.DeferredHelper(fire_callback=False,
-                fire_errback=True)
+                fire_errback=True, data=Exception())
         lala.util._PM._handle_message("user", "#channel", url)
+        lala.plugins.httptitle.getPage._fire()
         lala.util.msg.assert_called_once_with("#channel",
                 "Sorry, I couldn't get the title for %s" % url)
 
@@ -227,6 +230,7 @@ class TestQuotes(PluginTestCase):
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(
             data=[[1, "testquote"]])
         lala.util._PM.on_join("user", "#channel")
+        lala.plugins.quotes.db_connection.runQuery._fire()
         lala.util.msg.assert_called_once_with("#channel", "[1] testquote")
 
     def test_on_join_no_quote(self):
@@ -241,6 +245,7 @@ class TestQuotes(PluginTestCase):
             data.append([i, "testquote %i" % i])
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.util._PM._handle_message("user", "#channel", "!searchquote test")
+        lala.plugins.quotes.db_connection.runQuery._fire()
         for i in data:
             lala.util.msg.assert_any_call("#channel",
                     lala.plugins.quotes.MESSAGE_TEMPLATE % (i[0], i[1]))
@@ -248,6 +253,7 @@ class TestQuotes(PluginTestCase):
     def test_searchquote_none_found(self):
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=[])
         lala.util._PM._handle_message("user", "#channel", "!searchquote foo")
+        lala.plugins.quotes.db_connection.runQuery._fire()
         lala.util.msg.assert_called_once_with("#channel", "No matching quotes found")
 
     def test_searchquote_too_many(self):
@@ -257,6 +263,7 @@ class TestQuotes(PluginTestCase):
             data.append([i, "testquote %i" % i])
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.util._PM._handle_message("user", "#channel", "!searchquote test")
+        lala.plugins.quotes.db_connection.runQuery._fire()
         lala.util.msg.assert_called_once_with("#channel",
                 "Too many results, please refine your search")
 

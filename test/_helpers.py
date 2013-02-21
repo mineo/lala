@@ -9,28 +9,36 @@ class NewDate(datetime.date):
 
 class DeferredHelper(object):
     def __init__(self, fire_callback=True, fire_errback=False, data=None):
-        self.callback = None
-        self.errback = None
+        self.callbacks = []
+        self.errbacks = []
         self.fire_callback = fire_callback
         self.fire_errback = fire_errback
         self.data = data
         self.args = None
 
     def _fire(self):
-        if self.fire_callback and self.callback is not None:
-            self.callback(self.data)
+        def _walk_func_list(func_list):
+            res = None
+            for callback in func_list:
+                res = callback(self.data)
+                if res is None:
+                    break
 
-        if self.fire_errback and self.errback is not None:
-            self.errback(self.data)
+        if self.fire_callback and len(self.callbacks) > 0:
+            _walk_func_list(self.callbacks)
+
+        if self.fire_errback and len(self.errbacks) > 0:
+            _walk_func_list(self.errbacks)
 
     def addCallback(self, callback):
-        self.callback = callback
-        self._fire()
+        self.callbacks.append(callback)
+
+    def addErrback(self, errback):
+        self.errbacks.append(errback)
 
     def addCallbacks(self, callback, errback):
-        self.callback = callback
-        self.errback = errback
-        self._fire()
+        self.callbacks.append(callback)
+        self.errbacks.append(errback)
 
     def __call__(self, *args):
         self.args = args
