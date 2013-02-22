@@ -130,7 +130,7 @@ class TestPluginmanager(unittest.TestCase):
     @mock.patch("lala.pluginmanager._get")
     def test_is_admin_with_nickserv(self, mock):
         util._BOT.factory.nspassword = "foobar"
-        util._BOT._identified_admins = ["superman"]
+        util._BOT.identified_admins = ["superman"]
         mock.return_value = "superman,gandalf"
         self.assertTrue(pluginmanager.PluginManager.is_admin("superman"))
         self.assertFalse(pluginmanager.PluginManager.is_admin("i'm-no-superman"))
