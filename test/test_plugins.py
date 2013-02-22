@@ -41,7 +41,6 @@ class TestFortune(PluginTestCase):
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
                                                 data="fortune")
         lala.util._PM._handle_message("user", "#channel", "!fortune")
-        print lala.plugins.fortune.getProcessOutput.fire_callback
         lala.plugins.fortune.getProcessOutput._fire()
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
 
