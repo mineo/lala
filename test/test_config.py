@@ -13,7 +13,7 @@ class TestConfig(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         config._CFG = SafeConfigParser()
-        config._FILENAME = "foobar.txt"
+        config._FILENAME = None
 
     def setUp(self):
         for section in config._CFG.sections():
@@ -50,7 +50,3 @@ class TestConfig(unittest.TestCase):
 
     def test_raises(self):
         self.assertRaises(NoSectionError, config.get, "foo")
-
-    @classmethod
-    def tearDownClass(cls):
-        remove(config._FILENAME)
