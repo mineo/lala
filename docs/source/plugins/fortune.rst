@@ -9,4 +9,7 @@ and post the result in the channel. In addition, ``ofortune`` supplies the
 Options
 -------
 
-- None
+- ``fortune_path``
+
+  The full path to the fortune binary. Defaults to ``/usr/bin/fortune``
+

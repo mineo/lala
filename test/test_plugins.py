@@ -41,7 +41,6 @@ class TestFortune(PluginTestCase):
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
                                                 data="fortune")
         lala.util._PM._handle_message("user", "#channel", "!fortune")
-        print lala.plugins.fortune.getProcessOutput.fire_callback
         lala.plugins.fortune.getProcessOutput._fire()
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
 
@@ -300,3 +299,35 @@ class TestBirthday(PluginTestCase):
         lala.util._PM._handle_message("user", "#channel", "!my_birthday_is 09.12.")
         self.assertEqual(lala.config._get("birthday", "user"), "09.12.2013")
 
+
+class TestLast(PluginTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(TestLast, cls).setUpClass()
+        import lala.plugins.last
+
+    def setUp(self):
+        super(TestLast, self).setUp()
+        lala.plugins.last.msg = lala.util.msg
+
+    def _fill_log(self, entries):
+        for i in xrange(entries):
+            lala.util._PM._handle_message("user", "#channel", "text %i" % i)
+
+    def test_chatlog(self):
+        max_entries = int(lala.config._get("last", "max_lines"))
+        self._fill_log(max_entries)
+
+        self.assertEqual(len(lala.plugins.last._chatlog), max_entries)
+        lala.util._PM._handle_message("user", "#channel", "text")
+        self.assertEqual(len(lala.plugins.last._chatlog), max_entries)
+
+    def test_last(self):
+        max_entries = int(lala.config._get("last", "max_lines"))
+        self._fill_log(max_entries)
+        lala.util._PM._handle_message("user", "#channel", "!last")
+
+        messages = []
+        for i in xrange(max_entries):
+            messages.append('user: text %i' % i)
+        lala.util.msg.assert_called_with('user', messages, log=False)

@@ -27,7 +27,8 @@ class Lala(irc.IRCClient):
 
         Joins all configured channels and identifies with Nickserv."""
         logging.debug("Joining %s" % self.factory.channel)
-        self.join(self.factory.channel)
+        if self.factory.channel:
+            self.join(self.factory.channel)
         if self.factory.nspassword is not None:
             logging.info("Identifying with Nickserv")
             self.msg("Nickserv", "identify %s" % self.factory.nspassword,

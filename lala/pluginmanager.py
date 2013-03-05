@@ -25,7 +25,7 @@ class PluginManager(object):
         If not nickserv password is set, this simply checks if ``user`` is in
         the "admins" option of the "base" section."""
         if lala.util._BOT.factory.nspassword is not None:
-            return user in lala.util._BOT._identified_admins
+            return user in lala.util._BOT.identified_admins
         else:
             return user in _get("base", "admins").split(_LIST_SEPARATOR)
 
