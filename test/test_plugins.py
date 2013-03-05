@@ -51,6 +51,29 @@ class TestFortune(PluginTestCase):
         lala.plugins.fortune.getProcessOutput._fire()
         lala.util.msg.assert_called_once_with("#channel", "user: ofortune")
 
+    def test_fortune_with_default_files(self):
+        # A space is in front of 'people' to make sure whitespace around
+        # arguments is properly stripped.
+        lala.config._set("fortune", "fortune_files", "riddles, people")
+        lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
+                                                data="fortune")
+        lala.util._PM._handle_message("user", "#channel", "!fortune")
+        lala.plugins.fortune.getProcessOutput._fire()
+        lala.util.msg.assert_called_once_with("#channel", "user: fortune")
+        # The first entry is the path to the fortune binary
+        self.assertEqual(lala.plugins.fortune.getProcessOutput.args[1:][0],
+                         ["riddles", "people"])
+
+    def test_fortune_with_non_default_files(self):
+        lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
+                                                data="fortune")
+        lala.util._PM._handle_message("user", "#channel", "!fortune people riddles")
+        lala.plugins.fortune.getProcessOutput._fire()
+        lala.util.msg.assert_called_once_with("#channel", "user: fortune")
+        # The first entry is the path to the fortune binary
+        self.assertEqual(lala.plugins.fortune.getProcessOutput.args[1:][0],
+                         ["people", "riddles"])
+
 
 class TestBase(PluginTestCase):
     @classmethod

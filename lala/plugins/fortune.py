@@ -6,19 +6,20 @@ from lala.util import command, msg
 from twisted.internet.utils import getProcessOutput
 
 
-lala.config.set_default_options(fortune_path="/usr/bin/fortune")
+lala.config.set_default_options(fortune_path="/usr/bin/fortune",
+                                fortune_files="fortunes")
 
 
 @command
 def fortune(user, channel, text):
     """Show a random, hopefully interesting, adage"""
-    _call_fortune(user, channel)
+    _call_fortune(user, channel, _get_fortune_file_from_text(text))
 
 
 @command
 def ofortune(user, channel, text):
     """Show a random, hopefully interesting, offensive adage"""
-    _call_fortune(user, channel, ["-o"])
+    _call_fortune(user, channel, ["-o"] + _get_fortune_file_from_text(text))
 
 
 def _call_fortune(user, channel, args=[]):
@@ -30,6 +31,16 @@ def _call_fortune(user, channel, args=[]):
     deferred.addCallback(callback)
     deferred.addErrback(errback)
     deferred.addErrback(logging.error)
+
+
+def _get_fortune_file_from_text(text):
+    s_text = text.split()
+    if len(s_text) > 1:
+        return s_text[1:]
+    else:
+        files = lala.config.get("fortune_files").split(lala.config._LIST_SEPARATOR)
+        files = map(str.strip, files)
+        return files
 
 
 def _send_output_to_channel(user, channel, text):
