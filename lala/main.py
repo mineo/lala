@@ -46,12 +46,13 @@ def getService(options):
     handler = logging.FileHandler(filename=config._get("base", "log_file"),
                                   encoding="utf-8")
     if options["verbose"]:
+        logging.getLogger("").setLevel(logging.DEBUG)
         handler.setFormatter(logging.Formatter(
             "%(asctime)s %(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s"))
     else:
+        logging.getLogger("").setLevel(logging.INFO)
         handler.setFormatter(logging.Formatter("%(message)s"))
     logging.getLogger("").addHandler(handler)
-    logging.getLogger("").setLevel(logging.DEBUG)
 
     f = LalaFactory(cfg.get("base", "channels"),
             cfg.get("base", "nick"),
