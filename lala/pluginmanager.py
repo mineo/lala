@@ -55,6 +55,7 @@ class PluginManager(object):
             command = message.split()[0].replace(self._cbprefix, "")
             funcdict = self._callbacks.get(command)
             if funcdict is not None:
+                logging.info("'%s: %s' in %s is a command" % (user, channel, message))
                 logging.debug(funcdict)
                 if funcdict["enabled"]:
                     if ((funcdict["admin_only"] and self.is_admin(user))
