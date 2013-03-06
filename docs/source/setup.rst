@@ -45,3 +45,19 @@ or (if the latter is not set)::
     $HOME/.lala/config
 
 After that, you can modify the config file as you wish.
+
+Starting the bot
+----------------
+
+Starting the bot is very easy as it installs a ``twistd`` plugin::
+
+    twistd lala
+
+For now, only a ``--verbose`` option is provided which makes the output written
+to the log file more verbose.
+
+Additionally, ``twistd`` itself offers a few options, use::
+
+    twistd --help
+
+to view them.
