@@ -26,6 +26,7 @@ class Lala(irc.IRCClient):
         """ Called after a connection to the server has been established.
 
         Joins all configured channels and identifies with Nickserv."""
+        self.factory.resetDelay()
         logging.debug("Joining %s" % self.factory.channel)
         if self.factory.channel:
             self.join(self.factory.channel)
