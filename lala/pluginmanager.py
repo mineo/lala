@@ -3,6 +3,8 @@ import lala.util
 
 from lala.config import _get, _LIST_SEPARATOR
 
+from lala.config import _get, _list_converter
+from lala.util import msg
 
 def _make_pluginfunc(func, admin_only=False):
     return {'enabled': True, 'func': func, 'admin_only': admin_only}
@@ -30,7 +32,7 @@ class PluginManager(object):
             return user in _get("base", "admins").split(_LIST_SEPARATOR)
 
     def load_plugin(self, name):
-        logging.debug("Trying to load %s" % name)
+        logging.info("Trying to load %s" % name)
         name = "lala.plugins.%s" % name
         __import__(name)
 

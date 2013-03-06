@@ -39,7 +39,7 @@ class Lala(irc.IRCClient):
 
     def joined(self, channel):
         """ Called after joining a channel."""
-        logging.debug("Successfully joined %s" % channel)
+        logging.info("Successfully joined %s" % channel)
 
     def userJoined(self, user, channel):
         """ Handles join events."""
@@ -56,7 +56,7 @@ class Lala(irc.IRCClient):
             message = message.decode("utf-8")
         except Exception:
             message = message.decode(config._get("base", "fallback_encoding"))
-        logging.debug("%s: %s" % (user, message))
+        logging.info("%s: %s" % (user, message))
         util._PM._handle_message(user, channel, message)
 
     def msg(self, channel, message, log, length=None):
@@ -66,7 +66,7 @@ class Lala(irc.IRCClient):
 
         Do not use this method from plugins, use :meth:`lala.util.msg` instead."""
         if log:
-            logging.info("%s: %s" % (self.nickname, message))
+            logging.debug("%s: %s" % (self.nickname, message))
         message = message.rstrip().encode("utf-8")
         irc.IRCClient.msg(self, channel, message, length)
 

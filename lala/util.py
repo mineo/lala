@@ -2,6 +2,7 @@
 from types import FunctionType
 from inspect import getargspec
 from re import compile
+from types import FunctionType
 
 
 _BOT = None
@@ -50,9 +51,12 @@ class command(object):
             #   pass
             self.cmd = None
         elif not (isinstance(command, str) or isinstance(command, unicode)):
-            raise TypeError("The command should be either a str or unicode")
+            raise TypeError(
+                    "The command should be either a str or unicode but it's %s"
+                    % type(command))
         else:
             self.cmd = command
+            self.admin_only=admin_only
 
     def __call__(self, func):
         self.cmd = self.cmd or func.__name__

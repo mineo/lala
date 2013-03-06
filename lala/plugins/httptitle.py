@@ -1,4 +1,3 @@
-import urllib2
 import logging
 import re
 import HTMLParser
@@ -23,11 +22,11 @@ def title(user, channel, text, match_obj):
             try:
                 title = unescape(title)
             except HTMLParser.HTMLParseError, e:
-                logging.info("%s -  %s" % (e.msg, url))
+                logging.exception("%s -  %s" % (e.msg, url))
             msg(channel, "Title: %s" % unicode(title, "utf-8"))
 
     def errback(error):
         msg(channel, "Sorry, I couldn't get the title for %s" % url)
-        logging.info(error)
+        logging.exception(error)
 
     getPage(str(url)).addCallbacks(callback, errback)

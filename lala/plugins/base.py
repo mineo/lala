@@ -1,6 +1,6 @@
-import logging
 import lala.config as config
 import lala.util as util
+import logging
 
 from lala.util import command, msg
 from twisted.internet import reactor

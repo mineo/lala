@@ -16,7 +16,7 @@ def get_anime(user, channel, text):
         return None
     except IndexError:
         return None
-    logging.debug("Querying AniDb for information about %i" % aid)
+    logging.info("Querying AniDb for information about %i" % aid)
     try:
         anime = anidb.query(anidb.QUERY_ANIME, aid)
     except anidb.exceptions.BannedException:
@@ -24,7 +24,7 @@ def get_anime(user, channel, text):
                 % user)
         return None
     if anime is None:
-        logging.debug("No data")
+        logging.info("No data")
         msg(channel, "%s: Sorry, no data could be retrieved" % user)
         return None
     return anime
@@ -81,7 +81,7 @@ def asearch(user, channel, text):
         name = " ".join(text.split()[1:])
     except KeyError:
         pass
-    logging.debug(name)
+    logging.info(name)
     results = anidb.search(name)
     max_results = get_int("max_search_results")
 

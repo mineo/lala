@@ -47,8 +47,8 @@ def getquote(user, channel, text):
     s_text = text.split()
     if len(s_text) > 1:
         quotenumber = s_text[1]
-        logging.debug("Trying to get quote number %s" % quotenumber)
-        run_query("SELECT rowid, quote FROM quotes WHERE rowid = ?;",
+        logging.info("Trying to get quote number %s" % quotenumber)
+        run_query("SELECT quote FROM quotes WHERE rowid = ?;",
                 [quotenumber],
                 callback)
 
@@ -67,14 +67,14 @@ def addquote(user, channel, text):
         text = " ".join(s_text[1:])
 
         def add(c):
-            logging.debug("Adding quote: %s" % text)
+            logging.info("Adding quote: %s" % text)
             run_query("INSERT INTO quotes (quote, author)\
                             SELECT (?), rowid\
                             FROM authors WHERE name = (?);",
                       [text , user],
                       addcallback)
 
-        logging.debug("Adding author %s" % user)
+        logging.info("Adding author %s" % user)
         run_query("INSERT OR IGNORE INTO authors (name) values (?)",
                 [user],
                 add)
