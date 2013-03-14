@@ -28,8 +28,8 @@ class LalaOptions(Options):
 
 
 def getService(options):
-    observer = log.PythonLoggingObserver(loggerName="twisted")
-    log.startLoggingWithObserver(observer.emit)
+    observer = log.PythonLoggingObserver(loggerName="")
+    observer.start()
 
     # Set up the config
     cfg = ConfigParser.SafeConfigParser(CONFIG_DEFAULTS)
