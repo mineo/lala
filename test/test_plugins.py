@@ -31,7 +31,7 @@ class TestFortune(PluginTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestFortune, cls).setUpClass()
-        import lala.plugins.fortune
+        lala.util._PM.load_plugin("fortune")
 
     def setUp(self):
         super(TestFortune, self).setUp()
@@ -79,7 +79,7 @@ class TestBase(PluginTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestBase, cls).setUpClass()
-        import lala.plugins.base
+        lala.util._PM.load_plugin("base")
         lala.util._BOT = mock.Mock()
         lala.util._BOT.factory.nspassword = None
         lala.config._CFG = mock.Mock()
@@ -161,7 +161,7 @@ class TestHTTPTitle(PluginTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestHTTPTitle, cls).setUpClass()
-        import lala.plugins.httptitle
+        lala.util._PM.load_plugin("httptitle")
 
     def setUp(self):
         super(TestHTTPTitle, self).setUp()
@@ -197,7 +197,7 @@ class TestRoulette(PluginTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestRoulette, cls).setUpClass()
-        import lala.plugins.roulette
+        lala.util._PM.load_plugin("roulette")
 
     def setUp(self):
         super(TestRoulette, self).setUp()
@@ -237,7 +237,7 @@ class TestQuotes(PluginTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestQuotes, cls).setUpClass()
-        import lala.plugins.quotes
+        lala.util._PM.load_plugin("quotes")
 
     def setUp(self):
         super(TestQuotes, self).setUp()
@@ -289,7 +289,7 @@ class TestBirthday(PluginTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestBirthday, cls).setUpClass()
-        import lala.plugins.birthday
+        lala.util._PM.load_plugin("birthday")
 
     def setUp(self):
         super(TestBirthday, self).setUp()
@@ -327,7 +327,7 @@ class TestLast(PluginTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestLast, cls).setUpClass()
-        import lala.plugins.last
+        lala.util._PM.load_plugin("last")
 
     def setUp(self):
         super(TestLast, self).setUp()
