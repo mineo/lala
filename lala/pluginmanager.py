@@ -1,10 +1,7 @@
 import logging
+import lala.config
 import lala.util
 
-from lala.config import _get, _LIST_SEPARATOR
-
-from lala.config import _get, _list_converter
-from lala.util import msg
 
 def _make_pluginfunc(func, admin_only=False):
     return {'enabled': True, 'func': func, 'admin_only': admin_only}
@@ -29,10 +26,13 @@ class PluginManager(object):
         if lala.util._BOT.factory.nspassword is not None:
             return user in lala.util._BOT.identified_admins
         else:
-            return user in _get("base", "admins").split(_LIST_SEPARATOR)
+            return user in lala.config._get("base",
+                                            "admins").split(lala.config._LIST_SEPARATOR)
 
     def load_plugin(self, name):
         logging.info("Trying to load %s" % name)
+        if not lala.config._CFG.has_section(name):
+            lala.config._CFG.add_section(name)
         name = "lala.plugins.%s" % name
         __import__(name)
 
