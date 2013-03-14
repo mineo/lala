@@ -3,9 +3,10 @@ try:
     import unittest2 as unittest
 except ImportError:
     import unittest
+import lala.pluginmanager
 import mock
 
-from lala import util, pluginmanager, config
+from lala import util, config
 from re import compile
 
 
@@ -23,7 +24,7 @@ def regex_f(arg1, arg2, arg3, arg4):
 
 class TestUtil(unittest.TestCase):
     def setUp(self):
-        pm_patcher = mock.patch('lala.util._PM', spec=pluginmanager.PluginManager)
+        pm_patcher = mock.patch('lala.pluginmanager')
         pm_patcher.start()
         self.addCleanup(pm_patcher.stop)
 
@@ -33,16 +34,16 @@ class TestUtil(unittest.TestCase):
 
     def test_on_join(self):
         util.on_join(f2)
-        util._PM.register_join_callback.assert_called_once_with(f2)
+        lala.pluginmanager.register_join_callback.assert_called_once_with(f2)
 
     def test_command(self):
         util.command(f)
-        util._PM.register_callback.assert_called_once_with("f", f, False)
+        lala.pluginmanager.register_callback.assert_called_once_with("f", f, False)
 
     def test_named_command(self):
         c = util.command("command")
         c(f)
-        util._PM.register_callback.assert_called_once_with("command", f, False)
+        lala.pluginmanager.register_callback.assert_called_once_with("command", f, False)
 
     def test_command_str(self):
         self.assertRaises(TypeError, util.command, object())
@@ -51,7 +52,7 @@ class TestUtil(unittest.TestCase):
         regex = compile(".*")
         r = util.regex(regex)
         r(regex_f)
-        util._PM.register_regex.assert_called_once_with(regex, regex_f)
+        lala.pluginmanager.register_regex.assert_called_once_with(regex, regex_f)
 
     def test_argcheck(self):
         self.assertFalse(util._check_args(f, 2))

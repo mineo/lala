@@ -1,7 +1,8 @@
 import logging
+import lala.pluginmanager
 
 from twisted.words.protocols import irc
-from lala import util, config, __version__
+from lala import config, __version__
 
 # From https://www.alien.net.au/irc/irc2numerics.html
 # This tells us a user has registered and identified for his nick
@@ -45,7 +46,7 @@ class Lala(irc.IRCClient):
     def userJoined(self, user, channel):
         """ Handles join events."""
         logging.debug("%s joined %s" % (user, channel))
-        util._PM.on_join(user, channel)
+        lala.pluginmanager.on_join(user, channel)
 
     def privmsg(self, user, channel, message):
         """ Handles received messages."""
@@ -58,7 +59,7 @@ class Lala(irc.IRCClient):
         except Exception:
             message = message.decode(config._get("base", "fallback_encoding"))
         logging.debug("%s: %s" % (user, message))
-        util._PM._handle_message(user, channel, message)
+        lala.pluginmanager._handle_message(user, channel, message)
 
     def msg(self, channel, message, log, length=None):
         """ Sends ``message`` to ``channel``.

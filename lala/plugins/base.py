@@ -1,6 +1,7 @@
 import lala.config as config
 import lala.util as util
 import logging
+import lala.pluginmanager
 
 from lala.util import command, msg
 from twisted.internet import reactor
@@ -43,7 +44,7 @@ def server(user, channel, text):
 def commands(user, channel, text):
     """Prints all available callbacks"""
     msg(channel, "I know the following commands:")
-    s = "!" + " !".join(util._PM._callbacks)
+    s = "!" + " !".join(lala.pluginmanager._callbacks)
     msg(channel, s)
 
 @command(admin_only=True)
@@ -81,7 +82,7 @@ def help(user, channel, text):
     """Show the help for a command"""
     cmd = text.split()[1]
     try:
-        func = util._PM._callbacks[cmd]["func"]
+        func = lala.pluginmanager._callbacks[cmd]["func"]
     except KeyError, e:
         msg(channel, "%s is not a command I know" % cmd)
         return
@@ -100,7 +101,7 @@ def enable(user, channel, text):
     """
     command = text.split()[1]
     logging.info("Enabling %s" % command)
-    util._PM.enable(command)
+    lala.pluginmanager.enable(command)
 
 
 @command(admin_only=True)
@@ -109,5 +110,5 @@ def disable(user, channel, text):
     """
     command = text.split()[1]
     logging.info("Disabling %s" % command)
-    util._PM.disable(command)
+    lala.pluginmanager.disable(command)
 

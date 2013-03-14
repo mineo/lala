@@ -14,8 +14,7 @@ from twisted.test import proto_helpers
 
 class TestBot(unittest.TestCase):
     def setUp(self):
-        patcher = mock.patch("lala.pluginmanager.PluginManager",
-                             spec=lala.pluginmanager.PluginManager)
+        patcher = mock.patch("lala.pluginmanager")
         patcher.start()
         self.addCleanup(patcher.stop)
 
@@ -26,11 +25,11 @@ class TestBot(unittest.TestCase):
 
     def test_bot_calls_pm_on_join(self):
         self.proto.userJoined("user", "channel")
-        lala.util._PM.on_join.assert_called_once_with("user", "channel")
+        lala.pluginmanager.on_join.assert_called_once_with("user", "channel")
 
     def test_bot_calls_pm_on_privmsg(self):
         self.proto.privmsg("user", "channel", "message")
-        lala.util._PM._handle_message.assert_called_once_with("user",
+        lala.pluginmanager._handle_message.assert_called_once_with("user",
                 "channel", "message")
 
     @mock.patch('lala.config._CFG')
@@ -41,9 +40,9 @@ class TestBot(unittest.TestCase):
 
     def test_factory(self):
         lala.factory.LalaFactory("#test", "nick", ["testplugin"])
-        self.assertTrue(("base", ) in lala.util._PM.load_plugin.call_args)
+        self.assertTrue(("base", ) in lala.pluginmanager.load_plugin.call_args)
         self.assertTrue((("testplugin", ), {}) in
-                lala.util._PM.load_plugin.call_args_list)
+                lala.pluginmanager.load_plugin.call_args_list)
 
     def test_nick(self):
         self.assertEqual(self.proto.nickname, "nick")

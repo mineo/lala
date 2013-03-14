@@ -1,4 +1,7 @@
 """Helpers to be used with plugins"""
+import lala.pluginmanager
+
+
 from types import FunctionType
 from inspect import getargspec
 from re import compile
@@ -6,7 +9,6 @@ from types import FunctionType
 
 
 _BOT = None
-_PM = None
 
 
 class command(object):
@@ -39,7 +41,8 @@ class command(object):
         self.admin_only = admin_only
         if isinstance(command, FunctionType):
             if _check_args(command):
-                _PM.register_callback(command.__name__, command, self.admin_only)
+                lala.pluginmanager.register_callback(command.__name__, command,
+                                                     self.admin_only)
             else:
                 raise TypeError(
                     "A callback function should take exactly 3 arguments")
@@ -60,7 +63,7 @@ class command(object):
 
     def __call__(self, func):
         self.cmd = self.cmd or func.__name__
-        _PM.register_callback(self.cmd, func, self.admin_only)
+        lala.pluginmanager.register_callback(self.cmd, func, self.admin_only)
 
 
 def on_join(f):
@@ -68,7 +71,7 @@ def on_join(f):
 
     :param f: The function which should be called on joins."""
     if _check_args(f, 2):
-        _PM.register_join_callback(f)
+        lala.pluginmanager.register_join_callback(f)
     else:
         raise TypeError("A callback function should takes exactly 2 arguments")
 
@@ -93,7 +96,7 @@ class regex(object):
 
     def __call__(self, func):
         if _check_args(func, 4):
-            _PM.register_regex(self.re, func)
+            lala.pluginmanager.register_regex(self.re, func)
         else:
             raise TypeError(
                 "A regex callback function should take exactly 4 arguments")
