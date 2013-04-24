@@ -2,6 +2,7 @@ Chatlogger
 ==========
 
 The ``log`` plugin logs all received messages to a file.
+
 Options
 -------
 
