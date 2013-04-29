@@ -127,7 +127,7 @@ class TestBase(PluginTestCase):
 
     def test_join(self):
         lala.pluginmanager._handle_message("user", "#channel", "!join #channel")
-        lala.util._BOT.join_.assert_called_once_with("#channel")
+        lala.util._BOT.join.assert_called_once_with("#channel")
 
     def test_part(self):
         lala.pluginmanager._handle_message("user", "#channel", "!part #channel")

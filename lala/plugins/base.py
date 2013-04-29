@@ -22,7 +22,7 @@ def join(user, channel, text):
     """Join a channel"""
     chan = text.split()[1]
     logging.debug("Joining %s" % chan)
-    util._BOT.join_(chan)
+    util._BOT.join(chan.encode("utf-8"))
 
 @command(admin_only=True)
 def quit(user, channel, text):
