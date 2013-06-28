@@ -48,7 +48,7 @@ def getquote(user, channel, text):
     if len(s_text) > 1:
         quotenumber = s_text[1]
         logging.info("Trying to get quote number %s" % quotenumber)
-        run_query("SELECT quote FROM quotes WHERE rowid = ?;",
+        run_query("SELECT rowid, quote FROM quotes WHERE rowid = ?;",
                 [quotenumber],
                 callback)
 

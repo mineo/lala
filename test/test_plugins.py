@@ -255,6 +255,22 @@ class TestQuotes(PluginTestCase):
         lala.pluginmanager.on_join("user", "#channel")
         self.assertFalse(lala.util.msg.called)
 
+    def test_getquote(self):
+        data = [(1, "testquote")]
+        lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
+        lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
+        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.util.msg.assert_called_with("#channel",
+                lala.plugins.quotes.MESSAGE_TEMPLATE % data[0])
+
+    def test_getquote_no_quote(self):
+        data = []
+        lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
+        lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
+        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.util.msg.assert_called_with("#channel", "%s: There's no quote #%s"
+        %("user", 1))
+
     def test_searchquote(self):
         max_quotes = int(lala.config._get("quotes", "max_quotes"))
         data = []
