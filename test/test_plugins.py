@@ -13,6 +13,8 @@ from . import _helpers
 
 
 class PluginTestCase(unittest.TestCase):
+    plugin = None
+
     @classmethod
     def setUpClass(cls):
         lala.config._CFG = ConfigParser.SafeConfigParser()
@@ -20,6 +22,7 @@ class PluginTestCase(unittest.TestCase):
         lala.pluginmanager._callsbacks = {}
         lala.pluginmanager._regexes = {}
         lala.pluginmanager._join_callbacks = []
+        lala.pluginmanager.load_plugin(cls.plugin)
 
     def setUp(self):
         msg_patcher = mock.patch('lala.util.msg')
@@ -28,10 +31,7 @@ class PluginTestCase(unittest.TestCase):
 
 
 class TestFortune(PluginTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestFortune, cls).setUpClass()
-        lala.pluginmanager.load_plugin("fortune")
+    plugin = "fortune"
 
     def setUp(self):
         super(TestFortune, self).setUp()
@@ -76,10 +76,11 @@ class TestFortune(PluginTestCase):
 
 
 class TestBase(PluginTestCase):
+    plugin = "base"
+
     @classmethod
     def setUpClass(cls):
         super(TestBase, cls).setUpClass()
-        lala.pluginmanager.load_plugin("base")
         lala.util._BOT = mock.Mock()
         lala.util._BOT.factory.nspassword = None
         lala.config._CFG = mock.Mock()
@@ -158,10 +159,7 @@ class TestBase(PluginTestCase):
 
 
 class TestHTTPTitle(PluginTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestHTTPTitle, cls).setUpClass()
-        lala.pluginmanager.load_plugin("httptitle")
+    plugin = "httptitle"
 
     def setUp(self):
         super(TestHTTPTitle, self).setUp()
@@ -194,10 +192,7 @@ class TestHTTPTitle(PluginTestCase):
 
 
 class TestRoulette(PluginTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestRoulette, cls).setUpClass()
-        lala.pluginmanager.load_plugin("roulette")
+    plugin = "roulette"
 
     def setUp(self):
         super(TestRoulette, self).setUp()
@@ -234,10 +229,7 @@ class TestRoulette(PluginTestCase):
 
 
 class TestQuotes(PluginTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestQuotes, cls).setUpClass()
-        lala.pluginmanager.load_plugin("quotes")
+    plugin = "quotes"
 
     def setUp(self):
         super(TestQuotes, self).setUp()
@@ -302,10 +294,7 @@ class TestQuotes(PluginTestCase):
 
 
 class TestBirthday(PluginTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestBirthday, cls).setUpClass()
-        lala.pluginmanager.load_plugin("birthday")
+    plugin = "birthday"
 
     def setUp(self):
         super(TestBirthday, self).setUp()
@@ -340,10 +329,7 @@ class TestBirthday(PluginTestCase):
 
 
 class TestLast(PluginTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestLast, cls).setUpClass()
-        lala.pluginmanager.load_plugin("last")
+    plugin = "last"
 
     def setUp(self):
         super(TestLast, self).setUp()
@@ -373,10 +359,7 @@ class TestLast(PluginTestCase):
 
 
 class TestCalendar(PluginTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestCalendar, cls).setUpClass()
-        lala.pluginmanager.load_plugin("calendar")
+    plugin = "calendar"
 
     def setUp(self):
         super(TestCalendar, self).setUp()
