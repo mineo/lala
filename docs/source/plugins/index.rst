@@ -2,6 +2,7 @@ Plugins
 =======
 
 - :doc:`birthday`
+- :doc:`calendar`
 - :doc:`decide`
 - :doc:`down`
 - :doc:`fortune`

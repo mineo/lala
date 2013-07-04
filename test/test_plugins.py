@@ -370,3 +370,20 @@ class TestLast(PluginTestCase):
         for i in xrange(max_entries):
             messages.append('user: text %i' % i)
         lala.util.msg.assert_called_with('user', messages, log=False)
+
+
+class TestCalendar(PluginTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(TestCalendar, cls).setUpClass()
+        lala.pluginmanager.load_plugin("calendar")
+
+    def setUp(self):
+        super(TestCalendar, self).setUp()
+        lala.plugins.calendar.msg = lala.util.msg
+
+    def test_weeknum(self):
+        lala.plugins.calendar.date = _helpers.NewDate
+        lala.pluginmanager._handle_message("user", "#channel", "!weeknum")
+        lala.plugins.calendar.msg.assert_called_once_with("#channel",
+                "It's week #50 of the year 2012.")
