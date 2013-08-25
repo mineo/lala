@@ -103,7 +103,6 @@ def enable(user, channel, text):
     logging.info("Enabling %s" % command)
     lala.pluginmanager.enable(command)
 
-
 @command(admin_only=True)
 def disable(user, channel, text):
     """disables a command.

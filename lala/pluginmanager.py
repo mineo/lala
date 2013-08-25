@@ -1,3 +1,4 @@
+import imp
 import logging
 import lala.config
 import lala.util
@@ -29,8 +30,9 @@ def load_plugin(name):
     logging.debug("Trying to load %s" % name)
     if not lala.config._CFG.has_section(name):
         lala.config._CFG.add_section(name)
-    name = "lala.plugins.%s" % name
-    __import__(name)
+    name = "lala/plugins/%s" % name
+    (f, p, d) = imp.find_module(name)
+    imp.load_module(name, f, p, d)
 
 def register_callback(trigger, func, admin_only=False):
     """ Adds ``func`` to the callbacks for ``trigger``."""
@@ -115,3 +117,16 @@ def enable(trigger):
     for regex in _regexes:
         if regex.pattern == trigger:
             _regexes[regex]["enabled"] = True
+
+def _get_enabled_plugins():
+    """Returns a list of all the enabled plugins.
+    """
+    return lala.config._get("base",
+            "plugins").split(lala.config._LIST_SEPARATOR)
+
+def setup():
+    """Loads all enabled plugins
+    """
+    for plugin in _get_enabled_plugins():
+        load_plugin(plugin)
+    load_plugin("base")
