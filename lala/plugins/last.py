@@ -8,10 +8,10 @@ lala.config.set_default_options(max_lines="30")
 
 class _LogEntryBuffer(list):
     """A list with a restricted length."""
-    def __init__(self, maxentries=None):
+    def __init__(self, maxentries):
         """
         :param maxentries: The amount of entries that can be stored in this list
-        :type maxentries: Integer or None
+        :type maxentries: Integer
         """
         list.__init__(self)
         self._maxentries = maxentries
