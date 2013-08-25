@@ -22,7 +22,7 @@ class PluginTestCase(unittest.TestCase):
         lala.pluginmanager._callsbacks = {}
         lala.pluginmanager._regexes = {}
         lala.pluginmanager._join_callbacks = []
-        lala.pluginmanager.load_plugin(cls.plugin)
+        __import__("lala.plugins.%s" % cls.plugin)
 
     def setUp(self):
         msg_patcher = mock.patch('lala.util.msg')
