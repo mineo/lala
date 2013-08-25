@@ -45,7 +45,7 @@ def getService(options):
     # Set up logging
     handler = logging.FileHandler(filename=config._get("base", "log_file"),
                                   encoding="utf-8")
-    if options["verbose"]:
+    if options["verbose"] or cfg.getboolean("base", "debug"):
         logging.getLogger("").setLevel(logging.DEBUG)
         handler.setFormatter(logging.Formatter(
             "%(asctime)s %(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s"))
