@@ -18,7 +18,7 @@ class TestBot(unittest.TestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-        self.factory = lala.factory.LalaFactory("#test", "nick", [])
+        self.factory = lala.factory.LalaFactory("#test", "nick")
         self.proto = self.factory.buildProtocol(("127.0.0.1", ))
         self.tr = proto_helpers.StringTransport()
         self.proto.makeConnection(self.tr)
@@ -39,10 +39,7 @@ class TestBot(unittest.TestCase):
         self.proto.join.assert_called_once_with("#test")
 
     def test_factory(self):
-        lala.factory.LalaFactory("#test", "nick", ["testplugin"])
-        self.assertTrue(("base", ) in lala.pluginmanager.load_plugin.call_args)
-        self.assertTrue((("testplugin", ), {}) in
-                lala.pluginmanager.load_plugin.call_args_list)
+        lala.factory.LalaFactory("#test", "nick")
 
     def test_nick(self):
         self.assertEqual(self.proto.nickname, "nick")

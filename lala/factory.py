@@ -8,7 +8,7 @@ from lala import util, config
 class LalaFactory(protocol.ReconnectingClientFactory):
     protocol = Lala
 
-    def __init__(self, channel, nickname, plugins):
+    def __init__(self, channel, nickname):
         self.channel = channel
         self.nickname = nickname
         try:
