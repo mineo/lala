@@ -34,6 +34,11 @@ def run_query(query, values, callback):
     if callback is not None:
         res.addCallback(callback)
 
+def run_interaction(func, callback = None,  **kwargs):
+    res = db_connection.runInteraction(func, kwargs)
+    if callback is not None:
+        res.addCallback(callback)
+
 @command
 def getquote(user, channel, text):
     """Show the quote with a specified number"""
@@ -87,9 +92,25 @@ def delquote(user, channel, text):
     s_text = text.split()
     if len(s_text) > 1:
         quotenumber = s_text[1]
-        logging.debug("Deleting quote: %s" % quotenumber)
-        run_query("DELETE FROM quotes where ROWID = (?);",
-                    [quotenumber], None)
+        logging.debug("delquote: %s" % quotenumber)
+
+        def interaction(txn, *args):
+            logging.debug("Deleting quote %s" % quotenumber)
+            txn.execute("DELETE FROM quotes WHERE rowid = (?)", [ quotenumber ])
+            txn.execute("SELECT changes()")
+            res = txn.fetchone()
+            logging.debug("%s changes" % res)
+            return int(res[0])
+
+        def callback(changes):
+            if changes > 0:
+                msg(channel, "Quote #%s has been deleted." % quotenumber)
+                return
+            else:
+                msg(channel, "It doesn't look like quote #%s exists." %
+                        quotenumber)
+
+        run_interaction(interaction, callback)
 
 @command
 def lastquote(user, channel, text):

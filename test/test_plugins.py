@@ -247,6 +247,24 @@ class TestQuotes(PluginTestCase):
         lala.pluginmanager.on_join("user", "#channel")
         self.assertFalse(lala.util.msg.called)
 
+    @_helpers.mock_is_admin
+    def test_delquote_no_quote(self):
+        lala.plugins.quotes.db_connection.runInteraction =\
+            _helpers.DeferredHelper(data=0)
+        lala.pluginmanager._handle_message("user", "#channel", "!delquote 1")
+        lala.plugins.quotes.db_connection.runInteraction._fire()
+        lala.util.msg.assert_called_with("#channel",
+            "It doesn't look like quote #1 exists.")
+
+    @_helpers.mock_is_admin
+    def test_delquote_with_quote(self):
+        lala.plugins.quotes.db_connection.runInteraction =\
+            _helpers.DeferredHelper(data=1)
+        lala.pluginmanager._handle_message("user", "#channel", "!delquote 1")
+        lala.plugins.quotes.db_connection.runInteraction._fire()
+        lala.util.msg.assert_called_with("#channel",
+            "Quote #1 has been deleted.")
+
     def test_getquote(self):
         data = [(1, "testquote")]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
