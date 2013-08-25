@@ -1,5 +1,8 @@
 import datetime
+import mock
 
+
+from functools import wraps
 
 class NewDate(datetime.date):
     @classmethod
@@ -43,3 +46,12 @@ class DeferredHelper(object):
     def __call__(self, *args):
         self.args = args
         return self
+
+
+def mock_is_admin(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        with mock.patch("lala.pluginmanager.is_admin") as mocked:
+            mocked.return_value = True
+            return f(*args, **kwargs)
+    return wrapper
