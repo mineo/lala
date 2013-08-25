@@ -124,6 +124,19 @@ def _get_enabled_plugins():
     return lala.config._get("base",
             "plugins").split(lala.config._LIST_SEPARATOR)
 
+def _reload():
+    """Reloads all enabled plugins.
+    """
+    logging.debug("Reloading plugins")
+    _join_callbacks = []
+    _regexes.clear()
+    _callbacks.clear()
+    # Call setup to load the modules again.
+    # Important: this works because when using imp.load_module to load an
+    # already imported module, the second import is equivalent to a reload() of
+    # that module.
+    setup()
+
 def setup():
     """Loads all enabled plugins
     """

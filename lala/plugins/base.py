@@ -111,3 +111,11 @@ def disable(user, channel, text):
     logging.info("Disabling %s" % command)
     lala.pluginmanager.disable(command)
 
+@command(admin_only=True)
+def pluginupdate(user, channel, text):
+    """Reloads all plugins. Plugins that are not enabled in the configuration
+    file will be disabled by calling this!
+    """
+    lala.pluginmanager._reload()
+    msg(channel, "All enabled plugins have been reloaded.")
+
