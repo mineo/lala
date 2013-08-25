@@ -42,3 +42,9 @@ The basic options are:
     A comma-separated list of plugins to load at startup. The plugin "base"
     is always loaded, it contains basic commands like "help" and
     "reconnect".
+
+- debug
+    Optional.
+
+    if "yes", this has the same effect as specifying --verbose on the command
+    line.
