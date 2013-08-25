@@ -4,7 +4,7 @@ Configuration file options
 Both the basic configuration and the plugin configuration of Lala takes place
 in a central configuration file.
 
-The basic options are:
+The basic options, which can be set in the `base` section, are:
 
 - server
     The server to connect to.
