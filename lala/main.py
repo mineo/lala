@@ -55,8 +55,7 @@ def getService(options):
     logging.getLogger("").addHandler(handler)
 
     f = LalaFactory(cfg.get("base", "channels"),
-            cfg.get("base", "nick"),
-            cfg.get("base", "plugins").split(","))
+            cfg.get("base", "nick"))
 
     return internet.TCPClient(cfg.get("base", "server"),
             int(cfg.get("base", "port")),
