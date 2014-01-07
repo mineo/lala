@@ -5,7 +5,7 @@ from lala.util import command, msg, regex
 
 
 lala.config.set_default_options(max_lines="30",
-                                datetime_format="%Y-%M-%d %H:%M:%S")
+                                datetime_format="%Y-%m-%d %H:%M:%S")
 
 
 class _LogEntryBuffer(list):
