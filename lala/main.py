@@ -10,14 +10,14 @@ from twisted.python.usage import Options
 
 
 CONFIG_DEFAULTS = {
-        "channels": "",
-        "plugins": "",
-        "nickserv_password": None,
-        "log_folder": os.path.expanduser("~/.lala/logs"),
-        "log_file": os.path.expanduser("~/.lala/lala.log"),
-        "encoding": "utf-8",
-        "fallback_encoding": "utf-8",
-        "max_log_days": 2,
+    "channels": "",
+    "plugins": "",
+    "nickserv_password": None,
+    "log_folder": os.path.expanduser("~/.lala/logs"),
+    "log_file": os.path.expanduser("~/.lala/lala.log"),
+    "encoding": "utf-8",
+    "fallback_encoding": "utf-8",
+    "max_log_days": 2,
 }
 
 
@@ -55,11 +55,11 @@ def getService(options):
     logging.getLogger("").addHandler(handler)
 
     f = LalaFactory(cfg.get("base", "channels"),
-            cfg.get("base", "nick"))
+                    cfg.get("base", "nick"))
 
     return internet.TCPClient(cfg.get("base", "server"),
-            int(cfg.get("base", "port")),
-            f)
+                              int(cfg.get("base", "port")),
+                              f)
 
 
 def getApplication():
