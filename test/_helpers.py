@@ -4,10 +4,17 @@ import mock
 
 from functools import wraps
 
+
 class NewDate(datetime.date):
     @classmethod
     def today(cls):
         return cls(2012, 12, 10)
+
+
+class NewDateTime(datetime.datetime):
+    @classmethod
+    def now(cls):
+        return cls(2012, 12, 10, 00, 00, 00, 00, None)
 
 
 class DeferredHelper(object):

@@ -352,6 +352,7 @@ class TestLast(PluginTestCase):
     def setUp(self):
         super(TestLast, self).setUp()
         lala.plugins.last.msg = lala.util.msg
+        lala.plugins.last.datetime = _helpers.NewDateTime
 
     def _fill_log(self, entries):
         for i in xrange(entries):
@@ -371,8 +372,10 @@ class TestLast(PluginTestCase):
         lala.pluginmanager._handle_message("user", "#channel", "!last")
 
         messages = []
+        date = _helpers.NewDateTime.now().strftime(lala.config._get("last",
+                                                   "datetime_format"))
         for i in xrange(max_entries):
-            messages.append('user: text %i' % i)
+            messages.append('[%s] user: text %i' % (date, i))
         lala.util.msg.assert_called_with('user', messages, log=False)
 
 

@@ -10,3 +10,10 @@ Options
 - ``max_lines``
     The maximum number of lines to message upon the ``last`` command. Defaults
     to 30
+
+- ``datetime_format``
+    The format used to format the timestamps in the log. Have a look at the
+    `strftime documentation`_ for all possible options. The default is
+    ``%Y-%M-%d %H:%M:%S``.
+
+.. _strftime documentation: http://docs.python.org/2/library/datetime.html?highlight=datetime#strftime-strptime-behavior

@@ -1,9 +1,11 @@
 import lala.config
 
+from datetime import datetime
 from lala.util import command, msg, regex
 
 
-lala.config.set_default_options(max_lines="30")
+lala.config.set_default_options(max_lines="30",
+                                datetime_format="%Y-%M-%d %H:%M:%S")
 
 
 class _LogEntryBuffer(list):
@@ -45,4 +47,5 @@ def last(user, channel, text):
 
 @regex(".*")
 def chatlog(user, channel, text, match_obj):
-    _chatlog.append("%s: %s" % (user, text))
+    now = datetime.now().strftime(lala.config.get("datetime_format"))
+    _chatlog.append("[%s] %s: %s" % (now, user, text))
