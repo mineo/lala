@@ -17,7 +17,7 @@ class PluginTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        lala.config._CFG = ConfigParser.SafeConfigParser()
+        lala.config._CFG = ConfigParser.RawConfigParser()
         lala.config._set("quotes", "database_path", ":memory:")
         lala.pluginmanager._callsbacks = {}
         lala.pluginmanager._regexes = {}

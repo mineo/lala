@@ -32,7 +32,7 @@ def getService(options):
     observer.start()
 
     # Set up the config
-    cfg = ConfigParser.SafeConfigParser(CONFIG_DEFAULTS)
+    cfg = ConfigParser.RawConfigParser(CONFIG_DEFAULTS)
     try:
         configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"), "lala", "config")
     except AttributeError:

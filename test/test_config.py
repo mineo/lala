@@ -5,14 +5,14 @@ except ImportError:
     import unittest
 
 from lala import config
-from ConfigParser import SafeConfigParser, NoSectionError
+from ConfigParser import RawConfigParser, NoSectionError
 from os import remove
 
 
 class TestConfig(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        config._CFG = SafeConfigParser()
+        config._CFG = RawConfigParser()
         config._FILENAME = None
 
     def setUp(self):
