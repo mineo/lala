@@ -39,8 +39,7 @@ def get(key, converter=None):
     """Returns the value of a config option.
     The section is the name of the calling file.
 
-    If ``key`` does not exist and ``default`` is passed, the default value will
-    be saved for later calls and returned.
+    Default values for all keys can be set with :meth:`set_default_options`.
 
     :param key: The key to lookup
     """
@@ -112,6 +111,9 @@ def set_list(key, value, *args):
 
 def set_default_options(**kwargs):
     """Sets the default options for a plugin.
+
+    The names of the arguments in ``kwargs`` will be used as the option names,
+    the values as the values of the options.
     """
     plugin = _find_current_plugin_name()
     for key, value in kwargs.iteritems():
