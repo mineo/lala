@@ -140,6 +140,7 @@ def _reload():
     """Reloads all enabled plugins.
     """
     logging.debug("Reloading plugins")
+    global _join_callbacks
     _join_callbacks = []
     _regexes.clear()
     _callbacks.clear()
