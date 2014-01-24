@@ -59,7 +59,7 @@ class TestPluginmanager(unittest.TestCase):
         c(f3)
 
         pluginmanager.disable("command")
-        self.assertFalse(pluginmanager._callbacks["command"]["enabled"])
+        self.assertFalse(pluginmanager._callbacks["command"].enabled)
         pluginmanager._handle_message("user", "channel", "!command")
 
     def test_reenabled_command(self):
@@ -68,7 +68,7 @@ class TestPluginmanager(unittest.TestCase):
 
         pluginmanager.disable("command")
         pluginmanager.enable("command")
-        self.assertTrue(pluginmanager._callbacks["command"]["enabled"])
+        self.assertTrue(pluginmanager._callbacks["command"].enabled)
         self.assertRaises(ValueError, pluginmanager._handle_message, "user",
         "channel", "!command")
 
@@ -88,7 +88,7 @@ class TestPluginmanager(unittest.TestCase):
         c(regex_f)
 
         pluginmanager.disable(regex.pattern)
-        self.assertFalse(pluginmanager._regexes[regex]["enabled"])
+        self.assertFalse(pluginmanager._regexes[regex].enabled)
         pluginmanager._handle_message("user", "channel", "command")
 
     def test_reenabled_regex(self):
@@ -98,7 +98,7 @@ class TestPluginmanager(unittest.TestCase):
 
         pluginmanager.disable(regex.pattern)
         pluginmanager.enable(regex.pattern)
-        self.assertTrue(pluginmanager._regexes[regex]["enabled"])
+        self.assertTrue(pluginmanager._regexes[regex].enabled)
         self.assertRaises(ValueError, pluginmanager._handle_message, "user",
         "channel", "command")
 

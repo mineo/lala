@@ -4,14 +4,26 @@ import lala.config
 import lala.util
 
 
+__all__ = ["disable", "enable", "is_admin"]
+
+
 _callbacks = {}
 _join_callbacks = list()
 _regexes = {}
 _cbprefix = "!"
 
 
+class PluginFunc(object):
+    __slots__ = ['enabled', 'func', 'admin_only']
+
+    def __init__(self, func, enabled=True, admin_only=False):
+        self.enabled = enabled
+        self.func = func
+        self.admin_only = admin_only
+
+
 def _make_pluginfunc(func, admin_only=False):
-    return {'enabled': True, 'func': func, 'admin_only': admin_only}
+    return PluginFunc(enabled=True, func=func, admin_only=admin_only)
 
 
 def is_admin(user):
@@ -58,13 +70,13 @@ def register_regex(regex, func):
 def _handle_message(user, channel, message):
     if message.startswith(_cbprefix):
         command = message.split()[0].replace(_cbprefix, "")
-        funcdict = _callbacks.get(command)
-        if funcdict is not None:
-            logging.debug(funcdict)
-            if funcdict["enabled"]:
-                if ((funcdict["admin_only"] and is_admin(user))
-                        or not funcdict["admin_only"]):
-                    _callbacks[command]["func"](
+        func = _callbacks.get(command)
+        if func is not None:
+            logging.debug(func)
+            if func.enabled:
+                if ((func.admin_only and is_admin(user))
+                        or not func.admin_only):
+                    _callbacks[command].func(
                         user,
                         channel,
                         message)
@@ -79,10 +91,10 @@ def _handle_message(user, channel, message):
     for regex in _regexes:
         match = regex.search(message)
         if match is not None:
-            funcdict = _regexes[regex]
-            if funcdict["enabled"]:
+            func = _regexes[regex]
+            if func.enabled:
                 logging.info("%s matched %s" % (message, regex))
-                _regexes[regex]["func"](
+                _regexes[regex].func(
                         user,
                         channel,
                         message,
@@ -106,11 +118,11 @@ def disable(trigger):
     regular expression
     """
     if trigger in _callbacks:
-        _callbacks[trigger]["enabled"] = False
+        _callbacks[trigger].enabled = False
 
     for regex in _regexes:
         if regex.pattern == trigger:
-            _regexes[regex]["enabled"] = False
+            _regexes[regex].enabled = False
             break
 
 
@@ -122,11 +134,11 @@ def enable(trigger):
 
     """
     if trigger in _callbacks:
-        _callbacks[trigger]["enabled"] = True
+        _callbacks[trigger].enabled = True
 
     for regex in _regexes:
         if regex.pattern == trigger:
-            _regexes[regex]["enabled"] = True
+            _regexes[regex].enabled = True
 
 
 def _get_enabled_plugins():
