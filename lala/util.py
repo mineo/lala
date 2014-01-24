@@ -77,8 +77,7 @@ def on_join(f):
 class regex(object):
     """Decorator to register a regex. Example::
 
-           regexp = re.compile("(https?://.+)\s?")
-           @regex(regexp)
+           @regex("(https?://.+)\s?")
            def somefunc(user, channel, text, match_obj):
                pass
 
