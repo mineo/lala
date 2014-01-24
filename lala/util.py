@@ -5,7 +5,6 @@ import lala.pluginmanager
 from types import FunctionType
 from inspect import getargspec
 from re import compile
-from types import FunctionType
 
 
 _BOT = None
