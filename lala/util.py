@@ -37,7 +37,6 @@ class command(object):
                 pass
     """
     def __init__(self, command=None, admin_only=False):
-        """docstring for __init__"""
         self.admin_only = admin_only
         if isinstance(command, FunctionType):
             if _check_args(command):
