@@ -10,7 +10,7 @@ CREATE TABLE author(
 CREATE TABLE IF NOT EXISTS quote(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         quote TEXT,
-        author INTEGER NOT NULL REFERENCES authors(id));
+        author INTEGER NOT NULL REFERENCES author(id));
 
 INSERT INTO author (id, name)
     SELECT rowid, name
