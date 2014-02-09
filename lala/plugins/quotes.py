@@ -21,11 +21,14 @@ db_connection = adbapi.ConnectionPool("sqlite3", database_path,
                                       check_same_thread=False)
 
 def setup_db():
-    db_connection.runOperation("CREATE TABLE IF NOT EXISTS quotes(\
-        quote TEXT,\
-        author INTEGER NOT NULL REFERENCES authors(rowid));")
-    db_connection.runOperation("CREATE TABLE IF NOT EXISTS authors(\
-        name TEXT NOT NULL UNIQUE);")
+    db_connection.runOperation("""PRAGMA foreign_keys = ON;""")
+    db_connection.runOperation("""CREATE TABLE IF NOT EXISTS author(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE);""")
+    db_connection.runOperation("""CREATE TABLE IF NOT EXISTS quote(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        quote TEXT,
+        author INTEGER NOT NULL REFERENCES author(id));""")
 
 setup_db()
 
@@ -53,7 +56,7 @@ def getquote(user, channel, text):
     if len(s_text) > 1:
         quotenumber = s_text[1]
         logging.info("Trying to get quote number %s" % quotenumber)
-        run_query("SELECT rowid, quote FROM quotes WHERE rowid = ?;",
+        run_query("SELECT rowid, quote FROM quote WHERE rowid = ?;",
                 [quotenumber],
                 callback)
 
@@ -65,7 +68,7 @@ def addquote(user, channel, text):
 
     def addcallback(c):
         # TODO This might not be the rowid we're looking for in all cases…
-        run_query("SELECT max(rowid) FROM quotes;", [], msgcallback)
+        run_query("SELECT max(rowid) FROM quote;", [], msgcallback)
 
     s_text = text.split()
     if len(s_text) > 1:
@@ -73,14 +76,14 @@ def addquote(user, channel, text):
 
         def add(c):
             logging.info("Adding quote: %s" % text)
-            run_query("INSERT INTO quotes (quote, author)\
+            run_query("INSERT INTO quote (quote, author)\
                             SELECT (?), rowid\
-                            FROM authors WHERE name = (?);",
+                            FROM author WHERE name = (?);",
                       [text , user],
                       addcallback)
 
         logging.info("Adding author %s" % user)
-        run_query("INSERT OR IGNORE INTO authors (name) values (?)",
+        run_query("INSERT OR IGNORE INTO author (name) values (?)",
                 [user],
                 add)
     else:
@@ -96,7 +99,7 @@ def delquote(user, channel, text):
 
         def interaction(txn, *args):
             logging.debug("Deleting quote %s" % quotenumber)
-            txn.execute("DELETE FROM quotes WHERE rowid = (?)", [ quotenumber ])
+            txn.execute("DELETE FROM quote WHERE rowid = (?)", [ quotenumber ])
             txn.execute("SELECT changes()")
             res = txn.fetchone()
             logging.debug("%s changes" % res)
@@ -116,14 +119,14 @@ def delquote(user, channel, text):
 def lastquote(user, channel, text):
     """Show the last quote"""
     callback = partial(_single_quote_callback, channel)
-    run_query("SELECT rowid, quote FROM quotes ORDER BY rowid DESC\
+    run_query("SELECT rowid, quote FROM quote ORDER BY rowid DESC\
     LIMIT 1;", [], callback)
 
 @command
 def randomquote(user, channel, text):
     """Show a random quote"""
     callback = partial(_single_quote_callback, channel)
-    run_query("SELECT rowid, quote FROM quotes ORDER BY random() DESC\
+    run_query("SELECT rowid, quote FROM quote ORDER BY random() DESC\
     LIMIT 1;", [], callback)
 
 @command
@@ -143,7 +146,7 @@ def searchquote(user, channel, text):
     logging.debug(s_text[1:])
 
     run_query(
-        "SELECT rowid, quote FROM quotes WHERE quote LIKE (?)",
+        "SELECT rowid, quote FROM quote WHERE quote LIKE (?)",
         ["".join(("%", " ".join(s_text[1:]), "%"))],
         callback
         )
@@ -159,8 +162,8 @@ def quotestats(user, channel, text):
         run_query(
             """
             SELECT count(q.quote) AS c, a.name
-            FROM quotes q
-            JOIN authors a
+            FROM quote q
+            JOIN author a
             ON q.author = a.rowid
             GROUP BY a.rowid;
             """,
@@ -181,7 +184,7 @@ def quotestats(user, channel, text):
                     (authors[0], count, percentage))
 
     quote_count_callback = partial(quote_count_callback, channel)
-    run_query("SELECT count(quote) from quotes;", [], quote_count_callback)
+    run_query("SELECT count(quote) from quote;", [], quote_count_callback)
 
 @on_join
 def join(user, channel):
@@ -191,7 +194,7 @@ def join(user, channel):
         except IndexError, e:
             return
 
-    run_query("SELECT rowid, quote FROM quotes where quote LIKE (?)\
+    run_query("SELECT rowid, quote FROM quote where quote LIKE (?)\
     ORDER BY random() LIMIT 1;", ["".join(["%", user, "%"])], callback)
 
 def _single_quote_callback(channel, quotes):
