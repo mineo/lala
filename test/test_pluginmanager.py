@@ -124,7 +124,7 @@ class TestPluginmanager(unittest.TestCase):
 
     @mock.patch("lala.config._get")
     def test_is_admin_no_nickserv(self, mock):
-        util._BOT.factory.nspassword= None
+        util._BOT.factory.nspassword = None
         mock.return_value = "superman,gandalf"
         self.assertTrue(pluginmanager.is_admin("superman"))
         self.assertFalse(pluginmanager.is_admin("i'm-no-superman"))
@@ -133,6 +133,14 @@ class TestPluginmanager(unittest.TestCase):
     def test_is_admin_with_nickserv(self, mock):
         util._BOT.factory.nspassword = "foobar"
         util._BOT.identified_admins = ["superman"]
+        mock.return_value = "superman,gandalf"
+        self.assertTrue(pluginmanager.is_admin("superman"))
+        self.assertFalse(pluginmanager.is_admin("i'm-no-superman"))
+
+    @mock.patch("lala.config._get")
+    def test_is_admin_with_explicitly_disabled_nickserv(self, mock):
+        util._BOT.factory.nspassword = "testpassword"
+        config._set("base", "nickserv_admin_tracking", "false")
         mock.return_value = "superman,gandalf"
         self.assertTrue(pluginmanager.is_admin("superman"))
         self.assertFalse(pluginmanager.is_admin("i'm-no-superman"))

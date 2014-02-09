@@ -18,6 +18,7 @@ CONFIG_DEFAULTS = {
     "encoding": "utf-8",
     "fallback_encoding": "utf-8",
     "max_log_days": 2,
+    "nickserv_admin_tracking": "false"
 }
 
 

@@ -34,10 +34,11 @@ class Lala(irc.IRCClient):
         if self.factory.nspassword is not None:
             logging.info("Identifying with Nickserv")
             self.msg("Nickserv", "identify %s" % self.factory.nspassword,
-                    log=False)
+                     log=False)
 
-        for admin in self._list_of_admins():
-            self.whois(admin)
+        if config._CFG.getboolean("base", "nickserv_admin_tracking"):
+            for admin in self._list_of_admins():
+                self.whois(admin)
 
     def joined(self, channel):
         """ Called after joining a channel."""
@@ -114,11 +115,15 @@ class Lala(irc.IRCClient):
         """Someone has left a channel or the network. Check if ``user`` is an
         an admin and remove him from the ``identified_admins`` list because
         if he joins again we don't know if it's still the same user."""
+        if not config._CFG.getboolean("base", "nickserv_admin_tracking"):
+            return
         if user in self._list_of_admins() and user in self.identified_admins:
             logging.debug("Removing %s from the admin list" % user)
             self.identified_admins.remove(user)
 
     def _potential_admin_joined(self, user):
+        if not config._CFG.getboolean("base", "nickserv_admin_tracking"):
+            return
         if user in self._list_of_admins() and user not in self.identified_admins:
             logging.debug("WHOISing %s" % user)
             self.whois(user)
