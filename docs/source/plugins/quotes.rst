@@ -28,6 +28,14 @@ It provides the following commands:
 
   Retrieve a random quote.
 
+- ``qdislike <quote id>``
+
+  Dislikes the quote.
+
+- ``qlike <quote id>``
+
+  Likes the quote.
+
 - ``quotestats``
 
   Display some stats about the quote database.

@@ -266,12 +266,12 @@ class TestQuotes(PluginTestCase):
             "Quote #1 has been deleted.")
 
     def test_getquote(self):
-        data = [(1, "testquote")]
+        data = [(1, "testquote", None, 0)]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
         lala.plugins.quotes.db_connection.runQuery._fire()
         lala.util.msg.assert_called_with("#channel",
-                lala.plugins.quotes.MESSAGE_TEMPLATE % data[0])
+                lala.plugins.quotes.MESSAGE_TEMPLATE_WITH_RATING % data[0])
 
     def test_getquote_no_quote(self):
         data = []

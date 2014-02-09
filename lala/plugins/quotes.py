@@ -14,6 +14,7 @@ set_default_options(database_path=os.path.join(os.path.expanduser("~/.lala"),
                     max_quotes="5")
 
 MESSAGE_TEMPLATE = "[%s] %s"
+MESSAGE_TEMPLATE_WITH_RATING = "[%s] %s (rating: %s, votes: %s)"
 
 db_connection = None
 database_path = get("database_path")
@@ -29,6 +30,16 @@ def setup_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         quote TEXT,
         author INTEGER NOT NULL REFERENCES author(id));""")
+    db_connection.runOperation("""CREATE TABLE IF NOT EXISTS voter (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE);""")
+    db_connection.runOperation("""CREATE TABLE IF NOT EXISTS vote (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        vote INT NOT NULL,
+        quote INTEGER NOT NULL REFERENCES quote(id),
+        voter INTEGER NOT NULL REFERENCES voter(id),
+        CONSTRAINT valid_vote CHECK (vote IN (-1, 1)),
+        CONSTRAINT unique_quote_voter UNIQUE (quote, voter));""")
 
 setup_db()
 
@@ -47,7 +58,7 @@ def getquote(user, channel, text):
     """Show the quote with a specified number"""
     def callback(quotes):
         if len(quotes) > 0:
-            _send_quote_to_channel(channel, quotes[0])
+            msg(channel, MESSAGE_TEMPLATE_WITH_RATING % quotes[0])
         else:
             msg(channel, "%s: There's no quote #%s" % (user,
                 quotenumber))
@@ -56,9 +67,14 @@ def getquote(user, channel, text):
     if len(s_text) > 1:
         quotenumber = s_text[1]
         logging.info("Trying to get quote number %s" % quotenumber)
-        run_query("SELECT rowid, quote FROM quote WHERE rowid = ?;",
-                [quotenumber],
-                callback)
+        run_query("""SELECT q.id, q.quote, sum(v.vote) as rating, count(v.vote)
+                            as votes
+                    FROM quote q
+                    LEFT JOIN vote v
+                    ON v.quote = q.id
+                    WHERE q.id = ?;""",
+                  [quotenumber],
+                  callback)
 
 @command
 def addquote(user, channel, text):
@@ -185,6 +201,41 @@ def quotestats(user, channel, text):
 
     quote_count_callback = partial(quote_count_callback, channel)
     run_query("SELECT count(quote) from quote;", [], quote_count_callback)
+
+def _like_impl(user, channel, text, votevalue):
+    s_text = text.split()
+    if not len(s_text) > 1:
+        msg(channel,
+            "%s: You need to specify the number of the quote you like!" % user)
+        return
+
+    quotenumber = int(s_text[1])
+
+    def interaction(txn, *args):
+        logging.debug("Adding 1 vote for %i by %s" % (quotenumber, user))
+        txn.execute("""INSERT OR IGNORE INTO voter (name) VALUES (?);""", [user])
+        txn.execute("""INSERT OR REPLACE INTO vote (vote, quote, voter)
+                        SELECT ?, ?, voter.rowid
+                        FROM voter
+                        WHERE voter.name = ?;""", [votevalue, quotenumber, user])
+        logging.debug("Added 1 vote for %i by %s" % (quotenumber, user))
+
+    def callback(*args):
+        msg(channel, "%s: Your vote for quote #%i has been accepted!" % (user, quotenumber))
+
+    run_interaction(interaction, callback)
+
+@command
+def qlike(user, channel, text):
+    """`Likes` a quote.
+    """
+    _like_impl(user, channel, text, 1)
+
+@command
+def qdislike(user, channel, text):
+    """`Dislikes` a quote.
+    """
+    _like_impl(user, channel, text, -1)
 
 @on_join
 def join(user, channel):
