@@ -24,7 +24,8 @@ db_connection = None
 database_path = get("database_path")
 db_connection = adbapi.ConnectionPool("sqlite3", database_path,
                                       check_same_thread=False,
-                                      cp_openfun=_openfun)
+                                      cp_openfun=_openfun,
+                                      cp_min=1)
 
 
 def setup_db():
