@@ -16,13 +16,18 @@ set_default_options(database_path=os.path.join(os.path.expanduser("~/.lala"),
 MESSAGE_TEMPLATE = "[%s] %s"
 MESSAGE_TEMPLATE_WITH_RATING = "[%s] %s (rating: %s, votes: %s)"
 
+
+def _openfun(c):
+    c.execute("PRAGMA foreign_keys = ON;")
+
 db_connection = None
 database_path = get("database_path")
 db_connection = adbapi.ConnectionPool("sqlite3", database_path,
-                                      check_same_thread=False)
+                                      check_same_thread=False,
+                                      cp_openfun=_openfun)
+
 
 def setup_db():
-    db_connection.runOperation("""PRAGMA foreign_keys = ON;""")
     db_connection.runOperation("""CREATE TABLE IF NOT EXISTS author(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE);""")
