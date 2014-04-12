@@ -129,19 +129,20 @@ class TestPluginmanager(unittest.TestCase):
         self.assertTrue(pluginmanager.is_admin("superman"))
         self.assertFalse(pluginmanager.is_admin("i'm-no-superman"))
 
-    @mock.patch("lala.config._get")
-    def test_is_admin_with_nickserv(self, mock):
+    @mock.patch.multiple("lala.config", _get=mock.DEFAULT, _CFG=mock.DEFAULT)
+    def test_is_admin_with_nickserv(self, _get, _CFG):
         util._BOT.factory.nspassword = "foobar"
         util._BOT.identified_admins = ["superman"]
-        mock.return_value = "superman,gandalf"
+        _get.return_value = "superman,gandalf"
+        _CFG.getboolean.return_value = True
         self.assertTrue(pluginmanager.is_admin("superman"))
         self.assertFalse(pluginmanager.is_admin("i'm-no-superman"))
 
-    @mock.patch("lala.config._get")
-    def test_is_admin_with_explicitly_disabled_nickserv(self, mock):
+    @mock.patch.multiple("lala.config", _get=mock.DEFAULT, _CFG=mock.DEFAULT)
+    def test_is_admin_with_explicitly_disabled_nickserv(self, _get, _CFG):
         util._BOT.factory.nspassword = "testpassword"
-        config._set("base", "nickserv_admin_tracking", "false")
-        mock.return_value = "superman,gandalf"
+        _get.return_value = "superman,gandalf"
+        _CFG.getboolean.return_value = False
         self.assertTrue(pluginmanager.is_admin("superman"))
         self.assertFalse(pluginmanager.is_admin("i'm-no-superman"))
 
