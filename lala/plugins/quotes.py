@@ -59,7 +59,7 @@ def run_interaction(func, callback = None,  **kwargs):
     if callback is not None:
         res.addCallback(callback)
 
-@command
+@command(aliases=["qget"])
 def getquote(user, channel, text):
     """Show the quote with a specified number"""
     def callback(quotes):
@@ -82,7 +82,7 @@ def getquote(user, channel, text):
                   [quotenumber],
                   callback)
 
-@command
+@command(aliases=["qadd"])
 def addquote(user, channel, text):
     """Add a quote"""
     def msgcallback(c):
@@ -111,7 +111,7 @@ def addquote(user, channel, text):
     else:
         msg(channel, "%s: You didn't give me any text to quote " % user)
 
-@command(admin_only=True)
+@command(admin_only=True, aliases=["qdelete"])
 def delquote(user, channel, text):
     """Delete a quote with a specified number"""
     s_text = text.split()
@@ -137,21 +137,21 @@ def delquote(user, channel, text):
 
         run_interaction(interaction, callback)
 
-@command
+@command(aliases=["qlast"])
 def lastquote(user, channel, text):
     """Show the last quote"""
     callback = partial(_single_quote_callback, channel)
     run_query("SELECT rowid, quote FROM quote ORDER BY rowid DESC\
     LIMIT 1;", [], callback)
 
-@command
+@command(aliases=["qrandom"])
 def randomquote(user, channel, text):
     """Show a random quote"""
     callback = partial(_single_quote_callback, channel)
     run_query("SELECT rowid, quote FROM quote ORDER BY random() DESC\
     LIMIT 1;", [], callback)
 
-@command
+@command(aliases=["qsearch"])
 def searchquote(user, channel, text):
     """Search for a quote"""
     def callback(quotes):
@@ -173,7 +173,7 @@ def searchquote(user, channel, text):
         callback
         )
 
-@command
+@command(aliases=["qstats"])
 def quotestats(user, channel, text):
     """Display statistics about all quotes."""
     def quote_count_callback(channel, result):
