@@ -4,7 +4,7 @@ import lala.config
 import lala.util
 
 
-__all__ = ["disable", "enable", "is_admin"]
+__all__ = ["disable", "enable", "is_admin", "PluginFunc", "load_plugin"]
 
 
 _callbacks = {}
