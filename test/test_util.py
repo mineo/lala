@@ -6,7 +6,7 @@ except ImportError:
 import lala.pluginmanager
 import mock
 
-from lala import util, config
+from lala import util
 from re import compile
 
 
@@ -83,4 +83,3 @@ class TestUtil(unittest.TestCase):
         self.assertFalse(util._BOT.msg.called)
         util.msg("user", ["", ""])
         self.assertFalse(util._BOT.msg.called)
-
