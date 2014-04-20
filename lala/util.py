@@ -27,6 +27,8 @@ class command(object):
             channel, text):
                 pass
 
+        ``aliases`` can be a list of names under which the function will be
+        available in addition to its primary name.
 
         An additional argument, ``admin_only`` can be used to make a function
         available to admins only::
@@ -35,12 +37,14 @@ class command(object):
             def give_me_the_one_ring(user, channel, text):
                 pass
     """
-    def __init__(self, command=None, admin_only=False):
+    def __init__(self, command=None, admin_only=False, aliases=None):
         self.admin_only = admin_only
+        self.aliases = aliases
         if isinstance(command, FunctionType):
             if _check_args(command):
-                lala.pluginmanager.register_callback(command.__name__, command,
-                                                     self.admin_only)
+                self.cmd = command.__name__
+                self.func = command
+                self._register()
             else:
                 raise TypeError(
                     "A callback function should take exactly 3 arguments")
@@ -57,11 +61,17 @@ class command(object):
                     % type(command))
         else:
             self.cmd = command
-            self.admin_only=admin_only
 
     def __call__(self, func):
         self.cmd = self.cmd or func.__name__
-        lala.pluginmanager.register_callback(self.cmd, func, self.admin_only)
+        self.func = func
+        self._register()
+
+    def _register(self):
+        lala.pluginmanager.register_callback(self.cmd,
+                                             self.func,
+                                             self.admin_only,
+                                             self.aliases)
 
 
 def on_join(f):

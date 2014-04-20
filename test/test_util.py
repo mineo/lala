@@ -38,12 +38,17 @@ class TestUtil(unittest.TestCase):
 
     def test_command(self):
         util.command(f)
-        lala.pluginmanager.register_callback.assert_called_once_with("f", f, False)
+        lala.pluginmanager.register_callback.assert_called_once_with("f", f, False, None)
 
     def test_named_command(self):
         c = util.command("command")
         c(f)
-        lala.pluginmanager.register_callback.assert_called_once_with("command", f, False)
+        lala.pluginmanager.register_callback.assert_called_once_with("command", f, False, None)
+
+    def test_command_aliases(self):
+        c = util.command(aliases=["foo", "bar"])
+        c(f)
+        lala.pluginmanager.register_callback.assert_called_once_with("f", f, False, ["foo", "bar"])
 
     def test_command_str(self):
         self.assertRaises(TypeError, util.command, object())

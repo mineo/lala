@@ -14,16 +14,23 @@ _cbprefix = "!"
 
 
 class PluginFunc(object):
-    __slots__ = ['enabled', 'func', 'admin_only']
-
-    def __init__(self, func, enabled=True, admin_only=False):
+    def __init__(self, func, enabled=True, admin_only=False, aliases=None):
         self.enabled = enabled
         self.func = func
         self.admin_only = admin_only
+        self.aliases = aliases or []
 
 
-def _make_pluginfunc(func, admin_only=False):
-    return PluginFunc(enabled=True, func=func, admin_only=admin_only)
+def _make_pluginfunc(func, admin_only=False, aliases=None):
+    if aliases is not None:
+        extradoc = "Aliases: %s" % (", ".join(aliases))
+        doc = func.__doc__
+        if doc is None:
+            func.__doc__ = extradoc
+        else:
+            func.__doc__ += "\n"
+            func.__doc__ += extradoc
+    return PluginFunc(func,admin_only=admin_only, aliases=aliases)
 
 
 def is_admin(user):
@@ -51,10 +58,14 @@ def load_plugin(name):
     imp.load_module(name, f, p, d)
 
 
-def register_callback(trigger, func, admin_only=False):
+def register_callback(trigger, func, admin_only=False, aliases=None):
     """ Adds ``func`` to the callbacks for ``trigger``."""
     logging.debug("Registering callback for %s" % trigger)
-    _callbacks[trigger] = _make_pluginfunc(func, admin_only)
+    f = _make_pluginfunc(func, admin_only, aliases)
+    if aliases is not None:
+        for alias in aliases:
+            _callbacks[alias] = f
+    _callbacks[trigger] = f
 
 
 def register_join_callback(func):

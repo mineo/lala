@@ -82,7 +82,7 @@ def help(user, channel, text):
     """Show the help for a command"""
     cmd = text.split()[1]
     try:
-        func = lala.pluginmanager._callbacks[cmd]["func"]
+        func = lala.pluginmanager._callbacks[cmd].func
     except KeyError, e:
         msg(channel, "%s is not a command I know" % cmd)
         return
