@@ -36,6 +36,14 @@ It provides the following commands:
 
   Likes the quote.
 
+- ``qtop <limit>``
+
+  Shows the ``limit`` (default: ``max_quotes``) quotes with the best rating.
+
+- ``qflop <limit>``
+
+  Shows the ``limit`` (default: ``max_quotes``) quotes with the worst rating.
+
 - ``quotestats``
 
   Display some stats about the quote database.
@@ -55,5 +63,5 @@ Options
 
 - ``max_quotes``
 
-  The maximum number of quotes to print while doing a search from
-  ``searchquote``. Defaults to 5
+  The maximum number of quotes to print when using ``searchquote`` or
+  ``qtop``/``qflop``. Defaults to 5.

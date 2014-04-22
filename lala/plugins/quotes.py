@@ -243,6 +243,44 @@ def qdislike(user, channel, text):
     """
     _like_impl(user, channel, text, -1)
 
+
+def _topflopimpl(channel, text, top=True):
+    """Shows quotes with the best or worst rating.
+    If ``top`` is True, the quotes with the best ratings will be shown,
+    otherwise the ones with the worst.
+    """
+    s_text = text.split()
+    if len(s_text) == 2:
+        limit = int(s_text[1])
+    else:
+        limit = get("max_quotes")
+
+    def callback(result):
+        for row in result:
+            msg(channel, MESSAGE_TEMPLATE_WITH_RATING % row)
+
+    run_query("""SELECT quote.id, quote.quote, sum(vote) as rating, count(vote) as votes
+                 FROM vote
+                 JOIN quote
+                 ON vote.quote = quote.id
+                 GROUP BY vote.quote
+                 ORDER BY rating %s
+                 LIMIT (?);""" % ("DESC" if top else "ASC") , [limit], callback)
+
+@command
+def qtop(user, channel, text):
+    """Shows the quotes with the best rating.
+    """
+    _topflopimpl(channel, text, True)
+
+
+@command
+def qflop(user, channel, text):
+    """Shows the quotes with the worst rating.
+    """
+    _topflopimpl(channel, text, False)
+
+
 @on_join
 def join(user, channel):
     def callback(quotes):
