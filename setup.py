@@ -25,21 +25,21 @@ def update_version_py():
                               "--tags", "--dirty", "--always"],
                              stdout=subprocess.PIPE)
     except EnvironmentError:
-        print("unable to run git, leaving lala/__init__.py alone")
+        print("unable to run git, leaving lala/version.py alone")
         return
     stdout = p.communicate()[0]
     if p.returncode != 0:
-        print("unable to run git, leaving lala/__init__.py alone")
+        print("unable to run git, leaving lala/version.py alone")
         return
     ver = stdout.strip()
-    f = open("lala/__init__.py", "w")
+    f = open("lala/version.py", "w")
     f.write(VERSION_PY % ver)
     f.close()
-    print("set lala/__init__.py to '%s'" % ver)
+    print("set lala/version.py to '%s'" % ver)
 
 def get_version():
     try:
-        f = open("lala/__init__.py")
+        f = open("lala/version.py")
     except IOError, e:
         import errno
         if e.errno == errno.ENOENT:
@@ -55,7 +55,7 @@ def get_version():
     return None
 
 class Version(Command):
-    description = "update lala/__init__.py from Git repo"
+    description = "update lala/version.py from Git repo"
     user_options = []
     boolean_options = []
     def initialize_options(self):
