@@ -126,7 +126,7 @@ def on_join(user, channel):
 def disable(trigger):
     """Disables `trigger`.
 
-    :trigger: The trigger to disable. Can be a key for a callback or a
+    :param str trigger: The trigger to disable. Can be a key for a callback or a
     regular expression
     """
     if trigger in _callbacks:
@@ -141,7 +141,7 @@ def disable(trigger):
 def enable(trigger):
     """Enables `trigger`.
 
-    :trigger: The trigger to enable. Can be a key for a callback or a
+    :param str trigger: The trigger to enable. Can be a key for a callback or a
     regular expression
 
     """
