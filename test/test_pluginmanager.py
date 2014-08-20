@@ -168,7 +168,6 @@ class TestPluginmanager(unittest.TestCase):
     def test_admin_only_command_as_non_admin(self, mock):
         util._BOT.factory.nspassword= None
         mock.return_value = "superman"
-        func_mock = mock.Mock()
-        util.command(command="mock", admin_only=True)(func_mock)
+
+        util.command(command="mock", admin_only=True)(f3)
         pluginmanager._handle_message("gandalf", "#channel", "!mock")
-        self.assertFalse(func_mock.called)

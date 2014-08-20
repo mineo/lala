@@ -41,13 +41,12 @@ class command(object):
         self.admin_only = admin_only
         self.aliases = aliases
         if isinstance(command, FunctionType):
-            if _check_args(command):
-                self.cmd = command.__name__
-                self.func = command
-                self._register()
-            else:
-                raise TypeError(
-                    "A callback function should take exactly 3 arguments")
+            # Used like
+            # @command
+            # def foo(...):
+            #     pass
+            self.cmd = None
+            self._handle_func(command)
         elif command is None:
             # This happens when only admin_only is set when decorating a
             # function like
@@ -63,9 +62,16 @@ class command(object):
             self.cmd = command
 
     def __call__(self, func):
-        self.cmd = self.cmd or func.__name__
-        self.func = func
-        self._register()
+        self._handle_func(func)
+
+    def _handle_func(self, f):
+        if _check_args(f):
+            self.cmd = self.cmd or f.__name__
+            self.func = f
+            self._register()
+        else:
+            raise TypeError(
+                "A callback function should take exactly 3 arguments")
 
     def _register(self):
         lala.pluginmanager.register_callback(self.cmd,
