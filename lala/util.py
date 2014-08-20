@@ -57,8 +57,8 @@ class command(object):
             self.cmd = None
         elif not (isinstance(command, str) or isinstance(command, unicode)):
             raise TypeError(
-                    "The command should be either a str or unicode but it's %s"
-                    % type(command))
+                "The command should be either a str or unicode but it's %s"
+                % type(command))
         else:
             self.cmd = command
 
