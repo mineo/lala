@@ -5,7 +5,7 @@ except ImportError:
     import unittest
 import mock
 
-from lala import util, pluginmanager, config
+from lala import util, pluginmanager
 from re import compile
 
 
