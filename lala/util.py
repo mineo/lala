@@ -118,9 +118,10 @@ class regex(object):
 def msg(target, message, log=True):
     """Send a message to a target.
 
-    :param target: Target to send the message to. Can be a channel or user
+    :param str target: Target to send the message to. Can be a channel or user
     :param message: One or more messages to send
-    :param log: Whether or not to log the message
+    :type message: str or [str]
+    :param bool log: Whether or not to log the message
     """
     try:
         if not isinstance(message, basestring):
