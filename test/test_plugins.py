@@ -281,6 +281,17 @@ class TestQuotes(PluginTestCase):
         lala.util.msg.assert_called_with("#channel", "%s: There's no quote #%s"
         %("user", 1))
 
+    def test_getquote_none_quote(self):
+        data = [(None, # quote id
+                 None, # quote text
+                 None, # rating
+                 0)]
+        lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
+        lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
+        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.util.msg.assert_called_with("#channel", "%s: There's no quote #%s"
+        %("user", 1))
+
     def test_qflop(self):
         data = [("1", "quote", "1", "4"), ("2", "quote", "2", "3")]
         calls = [mock.call("#channel", lala.plugins.quotes.MESSAGE_TEMPLATE_WITH_RATING % d) for d in data]

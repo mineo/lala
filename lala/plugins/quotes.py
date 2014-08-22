@@ -65,7 +65,7 @@ def run_interaction(func, callback = None,  **kwargs):
 def getquote(user, channel, text):
     """Show the quote with a specified number"""
     def callback(quotes):
-        if len(quotes) > 0:
+        if len(quotes) > 0 and quotes[0][0] is not None:
             msg(channel, MESSAGE_TEMPLATE_WITH_RATING % quotes[0])
         else:
             msg(channel, "%s: There's no quote #%s" % (user,
