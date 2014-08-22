@@ -54,10 +54,12 @@ def run_query(query, values, callback):
     if callback is not None:
         res.addCallback(callback)
 
+
 def run_interaction(func, callback = None,  **kwargs):
     res = db_connection.runInteraction(func, kwargs)
     if callback is not None:
         res.addCallback(callback)
+
 
 @command(aliases=["qget"])
 def getquote(user, channel, text):
@@ -82,6 +84,7 @@ def getquote(user, channel, text):
                   [quotenumber],
                   callback)
 
+
 @command(aliases=["qadd"])
 def addquote(user, channel, text):
     """Add a quote"""
@@ -101,7 +104,7 @@ def addquote(user, channel, text):
             run_query("INSERT INTO quote (quote, author)\
                             SELECT (?), rowid\
                             FROM author WHERE name = (?);",
-                      [text , user],
+                      [text, user],
                       addcallback)
 
         logging.info("Adding author %s" % user)
@@ -110,6 +113,7 @@ def addquote(user, channel, text):
                 add)
     else:
         msg(channel, "%s: You didn't give me any text to quote " % user)
+
 
 @command(admin_only=True, aliases=["qdelete"])
 def delquote(user, channel, text):
@@ -133,9 +137,10 @@ def delquote(user, channel, text):
                 return
             else:
                 msg(channel, "It doesn't look like quote #%s exists." %
-                        quotenumber)
+                    quotenumber)
 
         run_interaction(interaction, callback)
+
 
 @command(aliases=["qlast"])
 def lastquote(user, channel, text):
@@ -144,12 +149,14 @@ def lastquote(user, channel, text):
     run_query("SELECT rowid, quote FROM quote ORDER BY rowid DESC\
     LIMIT 1;", [], callback)
 
+
 @command(aliases=["qrandom"])
 def randomquote(user, channel, text):
     """Show a random quote"""
     callback = partial(_single_quote_callback, channel)
     run_query("SELECT rowid, quote FROM quote ORDER BY random() DESC\
     LIMIT 1;", [], callback)
+
 
 @command(aliases=["qsearch"])
 def searchquote(user, channel, text):
@@ -172,6 +179,7 @@ def searchquote(user, channel, text):
         ["".join(("%", " ".join(s_text[1:]), "%"))],
         callback
         )
+
 
 @command(aliases=["qstats"])
 def quotestats(user, channel, text):
@@ -197,7 +205,7 @@ def quotestats(user, channel, text):
         for count, author in rows:
             count_author_dict[count].append(author)
         for count, authors in sorted(count_author_dict.items(), reverse=True):
-            percentage = (count * 100)/num_quotes
+            percentage = (count * 100) / num_quotes
             if len(authors) > 1:
                 msg(channel, "%s each added %i quote(s) (%.2f%%)" %
                     (", ".join(authors), count, percentage))
@@ -207,6 +215,7 @@ def quotestats(user, channel, text):
 
     quote_count_callback = partial(quote_count_callback, channel)
     run_query("SELECT count(quote) from quote;", [], quote_count_callback)
+
 
 def _like_impl(user, channel, text, votevalue):
     s_text = text.split()
@@ -231,11 +240,13 @@ def _like_impl(user, channel, text, votevalue):
 
     run_interaction(interaction, callback)
 
+
 @command
 def qlike(user, channel, text):
     """`Likes` a quote.
     """
     _like_impl(user, channel, text, 1)
+
 
 @command
 def qdislike(user, channel, text):
@@ -265,7 +276,8 @@ def _topflopimpl(channel, text, top=True):
                  ON vote.quote = quote.id
                  GROUP BY vote.quote
                  ORDER BY rating %s
-                 LIMIT (?);""" % ("DESC" if top else "ASC") , [limit], callback)
+                 LIMIT (?);""" % ("DESC" if top else "ASC"), [limit], callback)
+
 
 @command
 def qtop(user, channel, text):
@@ -292,11 +304,13 @@ def join(user, channel):
     run_query("SELECT rowid, quote FROM quote where quote LIKE (?)\
     ORDER BY random() LIMIT 1;", ["".join(["%", user, "%"])], callback)
 
+
 def _single_quote_callback(channel, quotes):
     try:
         _send_quote_to_channel(channel, quotes[0])
     except IndexError, e:
         return
+
 
 def _send_quote_to_channel(channel, quote):
     (id, quote) = quote
