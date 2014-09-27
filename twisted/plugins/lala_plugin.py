@@ -5,6 +5,7 @@ from twisted.application.service import IServiceMaker
 
 from lala.main import LalaOptions, getService
 
+
 class LalaServiceMaker(object):
     implements(IServiceMaker, IPlugin)
     tapname = "lala"
