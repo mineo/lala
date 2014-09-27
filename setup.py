@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import os, subprocess, re
-from distutils.core import setup, Command
-from distutils.command.sdist import sdist as _sdist
+from setuptools import setup, Command
+from setuptools.command.sdist import sdist as _sdist
 from distutils.command.build import build as _build
 
 # The following code is taken from
@@ -15,6 +15,7 @@ VERSION_PY = """
 
 __version__ = '%s'
 """
+
 
 def update_version_py():
     if not os.path.isdir(".git"):
