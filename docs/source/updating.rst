@@ -7,11 +7,11 @@ The following is a list of those commits and the commands to run the update,
 where ``<sqlite-file>`` is the path to the quote database file. Newer commits
 appear first.
 
-* 410ccde58bf6f635b121c0a5349dce5fd643679a (part of release xx.xx)
+* 410ccde58bf6f635b121c0a5349dce5fd643679a (part of release 0.4)
 
   ``sqlite3 <sqlite-file> misc/2-add-votes-to-quotes.sql``
 
-* a602b32dfa8aeb0d89b18275fe9e371199f3fd7c (part of release xx.xx)
+* a602b32dfa8aeb0d89b18275fe9e371199f3fd7c (part of release 0.4)
 
   ``sqlite3 <sqlite-file> misc/1-add-id-columns.sql``
 
