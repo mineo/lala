@@ -166,7 +166,7 @@ class TestPluginmanager(unittest.TestCase):
 
     @mock.patch("lala.config._get")
     def test_admin_only_command_as_non_admin(self, mock):
-        util._BOT.factory.nspassword= None
+        util._BOT.factory.nspassword = None
         mock.return_value = "superman"
 
         util.command(command="mock", admin_only=True)(f3)
