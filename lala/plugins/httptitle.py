@@ -27,6 +27,6 @@ def title(user, channel, text, match_obj):
 
     def errback(error):
         msg(channel, "Sorry, I couldn't get the title for %s" % url)
-        logging.exception(error)
+        return error
 
     getPage(str(url)).addCallbacks(callback, errback)

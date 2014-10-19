@@ -36,6 +36,12 @@ class command(object):
             @command(admin_only=True)
             def give_me_the_one_ring(user, channel, text):
                 pass
+
+        .. versionadded:: 0.5
+        If the function returns a :class:`twisted.internet.defer.Deferred` or a
+        generator function that's generating them, an
+        `Errback <https://twistedmatrix.com/documents/current/core/howto/defer.html#errbacks>`_
+        will automatically be added to the Deferred(s).
     """
     def __init__(self, command=None, admin_only=False, aliases=None):
         self.admin_only = admin_only

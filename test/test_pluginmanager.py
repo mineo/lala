@@ -7,6 +7,8 @@ import mock
 
 from lala import util, pluginmanager
 from re import compile
+from twisted.internet.defer import Deferred
+from twisted.python.failure import Failure
 
 
 def f(user, channel, text):
@@ -171,3 +173,33 @@ class TestPluginmanager(unittest.TestCase):
 
         util.command(command="mock", admin_only=True)(f3)
         pluginmanager._handle_message("gandalf", "#channel", "!mock")
+
+    @mock.patch("lala.pluginmanager._generic_errback")
+    def test_automatically_adds_errbacks_deferred(self, mock):
+        d = Deferred()
+
+        def return_deferred(u, c, t):
+            return d
+
+        util.command(command="mock")(return_deferred)
+        f = Failure(ValueError(""))
+        pluginmanager._handle_message("gandalf", "#channel", "!mock")
+        d.errback(f)
+        mock.assert_called_once_with("gandalf", "#channel", f)
+
+    @mock.patch("lala.pluginmanager._generic_errback")
+    def test_automatically_adds_errbacks_deferred(self, errb):
+        ds = [Deferred(), Deferred()]
+
+        def return_deferred(u, c, t):
+            for d in ds:
+                yield d
+
+        util.command(command="errb")(return_deferred)
+        f = Failure(ValueError(""))
+        pluginmanager._handle_message("gandalf", "#channel", "!errb")
+        for d in ds:
+            d.errback(f)
+        self.assertEqual(errb.call_count, 2)
+        c = [mock.call("gandalf", "#channel", f)] * 2
+        self.assertEqual(c, errb.call_args_list)

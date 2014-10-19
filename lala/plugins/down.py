@@ -15,13 +15,11 @@ def isitdown(user, channel, text):
         else:
             msg(channel, "%s: It's not just you!" % user)
 
-    def errback(error):
-        msg(channel, "%s: Sorry, something went wrong while processing your request." % user)
-        logging.info(error)
-
     s_text = text.split()
     if len(s_text) <= 1:
         return
     website = DFEOOJM_URL % " ".join(s_text[1:])
     logging.debug("Trying to open %s" % website)
-    getPage(str(website)).addCallbacks(callback, errback)
+    d = getPage(str(website))
+    d.addCallback(callback)
+    return d
