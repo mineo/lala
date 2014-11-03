@@ -14,13 +14,12 @@ from twisted.internet import reactor
 @command(admin_only=True)
 def part(user, channel, text):
     """Part a channel"""
-    logging.debug("Parting %s" % text.split()[1])
-    util._BOT.part(text.split()[1].encode("utf-8"))
+    logging.debug("Parting %s" % channel)
+    util._BOT.part(channel.encode("utf-8"))
 
 @command(admin_only=True)
-def join(user, channel, text):
+def join(user, channel, chan):
     """Join a channel"""
-    chan = text.split()[1]
     logging.debug("Joining %s" % chan)
     util._BOT.join(chan.encode("utf-8"))
 
@@ -48,9 +47,8 @@ def commands(user, channel, text):
     msg(channel, s)
 
 @command(admin_only=True)
-def addadmin(user, channel, text):
+def addadmin(user, channel, admin):
     """Add a user to the list of admins"""
-    admin = text.split()[1]
     if admin in config.get("admins"):
         msg(channel, "%s already is an admin" % admin)
     else:
@@ -64,9 +62,8 @@ def admins(user, channel, text):
     msg(channel, config.get("admins"))
 
 @command(admin_only=True)
-def deladmin(user, channel, text):
+def deladmin(user, channel, admin):
     """Remove a user from the list of admins"""
-    admin = text.split()[1]
     if admin in config.get("admins"):
         admins = config.get("admins").split(",")
         admins.remove(admin)
@@ -78,9 +75,8 @@ def deladmin(user, channel, text):
         msg(channel, "Sorry, %s is not even an admin" % admin)
 
 @command
-def help(user, channel, text):
+def help(user, channel, cmd):
     """Show the help for a command"""
-    cmd = text.split()[1]
     try:
         func = lala.pluginmanager._callbacks[cmd].func
     except KeyError, e:
@@ -96,18 +92,16 @@ def help(user, channel, text):
             msg(channel, "There is no help available for %s" % cmd)
 
 @command(admin_only=True)
-def enable(user, channel, text):
+def enable(user, channel, command):
     """Enables a command or regular expression
     """
-    command = text.split()[1]
     logging.info("Enabling %s" % command)
     lala.pluginmanager.enable(command)
 
 @command(admin_only=True)
-def disable(user, channel, text):
+def disable(user, channel, command):
     """disables a command.
     """
-    command = text.split()[1]
     logging.info("Disabling %s" % command)
     lala.pluginmanager.disable(command)
 

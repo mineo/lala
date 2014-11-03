@@ -95,7 +95,7 @@ class TestBase(PluginTestCase):
     def test_addadmin(self):
         lala.pluginmanager._handle_message("user", "#channel", "!addadmin user3")
         lala.config._CFG.set.assert_called_once_with("base", "admins",
-                                                    "user,user2,user3")
+                                                     "user,user2,user3")
 
     def test_addadmin_already_admin(self):
         lala.pluginmanager._handle_message("user", "#channel", "!addadmin user")

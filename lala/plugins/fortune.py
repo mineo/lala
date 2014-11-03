@@ -33,8 +33,8 @@ def _call_fortune(user, channel, args=[]):
 
 def _get_fortune_file_from_text(text):
     s_text = text.split()
-    if len(s_text) > 1:
-        return s_text[1:]
+    if len(s_text) > 0:
+        return s_text
     else:
         files = lala.config.get("fortune_files").split(lala.config._LIST_SEPARATOR)
         files = map(str.strip, files)
@@ -42,4 +42,4 @@ def _get_fortune_file_from_text(text):
 
 
 def _send_output_to_channel(user, channel, text):
-    msg(channel, "%s: %s" %(user, text.replace("\n"," ")))
+    msg(channel, "%s: %s" %(user, text.replace("\n", " ")))

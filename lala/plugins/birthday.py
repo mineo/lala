@@ -27,9 +27,8 @@ def _set_birthday(user, channel, date_to_parse):
 
 
 @command
-def my_birthday_is(user, channel, text):
+def my_birthday_is(user, channel, date_to_parse):
     """Sets the users date of birth. The format is %d.%m."""
-    date_to_parse = text.split()[1]
     _set_birthday(user, channel, date_to_parse)
 
 

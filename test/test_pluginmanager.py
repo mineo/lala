@@ -121,7 +121,7 @@ class TestPluginmanager(unittest.TestCase):
         mocked_f = mock.Mock(spec=f)
         pluginmanager.register_callback("test", mocked_f)
         pluginmanager._handle_message("user", "channel", "!test")
-        mocked_f.assert_called_once_with("user", "channel", "!test")
+        mocked_f.assert_called_once_with("user", "channel", "")
 
     def test_on_join_called(self):
         mocked_f = mock.Mock(spec=f2)

@@ -69,19 +69,17 @@ def getquote(user, channel, text):
             msg(channel, MESSAGE_TEMPLATE_WITH_RATING % quotes[0])
         else:
             msg(channel, "%s: There's no quote #%s" % (user,
-                quotenumber))
+                                                       text))
 
-    s_text = text.split()
-    if len(s_text) > 1:
-        quotenumber = s_text[1]
-        logging.info("Trying to get quote number %s" % quotenumber)
+    if len(text):
+        logging.info("Trying to get quote number %s" % text)
         run_query("""SELECT q.id, q.quote, sum(v.vote) as rating, count(v.vote)
                             as votes
                     FROM quote q
                     LEFT JOIN vote v
                     ON v.quote = q.id
                     WHERE q.id = ?;""",
-                  [quotenumber],
+                  [text],
                   callback)
 
 
@@ -95,9 +93,7 @@ def addquote(user, channel, text):
         # TODO This might not be the rowid we're looking for in all cases…
         run_query("SELECT max(rowid) FROM quote;", [], msgcallback)
 
-    s_text = text.split()
-    if len(s_text) > 1:
-        text = " ".join(s_text[1:])
+    if len(text):
 
         def add(c):
             logging.info("Adding quote: %s" % text)
@@ -118,14 +114,12 @@ def addquote(user, channel, text):
 @command(admin_only=True, aliases=["qdelete"])
 def delquote(user, channel, text):
     """Delete a quote with a specified number"""
-    s_text = text.split()
-    if len(s_text) > 1:
-        quotenumber = s_text[1]
-        logging.debug("delquote: %s" % quotenumber)
+    if len(text):
+        logging.debug("delquote: %s" % text)
 
         def interaction(txn, *args):
-            logging.debug("Deleting quote %s" % quotenumber)
-            txn.execute("DELETE FROM quote WHERE rowid = (?)", [ quotenumber ])
+            logging.debug("Deleting quote %s" % text)
+            txn.execute("DELETE FROM quote WHERE rowid = (?)", [ text ])
             txn.execute("SELECT changes()")
             res = txn.fetchone()
             logging.debug("%s changes" % res)
@@ -133,11 +127,11 @@ def delquote(user, channel, text):
 
         def callback(changes):
             if changes > 0:
-                msg(channel, "Quote #%s has been deleted." % quotenumber)
+                msg(channel, "Quote #%s has been deleted." % text)
                 return
             else:
                 msg(channel, "It doesn't look like quote #%s exists." %
-                    quotenumber)
+                    text)
 
         run_interaction(interaction, callback)
 
@@ -218,13 +212,12 @@ def quotestats(user, channel, text):
 
 
 def _like_impl(user, channel, text, votevalue):
-    s_text = text.split()
-    if not len(s_text) > 1:
+    if not len(text):
         msg(channel,
             "%s: You need to specify the number of the quote you like!" % user)
         return
 
-    quotenumber = int(s_text[1])
+    quotenumber = int(text)
 
     def interaction(txn, *args):
         logging.debug("Adding 1 vote for %i by %s" % (quotenumber, user))
@@ -260,9 +253,8 @@ def _topflopimpl(channel, text, top=True):
     If ``top`` is True, the quotes with the best ratings will be shown,
     otherwise the ones with the worst.
     """
-    s_text = text.split()
-    if len(s_text) == 2:
-        limit = int(s_text[1])
+    if text:
+        limit = int(text)
     else:
         limit = get("max_quotes")
 

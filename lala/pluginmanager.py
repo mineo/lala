@@ -108,10 +108,11 @@ def _handle_message(user, channel, message):
             if func.enabled:
                 if ((func.admin_only and is_admin(user))
                         or not func.admin_only):
+                    stripped_message = message[len(_cbprefix) + len(command) + 1:]
                     ret = _callbacks[command].func(
                             user,
                             channel,
-                            message)
+                            stripped_message)
                     _auto_add_errback(user, channel, ret)
                 else:
                     lala.util.msg(channel,
