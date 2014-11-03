@@ -42,6 +42,10 @@ class command(object):
         generator function that's generating them, an
         `Errback <https://twistedmatrix.com/documents/current/core/howto/defer.html#errbacks>`_
         will automatically be added to the Deferred(s).
+
+        .. versionchanged:: 0.5
+        The third argument received by a command function used to include the
+        name of the command itself. Since version 0.5 this is no longer the case.
     """
     def __init__(self, command=None, admin_only=False, aliases=None):
         self.admin_only = admin_only
