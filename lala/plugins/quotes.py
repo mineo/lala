@@ -71,7 +71,7 @@ def getquote(user, channel, text):
             msg(channel, "%s: There's no quote #%s" % (user,
                                                        text))
 
-    if len(text):
+    if text:
         logging.info("Trying to get quote number %s" % text)
         run_query("""SELECT q.id, q.quote, sum(v.vote) as rating, count(v.vote)
                             as votes
@@ -93,7 +93,7 @@ def addquote(user, channel, text):
         # TODO This might not be the rowid we're looking for in all cases…
         run_query("SELECT max(rowid) FROM quote;", [], msgcallback)
 
-    if len(text):
+    if text:
 
         def add(c):
             logging.info("Adding quote: %s" % text)
@@ -114,7 +114,7 @@ def addquote(user, channel, text):
 @command(admin_only=True, aliases=["qdelete"])
 def delquote(user, channel, text):
     """Delete a quote with a specified number"""
-    if len(text):
+    if text:
         logging.debug("delquote: %s" % text)
 
         def interaction(txn, *args):
