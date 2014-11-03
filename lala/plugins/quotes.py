@@ -291,7 +291,7 @@ def join(user, channel):
     def callback(quotes):
         try:
             _send_quote_to_channel(channel, quotes[0])
-        except IndexError, e:
+        except IndexError:
             return
 
     run_query("SELECT rowid, quote FROM quote where quote LIKE (?)\
@@ -301,7 +301,7 @@ def join(user, channel):
 def _single_quote_callback(channel, quotes):
     try:
         _send_quote_to_channel(channel, quotes[0])
-    except IndexError, e:
+    except IndexError:
         return
 
 
