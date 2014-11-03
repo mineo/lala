@@ -49,13 +49,14 @@ def setup_db():
 
 setup_db()
 
+
 def run_query(query, values, callback):
     res = db_connection.runQuery(query, values)
     if callback is not None:
         res.addCallback(callback)
 
 
-def run_interaction(func, callback = None,  **kwargs):
+def run_interaction(func, callback=None, **kwargs):
     res = db_connection.runInteraction(func, kwargs)
     if callback is not None:
         res.addCallback(callback)
@@ -119,7 +120,7 @@ def delquote(user, channel, text):
 
         def interaction(txn, *args):
             logging.debug("Deleting quote %s" % text)
-            txn.execute("DELETE FROM quote WHERE rowid = (?)", [ text ])
+            txn.execute("DELETE FROM quote WHERE rowid = (?)", [text])
             txn.execute("SELECT changes()")
             res = txn.fetchone()
             logging.debug("%s changes" % res)
