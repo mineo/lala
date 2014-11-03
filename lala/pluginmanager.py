@@ -149,7 +149,7 @@ def disable(trigger):
     """Disables `trigger`.
 
     :param str trigger: The trigger to disable. Can be a key for a callback or a
-    regular expression
+                        regular expression
     """
     if trigger in _callbacks:
         _callbacks[trigger].enabled = False
@@ -164,7 +164,7 @@ def enable(trigger):
     """Enables `trigger`.
 
     :param str trigger: The trigger to enable. Can be a key for a callback or a
-    regular expression
+                        regular expression
 
     """
     if trigger in _callbacks:
