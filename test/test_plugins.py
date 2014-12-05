@@ -10,6 +10,7 @@ except ImportError:
     import unittest
 
 from . import _helpers
+from twisted.python.failure import Failure
 
 
 class PluginTestCase(unittest.TestCase):
@@ -41,14 +42,14 @@ class TestFortune(PluginTestCase):
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
                                                 data="fortune")
         lala.pluginmanager._handle_message("user", "#channel", "!fortune")
-        lala.plugins.fortune.getProcessOutput._fire()
+        lala.plugins.fortune.getProcessOutput.callback()
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
 
     def test_ofortune(self):
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
                                                 data="ofortune")
         lala.pluginmanager._handle_message("user", "#channel", "!ofortune")
-        lala.plugins.fortune.getProcessOutput._fire()
+        lala.plugins.fortune.getProcessOutput.callback()
         lala.util.msg.assert_called_once_with("#channel", "user: ofortune")
 
     def test_fortune_with_default_files(self):
@@ -58,7 +59,7 @@ class TestFortune(PluginTestCase):
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
                                                 data="fortune")
         lala.pluginmanager._handle_message("user", "#channel", "!fortune")
-        lala.plugins.fortune.getProcessOutput._fire()
+        lala.plugins.fortune.getProcessOutput.callback()
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
         # The first entry is the path to the fortune binary
         self.assertEqual(lala.plugins.fortune.getProcessOutput.args[1:][0],
@@ -68,7 +69,7 @@ class TestFortune(PluginTestCase):
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
                                                 data="fortune")
         lala.pluginmanager._handle_message("user", "#channel", "!fortune people riddles")
-        lala.plugins.fortune.getProcessOutput._fire()
+        lala.plugins.fortune.getProcessOutput.callback()
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
         # The first entry is the path to the fortune binary
         self.assertEqual(lala.plugins.fortune.getProcessOutput.args[1:][0],
@@ -170,7 +171,7 @@ class TestHTTPTitle(PluginTestCase):
         lala.plugins.httptitle.getPage = _helpers.DeferredHelper(
                 data="<html><head><title>title</title></head></html>")
         lala.pluginmanager._handle_message("user", "#channel", url)
-        lala.plugins.httptitle.getPage._fire()
+        lala.plugins.httptitle.getPage.callback()
         self.assertTrue(url in lala.plugins.httptitle.getPage.args)
         lala.util.msg.assert_called_once_with("#channel", "Title: title")
 
@@ -178,15 +179,20 @@ class TestHTTPTitle(PluginTestCase):
         lala.plugins.httptitle.getPage = _helpers.DeferredHelper(
                 data="<html></html>")
         lala.pluginmanager._handle_message("user", "#channel", "http://example.com")
-        lala.plugins.httptitle.getPage._fire()
+        lala.plugins.httptitle.getPage.callback()
         self.assertFalse(lala.util.msg.called)
 
     def test_errback(self):
         url = "http://example.com"
-        lala.plugins.httptitle.getPage = _helpers.DeferredHelper(fire_callback=False,
-                fire_errback=True, data=Exception())
+        f = Failure(Exception())
+        lala.plugins.httptitle.getPage = _helpers.DeferredHelper(data=f)
         lala.pluginmanager._handle_message("user", "#channel", url)
-        lala.plugins.httptitle.getPage._fire()
+
+        def check_error_got_passed_through(error):
+            self.assertEqual(error, f)
+
+        lala.plugins.httptitle.getPage.addErrback(check_error_got_passed_through)
+        lala.plugins.httptitle.getPage.errback()
         lala.util.msg.assert_called_once_with("#channel",
                 "Sorry, I couldn't get the title for %s" % url)
 
@@ -239,7 +245,7 @@ class TestQuotes(PluginTestCase):
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(
             data=[[1, "testquote"]])
         lala.pluginmanager.on_join("user", "#channel")
-        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_once_with("#channel", "[1] testquote")
 
     def test_on_join_no_quote(self):
@@ -252,7 +258,7 @@ class TestQuotes(PluginTestCase):
         lala.plugins.quotes.db_connection.runInteraction =\
             _helpers.DeferredHelper(data=0)
         lala.pluginmanager._handle_message("user", "#channel", "!delquote 1")
-        lala.plugins.quotes.db_connection.runInteraction._fire()
+        lala.plugins.quotes.db_connection.runInteraction.callback()
         lala.util.msg.assert_called_with("#channel",
             "It doesn't look like quote #1 exists.")
 
@@ -261,7 +267,7 @@ class TestQuotes(PluginTestCase):
         lala.plugins.quotes.db_connection.runInteraction =\
             _helpers.DeferredHelper(data=1)
         lala.pluginmanager._handle_message("user", "#channel", "!delquote 1")
-        lala.plugins.quotes.db_connection.runInteraction._fire()
+        lala.plugins.quotes.db_connection.runInteraction.callback()
         lala.util.msg.assert_called_with("#channel",
             "Quote #1 has been deleted.")
 
@@ -269,7 +275,7 @@ class TestQuotes(PluginTestCase):
         data = [(1, "testquote", None, 0)]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
-        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_with("#channel",
                 lala.plugins.quotes.MESSAGE_TEMPLATE_WITH_RATING % data[0])
 
@@ -277,7 +283,7 @@ class TestQuotes(PluginTestCase):
         data = []
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
-        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_with("#channel", "%s: There's no quote #%s"
         %("user", 1))
 
@@ -288,7 +294,7 @@ class TestQuotes(PluginTestCase):
                  0)]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
-        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_with("#channel", "%s: There's no quote #%s"
         %("user", 1))
 
@@ -297,7 +303,7 @@ class TestQuotes(PluginTestCase):
         calls = [mock.call("#channel", lala.plugins.quotes.MESSAGE_TEMPLATE_WITH_RATING % d) for d in data]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!qflop")
-        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_has_calls(calls)
 
     def test_qtop(self):
@@ -305,7 +311,7 @@ class TestQuotes(PluginTestCase):
         calls = [mock.call("#channel", lala.plugins.quotes.MESSAGE_TEMPLATE_WITH_RATING % d) for d in data]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!qtop")
-        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_has_calls(calls)
 
     def test_searchquote(self):
@@ -315,7 +321,7 @@ class TestQuotes(PluginTestCase):
             data.append([i, "testquote %i" % i])
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!searchquote test")
-        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.plugins.quotes.db_connection.runQuery.callback()
         for i in data:
             lala.util.msg.assert_any_call("#channel",
                     lala.plugins.quotes.MESSAGE_TEMPLATE % (i[0], i[1]))
@@ -323,7 +329,7 @@ class TestQuotes(PluginTestCase):
     def test_searchquote_none_found(self):
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=[])
         lala.pluginmanager._handle_message("user", "#channel", "!searchquote foo")
-        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_once_with("#channel", "No matching quotes found")
 
     def test_searchquote_too_many(self):
@@ -333,7 +339,7 @@ class TestQuotes(PluginTestCase):
             data.append([i, "testquote %i" % i])
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!searchquote test")
-        lala.plugins.quotes.db_connection.runQuery._fire()
+        lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_once_with("#channel",
                 "Too many results, please refine your search")
 

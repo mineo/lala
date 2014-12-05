@@ -3,6 +3,7 @@ import mock
 
 
 from functools import wraps
+from twisted.internet.defer import Deferred
 
 
 class NewDate(datetime.date):
@@ -18,37 +19,22 @@ class NewDateTime(datetime.datetime):
 
 
 class DeferredHelper(object):
-    def __init__(self, fire_callback=True, fire_errback=False, data=None):
-        self.callbacks = []
-        self.errbacks = []
-        self.fire_callback = fire_callback
-        self.fire_errback = fire_errback
+    def __init__(self, data=None):
         self.data = data
-        self.args = None
+        self.deferred = Deferred()
+        self.addCallback = self.deferred.addCallback
+        self.addCallbacks = self.deferred.addCallbacks
+        self.addErrback = self.deferred.addErrback
 
-    def _fire(self):
-        def _walk_func_list(func_list):
-            res = None
-            for callback in func_list:
-                res = callback(self.data)
-                if res is None:
-                    break
+    def callback(self, result=None):
+        if result is None:
+            result = self.data
+        self.deferred.callback(result)
 
-        if self.fire_callback and len(self.callbacks) > 0:
-            _walk_func_list(self.callbacks)
-
-        if self.fire_errback and len(self.errbacks) > 0:
-            _walk_func_list(self.errbacks)
-
-    def addCallback(self, callback):
-        self.callbacks.append(callback)
-
-    def addErrback(self, errback):
-        self.errbacks.append(errback)
-
-    def addCallbacks(self, callback, errback):
-        self.callbacks.append(callback)
-        self.errbacks.append(errback)
+    def errback(self, failure=None):
+        if failure is None:
+            failure = self.data
+        self.deferred.errback(failure)
 
     def __call__(self, *args):
         self.args = args
