@@ -18,23 +18,20 @@ class NewDateTime(datetime.datetime):
         return cls(2012, 12, 10, 00, 00, 00, 00, None)
 
 
-class DeferredHelper(object):
+class DeferredHelper(Deferred):
     def __init__(self, data=None):
+        Deferred.__init__(self)
         self.data = data
-        self.deferred = Deferred()
-        self.addCallback = self.deferred.addCallback
-        self.addCallbacks = self.deferred.addCallbacks
-        self.addErrback = self.deferred.addErrback
 
     def callback(self, result=None):
         if result is None:
             result = self.data
-        self.deferred.callback(result)
+        return Deferred.callback(self, result)
 
     def errback(self, failure=None):
         if failure is None:
             failure = self.data
-        self.deferred.errback(failure)
+        return Deferred.errback(self, failure)
 
     def __call__(self, *args):
         self.args = args
