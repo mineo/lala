@@ -34,7 +34,7 @@ def _make_pluginfunc(func, admin_only=False, aliases=None):
         else:
             func.__doc__ += "\n"
             func.__doc__ += extradoc
-    return PluginFunc(func,admin_only=admin_only, aliases=aliases)
+    return PluginFunc(func, admin_only=admin_only, aliases=aliases)
 
 
 def is_admin(user):
@@ -110,13 +110,13 @@ def _handle_message(user, channel, message):
                         or not func.admin_only):
                     stripped_message = message[len(_cbprefix) + len(command) + 1:]
                     ret = _callbacks[command].func(
-                            user,
-                            channel,
-                            stripped_message)
+                        user,
+                        channel,
+                        stripped_message)
                     _auto_add_errback(user, channel, ret)
                 else:
                     lala.util.msg(channel,
-                                   "Sorry %s, you're not allowed to do that" % user)
+                                  "Sorry %s, you're not allowed to do that" % user)
             else:
                 lala.util.msg(channel, "%s is not enabled" % command)
                 logging.info("%s is not enabled" % command)
@@ -129,10 +129,10 @@ def _handle_message(user, channel, message):
             if func.enabled:
                 logging.info("%s matched %s" % (message, regex))
                 _regexes[regex].func(
-                        user,
-                        channel,
-                        message,
-                        match)
+                    user,
+                    channel,
+                    message,
+                    match)
             else:
                 logging.info("%s is not enabled" % regex.pattern)
 
