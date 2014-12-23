@@ -7,7 +7,6 @@ from twisted.web.client import getPage
 from twisted.internet.defer import inlineCallbacks, returnValue
 
 _regex = re.compile("(https?://.+)\s?")
-_ua = "Mozilla/5.0 (X11; Linux x86_64; rv:2.0b8) Gecko/20100101 Firefox/4.0b8"
 
 
 def unescape(s):
