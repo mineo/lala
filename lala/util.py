@@ -155,4 +155,4 @@ def _check_args(f, count=3):
     args, varargs, varkw, defaults = getargspec(f)
     if defaults:
         args = args[:-defaults]
-    return len(args) == count
+    return varargs is not None or varkw is not None or len(args) == count
