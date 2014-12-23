@@ -11,10 +11,7 @@ DFEOOJM_URL = "http://www.downforeveryoneorjustme.com/%s"
 @command
 @inlineCallbacks
 def isitdown(user, channel, text):
-    s_text = text.split()
-    if len(s_text) <= 1:
-        return
-    website = DFEOOJM_URL % " ".join(s_text[1:])
+    website = DFEOOJM_URL % text
     logging.debug("Trying to open %s" % website)
     content = yield getPage(str(website))
     if "It's just you" in content:
