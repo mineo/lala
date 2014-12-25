@@ -43,6 +43,9 @@ def getService(options):
     config._CFG = cfg
     config._FILENAME = files[0]
 
+    # Set the default logging level so we can already log messages
+    logging.getLogger("").setLevel(logging.INFO)
+
     # Set up logging
     handler = logging.FileHandler(filename=config._get("base", "log_file"),
                                   encoding="utf-8")
@@ -51,7 +54,6 @@ def getService(options):
         handler.setFormatter(logging.Formatter(
             "%(asctime)s %(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s"))
     else:
-        logging.getLogger("").setLevel(logging.INFO)
         handler.setFormatter(logging.Formatter("%(message)s"))
     logging.getLogger("").addHandler(handler)
 
