@@ -45,6 +45,8 @@ def getService(options):
 
     # Set the default logging level so we can already log messages
     logging.getLogger("").setLevel(logging.INFO)
+    logging.info("Read config files %s", files)
+    logging.info("Using %s to save setting", files[0])
 
     # Set up logging
     handler = logging.FileHandler(filename=config._get("base", "log_file"),
