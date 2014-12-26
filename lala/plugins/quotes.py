@@ -55,6 +55,7 @@ def run_query(query, values, callback):
     res = db_connection.runQuery(query, values)
     if callback is not None:
         res.addCallback(callback)
+    return res
 
 
 def run_interaction(func, callback=None, **kwargs):
@@ -171,39 +172,34 @@ def searchquote(user, channel, text):
 
 
 @command(aliases=["qstats"])
+@inlineCallbacks
 def quotestats(user, channel, text):
     """Display statistics about all quotes."""
-    def quote_count_callback(channel, result):
-        quote_count = result[0][0]
-        logging.debug(quote_count)
-        msg(channel, "There are a total of %i quotes." % quote_count)
-        callback = partial(author_stats_callback, channel, quote_count)
-        run_query(
-            """
-            SELECT count(q.quote) AS c, a.name
-            FROM quote q
-            JOIN author a
-            ON q.author = a.rowid
-            GROUP BY a.rowid;
-            """,
-            [],
-            callback)
-
-    def author_stats_callback(channel, num_quotes, rows):
-        count_author_dict = defaultdict(list)
-        for count, author in rows:
-            count_author_dict[count].append(author)
-        for count, authors in sorted(count_author_dict.items(), reverse=True):
-            percentage = (count * 100) / num_quotes
-            if len(authors) > 1:
-                msg(channel, "%s each added %i quote(s) (%.2f%%)" %
-                    (", ".join(authors), count, percentage))
-            else:
-                msg(channel, "%s added %i quote(s) (%.2f%%)" %
-                    (authors[0], count, percentage))
-
-    quote_count_callback = partial(quote_count_callback, channel)
-    run_query("SELECT count(quote) from quote;", [], quote_count_callback)
+    result = yield run_query("SELECT count(quote) from quote;", [], None)
+    quote_count = result[0][0]
+    msg(channel, "There are a total of %i quotes." % quote_count)
+    rows = yield run_query(
+        """
+        SELECT count(q.quote) AS c, a.name
+        FROM quote q
+        JOIN author a
+        ON q.author = a.rowid
+        GROUP BY a.rowid;
+        """,
+        [],
+        None
+    )
+    count_author_dict = defaultdict(list)
+    for count, author in rows:
+        count_author_dict[count].append(author)
+    for count, authors in sorted(count_author_dict.items(), reverse=True):
+        percentage = (count * 100) / quote_count
+        if len(authors) > 1:
+            msg(channel, "%s each added %i quote(s) (%.2f%%)" %
+                (", ".join(authors), count, percentage))
+        else:
+            msg(channel, "%s added %i quote(s) (%.2f%%)" %
+                (authors[0], count, percentage))
 
 
 def _like_impl(user, channel, text, votevalue):
