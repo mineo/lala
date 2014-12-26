@@ -163,14 +163,11 @@ def searchquote(user, channel, text):
             for quote in quotes:
                 _send_quote_to_channel(channel, quote)
 
-    s_text = text.split()
-    logging.debug(s_text[1:])
-
     run_query(
         "SELECT rowid, quote FROM quote WHERE quote LIKE (?)",
-        ["".join(("%", " ".join(s_text[1:]), "%"))],
+        ["".join(("%", text, "%"))],
         callback
-        )
+    )
 
 
 @command(aliases=["qstats"])
