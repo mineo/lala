@@ -1,7 +1,7 @@
 import lala.config
 
-from functools import partial
 from lala.util import command, msg
+from twisted.internet.defer import inlineCallbacks
 from twisted.internet.utils import getProcessOutput
 
 
@@ -21,13 +21,12 @@ def ofortune(user, channel, text):
     return _call_fortune(user, channel, ["-o"] + _get_fortune_file_from_text(text))
 
 
+@inlineCallbacks
 def _call_fortune(user, channel, args=[]):
     """Call the ``fortune`` executable with ``args`` (a sequence of strings).
     """
-    callback = partial(_send_output_to_channel, user, channel)
-    deferred = getProcessOutput(lala.config.get("fortune_path"), args)
-    deferred.addCallback(callback)
-    return deferred
+    fortune = yield getProcessOutput(lala.config.get("fortune_path"), args)
+    _send_output_to_channel(user, channel, fortune)
 
 
 def _get_fortune_file_from_text(text):
