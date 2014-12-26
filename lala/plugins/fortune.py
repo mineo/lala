@@ -1,5 +1,4 @@
 import lala.config
-import logging
 
 from functools import partial
 from lala.util import command, msg
