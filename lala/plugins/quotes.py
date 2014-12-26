@@ -88,27 +88,23 @@ def getquote(user, channel, text):
 @command(aliases=["qadd"])
 def addquote(user, channel, text):
     """Add a quote"""
-    def msgcallback(c):
-        msg(channel, "New quote: %s" % c[0])
-
-    def addcallback(c):
-        # TODO This might not be the rowid we're looking for in all cases…
-        run_query("SELECT max(rowid) FROM quote;", [], msgcallback)
-
     if text:
 
-        def add(c):
+        def add(txn, *args):
+            logging.info("Adding author %s" % user)
+            txn.execute("INSERT OR IGNORE INTO author (name) values (?)",
+                        [user])
             logging.info("Adding quote: %s" % text)
-            run_query("INSERT INTO quote (quote, author)\
+            txn.execute("INSERT INTO quote (quote, author)\
                             SELECT (?), rowid\
                             FROM author WHERE name = (?);",
-                      [text, user],
-                      addcallback)
+                        [text, user])
+            txn.execute("SELECT max(rowid) FROM quote;", [])
+            num = txn.fetchone()
+            msg(channel, "New quote: %s" % num)
 
-        logging.info("Adding author %s" % user)
-        run_query("INSERT OR IGNORE INTO author (name) values (?)",
-                  [user],
-                  add)
+        run_interaction(add)
+
     else:
         msg(channel, "%s: You didn't give me any text to quote " % user)
 
