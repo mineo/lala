@@ -29,28 +29,6 @@ db_connection = adbapi.ConnectionPool("sqlite3", database_path,
                                       cp_min=1)
 
 
-def setup_db():
-    db_connection.runOperation("""CREATE TABLE IF NOT EXISTS author(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE);""")
-    db_connection.runOperation("""CREATE TABLE IF NOT EXISTS quote(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        quote TEXT,
-        author INTEGER NOT NULL REFERENCES author(id));""")
-    db_connection.runOperation("""CREATE TABLE IF NOT EXISTS voter (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE);""")
-    db_connection.runOperation("""CREATE TABLE IF NOT EXISTS vote (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        vote INT NOT NULL,
-        quote INTEGER NOT NULL REFERENCES quote(id),
-        voter INTEGER NOT NULL REFERENCES voter(id),
-        CONSTRAINT valid_vote CHECK (vote IN (-1, 1)),
-        CONSTRAINT unique_quote_voter UNIQUE (quote, voter));""")
-
-setup_db()
-
-
 def run_query(query, values=[], callback=None):
     res = db_connection.runQuery(query, values)
     if callback is not None:
@@ -63,6 +41,30 @@ def run_interaction(func, callback=None, **kwargs):
     if callback is not None:
         res.addCallback(callback)
     return res
+
+
+def setup_db():
+    def f(txn, *args):
+        txn.execute("""CREATE TABLE IF NOT EXISTS author(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE);""")
+        txn.execute("""CREATE TABLE IF NOT EXISTS quote(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            quote TEXT,
+            author INTEGER NOT NULL REFERENCES author(id));""")
+        txn.execute("""CREATE TABLE IF NOT EXISTS voter (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE);""")
+        txn.execute("""CREATE TABLE IF NOT EXISTS vote (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            vote INT NOT NULL,
+            quote INTEGER NOT NULL REFERENCES quote(id),
+            voter INTEGER NOT NULL REFERENCES voter(id),
+            CONSTRAINT valid_vote CHECK (vote IN (-1, 1)),
+            CONSTRAINT unique_quote_voter UNIQUE (quote, voter));""")
+    return run_interaction(f)
+
+setup_db()
 
 
 @command(aliases=["qget"])
