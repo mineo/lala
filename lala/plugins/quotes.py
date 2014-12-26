@@ -8,6 +8,7 @@ from functools import partial
 from lala.util import command, msg, on_join
 from lala.config import get, get_int, set_default_options
 from twisted.enterprise import adbapi
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 set_default_options(database_path=os.path.join(os.path.expanduser("~/.lala"),
                                                "quotes.sqlite3"),
@@ -106,8 +107,8 @@ def addquote(user, channel, text):
 
         logging.info("Adding author %s" % user)
         run_query("INSERT OR IGNORE INTO author (name) values (?)",
-                [user],
-                add)
+                  [user],
+                  add)
     else:
         msg(channel, "%s: You didn't give me any text to quote " % user)
 
