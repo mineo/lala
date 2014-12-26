@@ -62,6 +62,7 @@ def run_interaction(func, callback=None, **kwargs):
     res = db_connection.runInteraction(func, kwargs)
     if callback is not None:
         res.addCallback(callback)
+    return res
 
 
 @command(aliases=["qget"])
@@ -104,7 +105,7 @@ def addquote(user, channel, text):
             num = txn.fetchone()
             msg(channel, "New quote: %s" % num)
 
-        run_interaction(add)
+        return run_interaction(add)
 
     else:
         msg(channel, "%s: You didn't give me any text to quote " % user)
@@ -132,7 +133,7 @@ def delquote(user, channel, text):
                 msg(channel, "It doesn't look like quote #%s exists." %
                     text)
 
-        run_interaction(interaction, callback)
+        return run_interaction(interaction, callback)
 
 
 @command(aliases=["qlast"])
@@ -216,25 +217,23 @@ def _like_impl(user, channel, text, votevalue):
                         FROM voter
                         WHERE voter.name = ?;""", [votevalue, quotenumber, user])
         logging.debug("Added 1 vote for %i by %s" % (quotenumber, user))
-
-    def callback(*args):
         msg(channel, "%s: Your vote for quote #%i has been accepted!" % (user, quotenumber))
 
-    run_interaction(interaction, callback)
+    return run_interaction(interaction)
 
 
 @command
 def qlike(user, channel, text):
     """`Likes` a quote.
     """
-    _like_impl(user, channel, text, 1)
+    return _like_impl(user, channel, text, 1)
 
 
 @command
 def qdislike(user, channel, text):
     """`Dislikes` a quote.
     """
-    _like_impl(user, channel, text, -1)
+    return _like_impl(user, channel, text, -1)
 
 
 @inlineCallbacks
