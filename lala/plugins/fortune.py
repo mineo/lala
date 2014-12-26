@@ -42,4 +42,4 @@ def _get_fortune_file_from_text(text):
 
 
 def _send_output_to_channel(user, channel, text):
-    msg(channel, "%s: %s" %(user, text.replace("\n", " ")))
+    msg(channel, "%s: %s" % (user, text.replace("\n", " ")))
