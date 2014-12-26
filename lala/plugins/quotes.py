@@ -51,7 +51,7 @@ def setup_db():
 setup_db()
 
 
-def run_query(query, values, callback):
+def run_query(query, values=[], callback=None):
     res = db_connection.runQuery(query, values)
     if callback is not None:
         res.addCallback(callback)
@@ -175,7 +175,7 @@ def searchquote(user, channel, text):
 @inlineCallbacks
 def quotestats(user, channel, text):
     """Display statistics about all quotes."""
-    result = yield run_query("SELECT count(quote) from quote;", [], None)
+    result = yield run_query("SELECT count(quote) from quote;")
     quote_count = result[0][0]
     msg(channel, "There are a total of %i quotes." % quote_count)
     rows = yield run_query(
@@ -185,9 +185,7 @@ def quotestats(user, channel, text):
         JOIN author a
         ON q.author = a.rowid
         GROUP BY a.rowid;
-        """,
-        [],
-        None
+        """
     )
     count_author_dict = defaultdict(list)
     for count, author in rows:
@@ -259,8 +257,7 @@ def _topflopimpl(channel, text, top=True):
         GROUP BY vote.quote
         ORDER BY rating %s
         LIMIT (?);""" % ("DESC" if top else "ASC"),
-        [limit],
-        None)
+        [limit])
     for row in results:
         msg(channel, MESSAGE_TEMPLATE_WITH_RATING % row)
 
