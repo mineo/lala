@@ -8,7 +8,7 @@ from functools import partial
 from lala.util import command, msg, on_join
 from lala.config import get, get_int, set_default_options
 from twisted.enterprise import adbapi
-from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.defer import inlineCallbacks
 
 set_default_options(database_path=os.path.join(os.path.expanduser("~/.lala"),
                                                "quotes.sqlite3"),
@@ -239,6 +239,7 @@ def qdislike(user, channel, text):
     _like_impl(user, channel, text, -1)
 
 
+@inlineCallbacks
 def _topflopimpl(channel, text, top=True):
     """Shows quotes with the best or worst rating.
     If ``top`` is True, the quotes with the best ratings will be shown,
@@ -249,31 +250,33 @@ def _topflopimpl(channel, text, top=True):
     else:
         limit = get("max_quotes")
 
-    def callback(result):
-        for row in result:
-            msg(channel, MESSAGE_TEMPLATE_WITH_RATING % row)
-
-    run_query("""SELECT quote.id, quote.quote, sum(vote) as rating, count(vote) as votes
-                 FROM vote
-                 JOIN quote
-                 ON vote.quote = quote.id
-                 GROUP BY vote.quote
-                 ORDER BY rating %s
-                 LIMIT (?);""" % ("DESC" if top else "ASC"), [limit], callback)
+    results = yield run_query(
+        """
+        SELECT quote.id, quote.quote, sum(vote) as rating, count(vote) as votes
+        FROM vote
+        JOIN quote
+        ON vote.quote = quote.id
+        GROUP BY vote.quote
+        ORDER BY rating %s
+        LIMIT (?);""" % ("DESC" if top else "ASC"),
+        [limit],
+        None)
+    for row in results:
+        msg(channel, MESSAGE_TEMPLATE_WITH_RATING % row)
 
 
 @command
 def qtop(user, channel, text):
     """Shows the quotes with the best rating.
     """
-    _topflopimpl(channel, text, True)
+    return _topflopimpl(channel, text, True)
 
 
 @command
 def qflop(user, channel, text):
     """Shows the quotes with the worst rating.
     """
-    _topflopimpl(channel, text, False)
+    return _topflopimpl(channel, text, False)
 
 
 @on_join
