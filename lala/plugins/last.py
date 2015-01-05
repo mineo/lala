@@ -38,7 +38,7 @@ def last(user, channel, text):
     max_lines = lala.config.get_int("max_lines")
     s_text = text.split()
     try:
-        num_lines = min(max_lines, int(s_text[1]))
+        num_lines = min(max_lines, int(s_text[0]))
     except IndexError:
         num_lines = max_lines
     num_lines = min(num_lines, len(_chatlog))
