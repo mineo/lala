@@ -68,19 +68,20 @@ Options
   ``qtop``/``qflop``. Defaults to 5.
 """
 from __future__ import division
+__all__ = []
 import logging
 import os
 
 from collections import defaultdict
 from functools import partial
 from lala.util import command, msg, on_join
-from lala.config import get, get_int, set_default_options
+from lala.config import get, get_int
 from twisted.enterprise import adbapi
 from twisted.internet.defer import inlineCallbacks
 
-set_default_options(database_path=os.path.join(os.path.expanduser("~/.lala"),
+DEFAULT_OPTIONS = {"DATABASE_PATH": os.path.join(os.path.expanduser("~/.lala"),
                                                "quotes.sqlite3"),
-                    max_quotes="5")
+                   "MAX_QUOTES": "5"}
 
 MESSAGE_TEMPLATE = "[%s] %s"
 MESSAGE_TEMPLATE_WITH_RATING = "[%s] %s (rating: %s, votes: %s)"
@@ -90,11 +91,8 @@ def _openfun(c):
     c.execute("PRAGMA foreign_keys = ON;")
 
 db_connection = None
-database_path = get("database_path")
-db_connection = adbapi.ConnectionPool("sqlite3", database_path,
-                                      check_same_thread=False,
-                                      cp_openfun=_openfun,
-                                      cp_min=1)
+database_path = None
+db_connection = None
 
 
 def run_query(query, values=[], callback=None):
@@ -111,7 +109,15 @@ def run_interaction(func, callback=None, **kwargs):
     return res
 
 
-def setup_db():
+def init():
+    global database_path
+    global db_connection
+    database_path = get("database_path")
+    db_connection = adbapi.ConnectionPool("sqlite3", database_path,
+                                          check_same_thread=False,
+                                          cp_openfun=_openfun,
+                                          cp_min=1)
+
     def f(txn, *args):
         txn.execute("""CREATE TABLE IF NOT EXISTS author(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -131,8 +137,6 @@ def setup_db():
             CONSTRAINT valid_vote CHECK (vote IN (-1, 1)),
             CONSTRAINT unique_quote_voter UNIQUE (quote, voter));""")
     return run_interaction(f)
-
-setup_db()
 
 
 @command(aliases=["qget"])

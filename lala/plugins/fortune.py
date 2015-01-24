@@ -21,6 +21,7 @@ Options
   The full path to the fortune binary. Defaults to ``/usr/bin/fortune``
 
 """
+__all__ = []
 import lala.config
 
 from lala.util import command, msg
@@ -28,8 +29,8 @@ from twisted.internet.defer import inlineCallbacks
 from twisted.internet.utils import getProcessOutput
 
 
-lala.config.set_default_options(fortune_path="/usr/bin/fortune",
-                                fortune_files="fortunes")
+DEFAULT_OPTIONS = {"fortune_path": "/usr/bin/fortune",
+                   "fortune_files": "fortunes"}
 
 
 @command

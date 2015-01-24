@@ -10,6 +10,8 @@ Options
 
 - None
 """
+__all__ = []
+
 import logging
 import re
 import HTMLParser

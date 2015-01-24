@@ -19,14 +19,17 @@ Options
 
 .. _strftime documentation: http://docs.python.org/2/library/datetime.html?highlight=datetime#strftime-strptime-behavior
 """
+__all__ = []
 import lala.config
 
 from datetime import datetime
 from lala.util import command, msg, regex
 
 
-lala.config.set_default_options(max_lines="30",
-                                datetime_format="%Y-%m-%d %H:%M:%S")
+DEFAULT_OPTIONS = {"max_lines": "30",
+                   "datetime_format": "%Y-%m-%d %H:%M:%S"}
+
+_chatlog = None
 
 
 class _LogEntryBuffer(list):
@@ -50,7 +53,6 @@ class _LogEntryBuffer(list):
             self.pop(0)
         list.append(self, item)
 
-_chatlog = _LogEntryBuffer(lala.config.get_int("max_lines"))
 
 
 @command
@@ -70,3 +72,7 @@ def last(user, channel, text):
 def chatlog(user, channel, text, match_obj):
     now = datetime.now().strftime(lala.config.get("datetime_format"))
     _chatlog.append("[%s] %s: %s" % (now, user, text))
+
+def init():
+    global _chatlog
+    _chatlog = _LogEntryBuffer(lala.config.get_int("max_lines"))

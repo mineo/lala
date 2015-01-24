@@ -10,6 +10,8 @@ from types import GeneratorType
 
 __all__ = ["disable", "enable", "is_admin", "PluginFunc", "load_plugin"]
 
+DEFAULT_OPTIONS_VARIABLE = "DEFAULT_OPTIONS"
+MODULE_INIT_FUNC = "init"
 
 _callbacks = {}
 _join_callbacks = list()
@@ -59,7 +61,15 @@ def load_plugin(name):
         lala.config._CFG.add_section(name)
     name = "lala/plugins/%s" % name
     (f, p, d) = imp.find_module(name)
-    imp.load_module(name, f, p, d)
+    mod = imp.load_module(name, f, p, d)
+    if hasattr(mod, DEFAULT_OPTIONS_VARIABLE):
+        lala.config._set_default_options(name, getattr(mod, DEFAULT_OPTIONS_VARIABLE))
+    if hasattr(mod, MODULE_INIT_FUNC):
+        initf = getattr(mod, MODULE_INIT_FUNC)
+        if callable(initf):
+            initf()
+        else:
+            raise TypeError("module init function is not callable")
 
 
 def register_callback(trigger, func, admin_only=False, aliases=None):

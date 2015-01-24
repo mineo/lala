@@ -1,4 +1,11 @@
-"""Config module"""
+"""
+Config module
+
+.. versionchanged:: 0.5
+The function set_default_options was removed. To achieve the same behaviour,
+set a module-level dict called "DEFAULT_OPTIONS" where the keys are the
+option names and the values are the default values in your plugin.
+"""
 import logging
 
 
@@ -109,14 +116,13 @@ def set_list(key, value, *args):
     set(key, value, *args)
 
 
-def set_default_options(**kwargs):
+def _set_default_options(plugin, opts):
     """Sets the default options for a plugin.
 
     The names of the arguments in ``kwargs`` will be used as the option names,
     the values as the values of the options.
     """
-    plugin = _find_current_plugin_name()
-    for key, value in kwargs.iteritems():
+    for key, value in opts.iteritems():
         if not _CFG.has_option(plugin, key):
             if not isinstance(value, list):
                 _set(plugin, key, value)

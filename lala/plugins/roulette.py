@@ -18,15 +18,17 @@ Options
 
 - None
 """
+__all__ = []
 import random
 from lala.util import command, msg
+
 
 class revolver:
     def __init__(self):
         self.reload()
 
     def reload(self):
-        self.bullet = random.randint(1,6)
+        self.bullet = random.randint(1, 6)
         self.chamber = 1
 
     def shoot(self, user, channel, text):

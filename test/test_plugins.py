@@ -10,6 +10,7 @@ except ImportError:
     import unittest
 
 from . import _helpers
+from importlib import import_module
 from twisted.python.failure import Failure
 
 
@@ -23,7 +24,14 @@ class PluginTestCase(unittest.TestCase):
         lala.pluginmanager._callsbacks = {}
         lala.pluginmanager._regexes = {}
         lala.pluginmanager._join_callbacks = []
-        __import__("lala.plugins.%s" % cls.plugin)
+        mod = import_module("lala.plugins.%s" % cls.plugin)
+        default_opts = getattr(mod, lala.pluginmanager.DEFAULT_OPTIONS_VARIABLE,
+                               None)
+        if default_opts is not None:
+            lala.config._set_default_options(cls.plugin, default_opts)
+        initf = getattr(mod, lala.pluginmanager.MODULE_INIT_FUNC, None)
+        if initf is not None:
+            initf()
 
     def setUp(self):
         msg_patcher = mock.patch('lala.util.msg')
