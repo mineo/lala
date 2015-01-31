@@ -80,7 +80,7 @@ from twisted.enterprise import adbapi
 from twisted.internet.defer import inlineCallbacks
 
 DEFAULT_OPTIONS = {"DATABASE_PATH": os.path.join(os.path.expanduser("~/.lala"),
-                                               "quotes.sqlite3"),
+                                                 "quotes.sqlite3"),
                    "MAX_QUOTES": "5"}
 
 MESSAGE_TEMPLATE = "[%s] %s"

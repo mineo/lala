@@ -48,10 +48,13 @@ class revolver:
 
 gun = revolver()
 
+
 @command
 def reload(user, channel, text):
     gun.reload()
     msg(channel, "Can't you see I'm reloading")
+
+
 @command
 def shoot(user, channel, text):
     gun.shoot(user, channel, text)
