@@ -7,25 +7,25 @@ print a quote containg the name of the joining person on every join.
 
 It provides the following commands:
 
-- ``addquote <quote>``
+- ``qadd <quote>``
 
   Adds a new quote to the database
 
-- ``delquote <quote id>``
+- ``qdelete <quote id>``
 
   Admin only.
 
   Deletes the quote with the specified ID.
 
-- ``getquote <quote id>``
+- ``qget <quote id>``
 
   Get the quote with the specified ID.
 
-- ``lastquote``
+- ``qlast``
 
   Get the last inserted quote.
 
-- ``randomquote``
+- ``qrandom``
 
   Retrieve a random quote.
 
