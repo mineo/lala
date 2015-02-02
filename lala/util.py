@@ -58,8 +58,8 @@ class command(object):
             self.cmd = None
             self._handle_func(command)
         elif command is None:
-            # This happens when only admin_only is set when decorating a
-            # function like
+            # This happens when any of the keyword arguments (but not `command`)
+            # is set when decorating a function like
             # @command(admin_only=True)
             # def foo(user, channel, text):
             #   pass
