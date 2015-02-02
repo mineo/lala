@@ -54,7 +54,6 @@ class _LogEntryBuffer(list):
         list.append(self, item)
 
 
-
 @command
 def last(user, channel, text):
     """Show the last lines from the log"""
@@ -72,6 +71,7 @@ def last(user, channel, text):
 def chatlog(user, channel, text, match_obj):
     now = datetime.now().strftime(lala.config.get("datetime_format"))
     _chatlog.append("[%s] %s: %s" % (now, user, text))
+
 
 def init():
     global _chatlog
