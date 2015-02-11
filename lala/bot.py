@@ -67,7 +67,8 @@ class Lala(irc.IRCClient):
 
         Depending on ``log``, the message will be logged or not.
 
-        Do not use this method from plugins, use :meth:`lala.util.msg` instead."""
+        Do not use this method from plugins, use :meth:`lala.util.msg` instead.
+        """
         if log:
             logging.debug("%s: %s" % (self.nickname, message))
         message = message.rstrip().encode("utf-8")
@@ -90,7 +91,8 @@ class Lala(irc.IRCClient):
     def irc_RPL_WHOISREGNICK(self, prefix, params):
         user = params[1]
         logging.debug("%s is a registered nick" % user)
-        if self.factory.nspassword is not None and user in self._list_of_admins():
+        if (self.factory.nspassword is not None and
+            user in self._list_of_admins()):
             self.identified_admins.append(user)
 
     def userLeft(self, user, channel):
@@ -107,7 +109,7 @@ class Lala(irc.IRCClient):
         and the user is in the admin list, append him to ``identified_admins``.
         """
         if self.factory.nspassword is not None and set and user == "Chanserv"\
-        and user in self._list_of_admins():
+           and user in self._list_of_admins():
             logging.info("Assuming %s is identified" % user)
             self.identified_admins.append(user)
 
@@ -124,7 +126,8 @@ class Lala(irc.IRCClient):
     def _potential_admin_joined(self, user):
         if not config._CFG.getboolean("base", "nickserv_admin_tracking"):
             return
-        if user in self._list_of_admins() and user not in self.identified_admins:
+        if (user in self._list_of_admins() and
+            user not in self.identified_admins):
             logging.debug("WHOISing %s" % user)
             self.whois(user)
 

@@ -14,7 +14,6 @@ Options
     The number of days for which logs are kept. Set this to zero to keep them
     indefinitely.
 """
-__all__ = []
 import codecs
 import lala.config
 import logging
@@ -22,6 +21,7 @@ import logging.handlers
 
 from lala.util import command, msg, regex
 
+__all__ = []
 
 chatlogger = None
 

@@ -52,7 +52,8 @@ def is_admin(user):
         return user in lala.util._BOT.identified_admins
     else:
         return user in lala.config._get("base",
-                                        "admins").split(lala.config._LIST_SEPARATOR)
+                                        "admins").split(
+                                            lala.config._LIST_SEPARATOR)
 
 
 def load_plugin(name):
@@ -63,7 +64,8 @@ def load_plugin(name):
     (f, p, d) = imp.find_module(name)
     mod = imp.load_module(name, f, p, d)
     if hasattr(mod, DEFAULT_OPTIONS_VARIABLE):
-        lala.config._set_default_options(name, getattr(mod, DEFAULT_OPTIONS_VARIABLE))
+        lala.config._set_default_options(name,
+                                         getattr(mod, DEFAULT_OPTIONS_VARIABLE))
     if hasattr(mod, MODULE_INIT_FUNC):
         initf = getattr(mod, MODULE_INIT_FUNC)
         if callable(initf):
@@ -94,7 +96,8 @@ def register_regex(regex, func):
 
 
 def _generic_errback(user, channel, failure):
-    lala.util.msg(channel, "%s: whoops, something went wrong while processing your command!" % user)
+    lala.util.msg(channel, "%s: whoops, something went wrong while processing "
+                  "your command!" % user)
     return failure
 
 
@@ -118,7 +121,8 @@ def _handle_message(user, channel, message):
             if func.enabled:
                 if ((func.admin_only and is_admin(user))
                         or not func.admin_only):
-                    stripped_message = message[len(_cbprefix) + len(command) + 1:]
+                    stripped_message = message[len(_cbprefix)
+                                               + len(command) + 1:]
                     ret = _callbacks[command].func(
                         user,
                         channel,
@@ -126,7 +130,8 @@ def _handle_message(user, channel, message):
                     _auto_add_errback(user, channel, ret)
                 else:
                     lala.util.msg(channel,
-                                  "Sorry %s, you're not allowed to do that" % user)
+                                  "Sorry %s, you're not allowed to do that"
+                                  % user)
             else:
                 lala.util.msg(channel, "%s is not enabled" % command)
                 logging.info("%s is not enabled" % command)

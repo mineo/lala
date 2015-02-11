@@ -35,7 +35,8 @@ def getService(options):
     # Set up the config
     cfg = ConfigParser.RawConfigParser(CONFIG_DEFAULTS)
     try:
-        configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"), "lala", "config")
+        configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),
+                                  "lala", "config")
     except AttributeError:
         configfile = os.path.join(os.getenv("HOME"), ".lala", "config")
     files = cfg.read([configfile, "/etc/lala.config"])
@@ -54,7 +55,8 @@ def getService(options):
     if options["verbose"] or cfg.getboolean("base", "debug"):
         logging.getLogger("").setLevel(logging.DEBUG)
         handler.setFormatter(logging.Formatter(
-            "%(asctime)s %(levelname)s %(filename)s: %(funcName)s:%(lineno)d %(message)s"))
+            "%(asctime)s %(levelname)s %(filename)s: %(funcName)s:%(lineno)d"
+            " %(message)s"))
     else:
         handler.setFormatter(logging.Formatter("%(message)s"))
     logging.getLogger("").addHandler(handler)

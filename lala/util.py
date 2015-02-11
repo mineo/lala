@@ -46,7 +46,7 @@ class command(object):
         .. versionchanged:: 0.5
         The third argument received by a command function used to include the
         name of the command itself. Since version 0.5 this is no longer the case.
-    """
+    """  # noqa
     def __init__(self, command=None, admin_only=False, aliases=None):
         self.admin_only = admin_only
         self.aliases = aliases

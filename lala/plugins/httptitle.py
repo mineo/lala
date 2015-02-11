@@ -10,8 +10,6 @@ Options
 
 - None
 """
-__all__ = []
-
 import logging
 import re
 import HTMLParser
@@ -19,6 +17,9 @@ import HTMLParser
 from lala.util import regex, msg
 from twisted.web.client import getPage
 from twisted.internet.defer import inlineCallbacks, returnValue
+
+__all__ = []
+
 
 _regex = re.compile("(https?://.+)\s?")
 

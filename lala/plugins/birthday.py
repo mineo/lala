@@ -35,9 +35,11 @@ def _set_birthday(user, channel, date_to_parse):
         if today > date_of_birth.date():
             date_to_parse = date_to_parse[:-4] + str(today.year + 1)
             logging.debug("Parsing %s" % date_to_parse)
-            date_of_birth = datetime.strptime(date_to_parse, _CONFIG_TIME_FORMAT)
+            date_of_birth = datetime.strptime(date_to_parse,
+                                              _CONFIG_TIME_FORMAT)
     except ValueError:
-        msg(channel, "Sorry %s, I couldn't parse %s into a valid date" % (date_to_parse))
+        msg(channel, "Sorry %s, I couldn't parse %s into a valid date"
+            % (date_to_parse))
         return
 
     set(user, date_of_birth.strftime(_CONFIG_TIME_FORMAT))
@@ -67,4 +69,5 @@ def birthday_join_notice(user, channel):
         # The users date of birth in this year is already in the past but the
         # configuration file entry doesn't reflect that. This can happen if he
         # didn't join the channel on his birthday.
-        _set_birthday(user, channel, "%i.%i." % (date_of_birth.day, date_of_birth.month))
+        _set_birthday(user, channel, "%i.%i." % (date_of_birth.day,
+                                                 date_of_birth.month))

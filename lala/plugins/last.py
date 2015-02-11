@@ -18,12 +18,13 @@ Options
     ``%Y-%m-%d %H:%M:%S``.
 
 .. _strftime documentation: http://docs.python.org/2/library/datetime.html?highlight=datetime#strftime-strptime-behavior
-"""
-__all__ = []
+"""  # noqa
 import lala.config
 
 from datetime import datetime
 from lala.util import command, msg, regex
+
+__all__ = []
 
 
 DEFAULT_OPTIONS = {"max_lines": "30",

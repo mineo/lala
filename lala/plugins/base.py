@@ -6,11 +6,6 @@ import lala.pluginmanager
 from lala.util import command, msg
 from twisted.internet import reactor
 
-#@command
-#def load(user, channel, text):
-    #if is_admin(user):
-        #util._BOT.plugger.load_plugin(text.split()[1])
-
 
 @command(admin_only=True)
 def part(user, channel, text):
@@ -61,7 +56,7 @@ def addadmin(user, channel, admin):
     else:
         config.set("admins", "%s,%s" % (config.get("admins"), admin))
         msg(channel,
-                    "%s has been added to the list of admins" % admin)
+            "%s has been added to the list of admins" % admin)
 
 
 @command

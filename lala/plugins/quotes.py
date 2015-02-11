@@ -68,7 +68,6 @@ Options
   ``qtop``/``qflop``. Defaults to 5.
 """
 from __future__ import division
-__all__ = []
 import logging
 import os
 
@@ -78,6 +77,8 @@ from lala.util import command, msg, on_join
 from lala.config import get, get_int
 from twisted.enterprise import adbapi
 from twisted.internet.defer import inlineCallbacks
+
+__all__ = []
 
 DEFAULT_OPTIONS = {"DATABASE_PATH": os.path.join(os.path.expanduser("~/.lala"),
                                                  "quotes.sqlite3"),
@@ -285,13 +286,16 @@ def _like_impl(user, channel, text, votevalue):
 
     def interaction(txn, *args):
         logging.debug("Adding 1 vote for %i by %s" % (quotenumber, user))
-        txn.execute("""INSERT OR IGNORE INTO voter (name) VALUES (?);""", [user])
+        txn.execute("""INSERT OR IGNORE INTO voter (name) VALUES (?);""",
+                    [user])
         txn.execute("""INSERT OR REPLACE INTO vote (vote, quote, voter)
                         SELECT ?, ?, voter.rowid
                         FROM voter
-                        WHERE voter.name = ?;""", [votevalue, quotenumber, user])
+                        WHERE voter.name = ?;""",
+                    [votevalue, quotenumber, user])
         logging.debug("Added 1 vote for %i by %s" % (quotenumber, user))
-        msg(channel, "%s: Your vote for quote #%i has been accepted!" % (user, quotenumber))
+        msg(channel, "%s: Your vote for quote #%i has been accepted!"
+            % (user, quotenumber))
 
     return run_interaction(interaction)
 

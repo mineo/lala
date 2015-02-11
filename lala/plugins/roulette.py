@@ -18,9 +18,10 @@ Options
 
 - None
 """
-__all__ = []
 import random
 from lala.util import command, msg
+
+__all__ = []
 
 
 class revolver:

@@ -3,7 +3,8 @@ Fortune
 =======
 
 This plugin provides two commands, ``fortune`` and ``ofortune``, both of which
-basically call the `fortune command <https://en.wikipedia.org/wiki/Fortune_(Unix)>`_
+basically call the
+`fortune command <https://en.wikipedia.org/wiki/Fortune_(Unix)>`_
 and post the result in the channel. In addition, ``ofortune`` supplies the
 ``-o`` option to ``fortune`` so that only offensive fortunes are chosen.
 
@@ -21,12 +22,13 @@ Options
   The full path to the fortune binary. Defaults to ``/usr/bin/fortune``
 
 """
-__all__ = []
 import lala.config
 
 from lala.util import command, msg
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.utils import getProcessOutput
+
+__all__ = []
 
 
 DEFAULT_OPTIONS = {"fortune_path": "/usr/bin/fortune",
@@ -42,7 +44,8 @@ def fortune(user, channel, text):
 @command
 def ofortune(user, channel, text):
     """Show a random, hopefully interesting, offensive adage"""
-    return _call_fortune(user, channel, ["-o"] + _get_fortune_file_from_text(text))
+    return _call_fortune(user, channel, ["-o"] +
+                         _get_fortune_file_from_text(text))
 
 
 @inlineCallbacks
@@ -58,7 +61,8 @@ def _get_fortune_file_from_text(text):
     if len(s_text) > 0:
         return s_text
     else:
-        files = lala.config.get("fortune_files").split(lala.config._LIST_SEPARATOR)
+        files = lala.config.get("fortune_files").split(
+            lala.config._LIST_SEPARATOR)
         files = map(str.strip, files)
         return files
 
