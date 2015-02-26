@@ -119,10 +119,10 @@ def _handle_message(user, channel, message):
         if func is not None:
             logging.debug(func)
             if func.enabled:
-                if ((func.admin_only and is_admin(user))
-                        or not func.admin_only):
-                    stripped_message = message[len(_cbprefix)
-                                               + len(command) + 1:]
+                if ((func.admin_only and is_admin(user)) or
+                        not func.admin_only):
+                    stripped_message = message[len(_cbprefix) +
+                                               len(command) + 1:]
                     ret = _callbacks[command].func(
                         user,
                         channel,
