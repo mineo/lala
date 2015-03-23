@@ -17,7 +17,7 @@ Options
     `strftime documentation`_ for all possible options. The default is
     ``%Y-%m-%d %H:%M:%S``.
 
-.. _strftime documentation: http://docs.python.org/2/library/datetime.html?highlight=datetime#strftime-strptime-behavior
+.. _strftime documentation: https://docs.python.org/2/library/datetime.html?highlight=datetime#strftime-strptime-behavior
 """  # noqa
 import lala.config
 

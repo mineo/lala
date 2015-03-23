@@ -6,7 +6,7 @@ PyPI
 ----
 
 Lala is available on the Python Package Index. This makes installing
-it with `pip <http://www.pip-installer.org>`_ as easy as::
+it with `pip <https://pip.pypa.io/en/latest/>`_ as easy as::
 
     pip install lala
 
