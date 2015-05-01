@@ -107,5 +107,9 @@ setup(name="lala",
                    "Programming Language :: Python :: 2.6",
                    "Programming Language :: Python :: 2.7"],
       data_files=[("usr/share/doc/lala", ["config.example"])],
-      cmdclass={"version": Version, "sdist": sdist, "build": build}
+      cmdclass={"version": Version, "sdist": sdist, "build": build},
+      install_requires=["Twisted"],
+      extras_require={
+          "iw": ["ilmwetter"]
+      }
       )

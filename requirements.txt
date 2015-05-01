@@ -1,1 +1,1 @@
-Twisted
+-e .[iw]

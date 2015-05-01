@@ -10,6 +10,7 @@ Plugins
    down
    fortune
    httptitle
+   iw
    last
    log
    quotes

@@ -59,7 +59,8 @@ def get(key, converter=None):
     return value
 
 
-_get = lambda section, key: _CFG.get(section, key)
+def _get(section, key):
+    return _CFG.get(section, key)
 
 
 def get_int(*args):
