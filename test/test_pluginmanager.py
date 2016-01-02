@@ -188,7 +188,7 @@ class TestPluginmanager(unittest.TestCase):
         mock.assert_called_once_with("gandalf", "#channel", f)
 
     @mock.patch("lala.pluginmanager._generic_errback")
-    def test_automatically_adds_errbacks_deferred(self, errb):
+    def test_automatically_adds_errbacks_multiple_deferreds(self, errb):
         ds = [Deferred(), Deferred()]
 
         def return_deferred(u, c, t):
