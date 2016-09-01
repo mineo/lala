@@ -44,10 +44,10 @@ class _LogEntryBuffer(list):
         self._maxentries = maxentries
 
     def __add__(self, *args, **kwargs):
-        raise NotImplemented
+        return NotImplemented
 
     def __iadd__(self, *args, **kwargs):
-        raise NotImplemented
+        return NotImplemented
 
     def append(self, item):
         if len(self) >= self._maxentries:
