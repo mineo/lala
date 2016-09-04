@@ -41,7 +41,7 @@ def title(user, channel, text, match_obj):
             title = page[beg + 7:page.find("</title>")].replace("\n", "")
             try:
                 title = unescape(title)
-            except HTMLParser.HTMLParseError, e:
+            except HTMLParser.HTMLParseError as e:
                 logging.exception("%s -  %s" % (e.msg, url))
             msg(channel, "Title: %s" % unicode(title, "utf-8"))
 
