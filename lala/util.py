@@ -10,7 +10,7 @@ from re import compile
 _BOT = None
 
 
-class command(object):
+class command(object):  # noqa: N801
     """ Decorator to register a command. The name of the command is the
         `__name__` attribute of the decorated function.
         Example::
@@ -100,7 +100,7 @@ def on_join(f):
         raise TypeError("A callback function should takes exactly 2 arguments")
 
 
-class regex(object):
+class regex(object):  # noqa: N801
     """Decorator to register a regex. Example::
 
            @regex("(https?://.+)\s?")

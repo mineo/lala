@@ -23,7 +23,7 @@ class Lala(irc.IRCClient):
 
     nickname = property(_get_nick)
 
-    def signedOn(self):
+    def signedOn(self):  # noqa: N802
         """ Called after a connection to the server has been established.
 
         Joins all configured channels and identifies with Nickserv."""
@@ -44,7 +44,7 @@ class Lala(irc.IRCClient):
         """ Called after joining a channel."""
         logging.info("Successfully joined %s" % channel)
 
-    def userJoined(self, user, channel):
+    def userJoined(self, user, channel):  # noqa: N802
         """ Handles join events."""
         logging.debug("%s joined %s" % (user, channel))
         lala.pluginmanager.on_join(user, channel)
@@ -88,23 +88,23 @@ class Lala(irc.IRCClient):
             message = message.decode(config._get("base", "fallback_encoding"))
         logging.info("NOTICE: %s: %s" % (user, message))
 
-    def irc_RPL_WHOISREGNICK(self, prefix, params):
+    def irc_RPL_WHOISREGNICK(self, prefix, params):  # noqa: N802
         user = params[1]
         logging.debug("%s is a registered nick" % user)
         if (self.factory.nspassword is not None and
             user in self._list_of_admins()):
             self.identified_admins.append(user)
 
-    def userLeft(self, user, channel):
+    def userLeft(self, user, channel):  # noqa: N802
         self._potential_admin_left(user)
 
-    def userQuit(self, user, message):
+    def userQuit(self, user, message):  # noqa: N802
         self._potential_admin_left(user)
 
-    def userKicked(self, user, message):
+    def userKicked(self, user, message):  # noqa: N802
         self._potential_admin_left(user)
 
-    def modeChanged(self, user, channel, set, modes, args):
+    def modeChanged(self, user, channel, set, modes, args):  # noqa: N802
         """The mode of a user has been changed. If it was added by ``Chanserv``
         and the user is in the admin list, append him to ``identified_admins``.
         """

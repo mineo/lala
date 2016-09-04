@@ -17,7 +17,7 @@ class LalaFactory(protocol.ReconnectingClientFactory):
             self.nspassword = None
         lala.pluginmanager.setup()
 
-    def buildProtocol(self, addr):
+    def buildProtocol(self, addr):  # noqa: N802
         prot = protocol.ReconnectingClientFactory.buildProtocol(self, addr)
         util._BOT = prot
         return prot

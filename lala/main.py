@@ -28,7 +28,7 @@ class LalaOptions(Options):
     ]
 
 
-def getService(options):
+def getService(options):  # noqa: N802
     observer = log.PythonLoggingObserver(loggerName="")
     observer.start()
 
@@ -69,7 +69,7 @@ def getService(options):
                               f)
 
 
-def getApplication():
+def getApplication():  # noqa: N802
     application = service.Application("lala")
 
     _service = getService(LalaOptions())

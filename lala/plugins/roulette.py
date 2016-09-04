@@ -24,7 +24,7 @@ from lala.util import command, msg
 __all__ = ()
 
 
-class revolver:
+class Revolver:
     def __init__(self):
         self.reload()
 
@@ -47,7 +47,7 @@ class revolver:
             msg(channel, "%s: Chamber %s of 6: *click*" % (user, self.chamber))
             self.chamber += 1
 
-gun = revolver()
+gun = Revolver()
 
 
 @command
