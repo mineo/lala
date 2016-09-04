@@ -21,7 +21,7 @@ Options
 import random
 from lala.util import command, msg
 
-__all__ = []
+__all__ = ()
 
 
 class revolver:

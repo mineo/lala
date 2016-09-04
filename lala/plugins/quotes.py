@@ -78,7 +78,7 @@ from lala.config import get, get_int
 from twisted.enterprise import adbapi
 from twisted.internet.defer import inlineCallbacks
 
-__all__ = []
+__all__ = ()
 
 DEFAULT_OPTIONS = {"DATABASE_PATH": os.path.join(os.path.expanduser("~/.lala"),
                                                  "quotes.sqlite3"),

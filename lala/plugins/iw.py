@@ -27,7 +27,7 @@ from scrapy import signals
 from ilmwetter import settings as iw_settings
 from ilmwetter.spiders.thedy import ThedySpider
 from scrapy.settings import Settings
-__all__ = []
+__all__ = ()
 
 
 def item_scraped(item, response, spider):

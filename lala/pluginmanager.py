@@ -8,7 +8,7 @@ from twisted.internet.defer import Deferred
 from types import GeneratorType
 
 
-__all__ = ["disable", "enable", "is_admin", "PluginFunc", "load_plugin"]
+__all__ = ("disable", "enable", "is_admin", "PluginFunc", "load_plugin")
 
 DEFAULT_OPTIONS_VARIABLE = "DEFAULT_OPTIONS"
 MODULE_INIT_FUNC = "init"

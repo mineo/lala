@@ -18,7 +18,7 @@ from lala.util import regex, msg
 from twisted.web.client import getPage
 from twisted.internet.defer import inlineCallbacks, returnValue
 
-__all__ = []
+__all__ = ()
 
 
 _regex = re.compile("(https?://.+)\s?")

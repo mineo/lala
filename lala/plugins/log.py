@@ -21,7 +21,7 @@ import logging.handlers
 
 from lala.util import command, msg, regex
 
-__all__ = []
+__all__ = ()
 
 chatlogger = None
 

@@ -24,7 +24,7 @@ import lala.config
 from datetime import datetime
 from lala.util import command, msg, regex
 
-__all__ = []
+__all__ = ()
 
 
 DEFAULT_OPTIONS = {"max_lines": "30",

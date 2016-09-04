@@ -28,7 +28,7 @@ from lala.util import command, msg
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.utils import getProcessOutput
 
-__all__ = []
+__all__ = ()
 
 
 DEFAULT_OPTIONS = {"fortune_path": "/usr/bin/fortune",
