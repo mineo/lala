@@ -24,7 +24,7 @@ from lala.util import command, msg
 __all__ = ()
 
 
-class Revolver:
+class Revolver(object):
     def __init__(self):
         self.reload()
 
