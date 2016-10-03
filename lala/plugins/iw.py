@@ -19,8 +19,6 @@ Options
 - None
 
 """
-from __future__ import unicode_literals
-
 from lala.util import command, msg
 from scrapy.crawler import Crawler
 from scrapy import signals
@@ -32,7 +30,7 @@ __all__ = ()
 
 def item_scraped(item, response, spider):
     return msg(spider.lala_channel,
-               "It's %.2f°C in Ilmenau at a humidity of %.1f%%." % (
+               u"It's %.2f°C in Ilmenau at a humidity of %.1f%%." % (
                    item["temperature"],
                    item["humidity"]))
 
