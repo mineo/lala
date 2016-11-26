@@ -47,6 +47,7 @@ class Revolver(object):
             msg(channel, "%s: Chamber %s of 6: *click*" % (user, self.chamber))
             self.chamber += 1
 
+
 gun = Revolver()
 
 

@@ -91,6 +91,7 @@ MESSAGE_TEMPLATE_WITH_RATING = "[%s] %s (rating: %s, votes: %s)"
 def _openfun(c):
     c.execute("PRAGMA foreign_keys = ON;")
 
+
 db_connection = None
 database_path = None
 db_connection = None
