@@ -8,6 +8,7 @@ Plugins
    calendar
    decide
    down
+   feinstaubalarm
    fortune
    httptitle
    iw
