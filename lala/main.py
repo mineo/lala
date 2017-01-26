@@ -2,6 +2,7 @@ import ConfigParser
 import logging
 import os
 
+from appdirs import user_config_dir
 from lala import config
 from lala.factory import LalaFactory
 from twisted.application import service, internet
@@ -34,12 +35,11 @@ def getService(options):  # noqa: N802
 
     # Set up the config
     cfg = ConfigParser.RawConfigParser(CONFIG_DEFAULTS)
-    try:
-        configfile = os.path.join(os.getenv("XDG_CONFIG_HOME"),
-                                  "lala", "config")
-    except AttributeError:
-        configfile = os.path.join(os.getenv("HOME"), ".lala", "config")
-    files = cfg.read([configfile, "/etc/lala.config"])
+    configfiles = [os.path.join(user_config_dir(appname="lala"),
+                                "config"),
+                   os.path.join(os.getenv("HOME"), ".lala", "config"),
+                   "/etc/lala/config"]
+    files = cfg.read(configfiles)
 
     config._CFG = cfg
     config._FILENAME = files[0]

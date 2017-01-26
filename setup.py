@@ -22,7 +22,7 @@ setup(name="lala",
                    "Operating System :: OS Independent",
                    "Programming Language :: Python :: 2.7"],
       data_files=[("usr/share/doc/lala", ["config.example"])],
-      install_requires=["Twisted"],
+      install_requires=["Twisted", "appdirs"],
       setup_requires=["setuptools_scm"],
       use_scm_version={"write_to": "lala/version.py"},
       extras_require={
