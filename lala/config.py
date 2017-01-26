@@ -11,6 +11,7 @@ import logging
 
 from inspect import getframeinfo, stack
 from os.path import basename
+from six import iteritems, string_types
 
 _CFG = None
 _FILENAME = None
@@ -76,7 +77,7 @@ def set(key, value, plugin=None):
     """Sets the ``value`` of ``key``.
     The section is the name of the calling file."""
     plugin = _find_current_plugin_name()
-    if not isinstance(value, basestring):
+    if not isinstance(value, string_types):
         value = str(value)
     logging.info("%s wants to set the value of %s to %s" % (plugin, key, value))
     _set(plugin, key, value)
@@ -85,7 +86,7 @@ def set(key, value, plugin=None):
 def _list_converter(value):
     """Converts a list of values into a string in which the values will be
     separated by :data:`_LIST_SEPARATOR`."""
-    if not isinstance(value, basestring):
+    if not isinstance(value, string_types):
         value = map(str, value)
         value = _LIST_SEPARATOR.join(value)
     return value
@@ -123,7 +124,7 @@ def _set_default_options(plugin, opts):
     The names of the arguments in ``kwargs`` will be used as the option names,
     the values as the values of the options.
     """
-    for key, value in opts.iteritems():
+    for key, value in iteritems(opts):
         if not _CFG.has_option(plugin, key):
             if not isinstance(value, list):
                 _set(plugin, key, value)

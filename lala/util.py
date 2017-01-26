@@ -1,10 +1,14 @@
 """Helpers to be used with plugins"""
 import lala.pluginmanager
 
-
 from types import FunctionType
-from inspect import getargspec
+try:
+    from inspect import getfullargspec
+except ImportError:
+    from inspect import getargspec
+
 from re import compile
+from six import string_types, PY3
 
 
 _BOT = None
@@ -64,7 +68,7 @@ class command(object):  # noqa: N801
             # def foo(user, channel, text):
             #   pass
             self.cmd = None
-        elif not (isinstance(command, str) or isinstance(command, unicode)):
+        elif not isinstance(command, string_types):
             raise TypeError(
                 "The command should be either a str or unicode but it's %s"
                 % type(command))
@@ -113,7 +117,7 @@ class regex(object):  # noqa: N801
                      regular expression.
     """
     def __init__(self, regex):
-        if not hasattr(regex, "match") and isinstance(regex, basestring):
+        if not hasattr(regex, "match") and isinstance(regex, string_types):
             regex = compile(regex)
         self.re = regex
 
@@ -134,7 +138,7 @@ def msg(target, message, log=True):
     :param bool log: Whether or not to log the message
     """
     try:
-        if not isinstance(message, basestring):
+        if not isinstance(message, string_types):
             for _message in iter(message):
                 if _message == "":
                     continue
@@ -152,7 +156,19 @@ def msg(target, message, log=True):
 def _check_args(f, count=3):
     """ Checks whether the number of arguments ``f`` takes equals
     ``count``."""
-    args, varargs, varkw, defaults = getargspec(f)
-    if defaults:
-        args = args[:-defaults]
-    return varargs is not None or varkw is not None or len(args) == count
+    if PY3:
+        args, varargs, varkw, defaults, keywordonly, kwod, _ = getfullargspec(f)
+        if defaults:
+            args = args[:-defaults]
+        return (varargs is not None or
+                varkw is not None or
+                len(keywordonly) != 0 or
+                kwod is not None or
+                len(args) == count)
+    else:
+        args, varargs, varkw, defaults = getargspec(f)
+        if defaults:
+            args = args[:-defaults]
+        return (varargs is not None or
+                varkw is not None or
+                len(args) == count)

@@ -1,4 +1,3 @@
-import ConfigParser
 import lala.config
 import lala.pluginmanager
 import lala.util
@@ -11,6 +10,7 @@ except ImportError:
 
 from . import _helpers
 from importlib import import_module
+from six.moves import configparser, range
 from twisted.python.failure import Failure
 
 
@@ -19,7 +19,7 @@ class PluginTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        lala.config._CFG = ConfigParser.RawConfigParser()
+        lala.config._CFG = configparser.RawConfigParser()
         lala.config._set("quotes", "database_path", ":memory:")
         lala.pluginmanager._callsbacks = {}
         lala.pluginmanager._regexes = {}
@@ -136,12 +136,12 @@ class TestBase(PluginTestCase):
         lala.pluginmanager.enable.assert_called_once_with("command")
 
     def test_join(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!join #channel")
-        lala.util._BOT.join.assert_called_once_with("#channel")
+        lala.pluginmanager._handle_message("user", "#channel", u"!join #channel")
+        lala.util._BOT.join.assert_called_once_with(b"#channel")
 
     def test_part(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!part #channel")
-        lala.util._BOT.part.assert_called_once_with("#channel")
+        lala.pluginmanager._handle_message("user", "#channel", u"!part #channel")
+        lala.util._BOT.part.assert_called_once_with(b"#channel")
 
     def test_quit(self):
         lala.plugins.base.reactor = mock.Mock()
@@ -199,7 +199,8 @@ class TestHTTPTitle(PluginTestCase):
         def check_error_got_passed_through(error):
             self.assertEqual(error, f)
 
-        lala.plugins.httptitle.getPage.addErrback(check_error_got_passed_through)
+        lala.plugins.httptitle.getPage.addErrback(
+            check_error_got_passed_through)
         lala.plugins.httptitle.getPage.errback()
         lala.util.msg.assert_called_once_with("#channel",
                                               "Sorry, I couldn't get the title for %s" % url)
@@ -325,7 +326,7 @@ class TestQuotes(PluginTestCase):
     def test_searchquote(self):
         max_quotes = int(lala.config._get("quotes", "max_quotes"))
         data = []
-        for i in xrange(max_quotes):
+        for i in range(max_quotes):
             data.append([i, "testquote %i" % i])
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!searchquote test")
@@ -343,7 +344,7 @@ class TestQuotes(PluginTestCase):
     def test_searchquote_too_many(self):
         max_quotes = int(lala.config._get("quotes", "max_quotes")) + 1
         data = []
-        for i in xrange(max_quotes):
+        for i in range(max_quotes):
             data.append([i, "testquote %i" % i])
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         lala.pluginmanager._handle_message("user", "#channel", "!searchquote test")
@@ -396,7 +397,7 @@ class TestLast(PluginTestCase):
         lala.plugins.last.datetime = _helpers.NewDateTime
 
     def _fill_log(self, entries):
-        for i in xrange(entries):
+        for i in range(entries):
             lala.pluginmanager._handle_message("user", "#channel", "text %i" % i)
 
     def test_chatlog(self):
@@ -415,7 +416,7 @@ class TestLast(PluginTestCase):
         messages = []
         date = _helpers.NewDateTime.now().strftime(lala.config._get("last",
                                                    "datetime_format"))
-        for i in xrange(max_entries):
+        for i in range(max_entries):
             messages.append('[%s] user: text %i' % (date, i))
         lala.util.msg.assert_called_with('user', messages, log=False)
 

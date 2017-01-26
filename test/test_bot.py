@@ -30,7 +30,8 @@ class TestBot(unittest.TestCase):
     def test_bot_calls_pm_on_privmsg(self):
         self.proto.privmsg("user", "channel", "message")
         lala.pluginmanager._handle_message.assert_called_once_with("user",
-                "channel", "message")
+                                                                   "channel",
+                                                                   "message")
 
     @mock.patch('lala.config._CFG')
     def test_bot_joins_channel_on_signon(self, mock):

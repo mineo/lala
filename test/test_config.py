@@ -5,13 +5,13 @@ except ImportError:
     import unittest
 
 from lala import config
-from ConfigParser import RawConfigParser, NoSectionError
+from six.moves import configparser
 
 
 class TestConfig(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        config._CFG = RawConfigParser()
+        config._CFG = configparser.RawConfigParser()
         config._FILENAME = None
 
     def setUp(self):
@@ -39,7 +39,7 @@ class TestConfig(unittest.TestCase):
     def test_default_doesnt_overwrite(self):
         config.set("not_overwritten_key", 1)
         self._set_default_options(not_overwritten_key=2)
-        self.assertEquals(config.get_int("not_overwritten_key"), 1)
+        self.assertEqual(config.get_int("not_overwritten_key"), 1)
 
     def test_converter_int_setandget(self):
         config.set("intkey", 2)
@@ -51,4 +51,4 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(sorted(config.get_list("listkey")), sorted(items))
 
     def test_raises(self):
-        self.assertRaises(NoSectionError, config.get, "foo")
+        self.assertRaises(configparser.NoSectionError, config.get, "foo")

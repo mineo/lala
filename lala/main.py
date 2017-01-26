@@ -1,10 +1,10 @@
-import ConfigParser
 import logging
 import os
 
 from appdirs import user_config_dir
 from lala import config
 from lala.factory import LalaFactory
+from six.moves import configparser
 from twisted.application import service, internet
 from twisted.python import log
 from twisted.python.usage import Options
@@ -34,7 +34,7 @@ def getService(options):  # noqa: N802
     observer.start()
 
     # Set up the config
-    cfg = ConfigParser.RawConfigParser(CONFIG_DEFAULTS)
+    cfg = configparser.RawConfigParser(CONFIG_DEFAULTS)
     configfiles = [os.path.join(user_config_dir(appname="lala"),
                                 "config"),
                    os.path.join(os.getenv("HOME"), ".lala", "config"),

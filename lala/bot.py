@@ -18,10 +18,13 @@ class Lala(irc.IRCClient):
     def __init__(self, *args, **kwargs):
         self.identified_admins = []
 
-    def _get_nick(self):
+    @property
+    def nickname(self):
         return self.factory.nickname
 
-    nickname = property(_get_nick)
+    @nickname.setter
+    def nickname(self, value):
+        self.factory.nickname = value
 
     def signedOn(self):  # noqa: N802
         """ Called after a connection to the server has been established.
@@ -55,10 +58,12 @@ class Lala(irc.IRCClient):
         if channel == self.nickname:
             # This is true if the bot was queried
             channel = user
-        try:
-            message = message.decode("utf-8")
-        except Exception:
-            message = message.decode(config._get("base", "fallback_encoding"))
+        if isinstance(message, bytes):
+            try:
+                message = message.decode("utf-8")
+            except Exception:
+                message = message.decode(config._get("base",
+                                                     "fallback_encoding"))
         logging.debug("%s: %s" % (user, message))
         lala.pluginmanager._handle_message(user, channel, message)
 
@@ -71,7 +76,6 @@ class Lala(irc.IRCClient):
         """
         if log:
             logging.debug("%s: %s" % (self.nickname, message))
-        message = message.rstrip().encode("utf-8")
         irc.IRCClient.msg(self, channel, message, length)
 
     def action(self, user, channel, data):

@@ -12,9 +12,10 @@ Options
 """
 import logging
 import re
-import HTMLParser
 
+from lala.compat import html_unescape
 from lala.util import regex, msg
+from six.moves import html_parser
 from twisted.web.client import getPage
 from twisted.internet.defer import inlineCallbacks, returnValue
 
@@ -22,11 +23,6 @@ __all__ = ()
 
 
 _regex = re.compile("(https?://.+)\s?")
-
-
-def unescape(s):
-    p = HTMLParser.HTMLParser()
-    return p.unescape(s)
 
 
 @regex(_regex)
@@ -40,10 +36,10 @@ def title(user, channel, text, match_obj):
         if beg != -1:
             title = page[beg + 7:page.find("</title>")].replace("\n", "")
             try:
-                title = unescape(title)
-            except HTMLParser.HTMLParseError as e:
+                title = html_unescape(title)
+            except html_parser.HTMLParseError as e:
                 logging.exception("%s -  %s" % (e.msg, url))
-            msg(channel, "Title: %s" % unicode(title, "utf-8"))
+            msg(channel, "Title: %s" % title)
 
     except Exception as exc:
         msg(channel, "Sorry, I couldn't get the title for %s" % url)

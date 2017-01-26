@@ -15,12 +15,12 @@ Options
 
 - None
 """
-from ConfigParser import NoOptionError
 import logging
 
 from datetime import datetime, date, timedelta
 from lala.util import command, msg, on_join
 from lala.config import get, set
+from six.moves import configparser
 
 _CONFIG_TIME_FORMAT = "%d.%m.%Y"
 
@@ -58,7 +58,7 @@ def birthday_join_notice(user, channel):
     congratulations twice."""
     try:
         date_of_birth = datetime.strptime(get(user), _CONFIG_TIME_FORMAT).date()
-    except NoOptionError:
+    except configparser.NoOptionError:
         return
     today = date.today()
     if date_of_birth == today:

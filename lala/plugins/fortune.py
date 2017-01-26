@@ -64,7 +64,7 @@ def _get_fortune_file_from_text(text):
         files = lala.config.get("fortune_files").split(
             lala.config._LIST_SEPARATOR)
         files = map(str.strip, files)
-        return files
+        return list(files)
 
 
 def _send_output_to_channel(user, channel, text):
