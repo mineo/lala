@@ -28,4 +28,7 @@ setup(name="lala",
       use_scm_version={"write_to": "lala/version.py"},
       extras_require={
           "iw": ["ilmwetter"]
-      },)
+      },
+      tests_require=["mock"],
+      test_suite="test",
+)
