@@ -6,6 +6,8 @@ except ImportError:
 import lala.pluginmanager
 import mock
 
+from ._helpers import bot_command, bot_command_list
+from hypothesis import given
 from lala import util
 from re import compile
 
@@ -40,15 +42,19 @@ class TestUtil(unittest.TestCase):
         util.command(f)
         lala.pluginmanager.register_callback.assert_called_once_with("f", f, False, None)
 
-    def test_named_command(self):
-        c = util.command("command")
+    @given(bot_command())
+    def test_named_command(self, command):
+        lala.pluginmanager.register_callback.reset_mock()
+        c = util.command(command)
         c(f)
-        lala.pluginmanager.register_callback.assert_called_once_with("command", f, False, None)
+        lala.pluginmanager.register_callback.assert_called_once_with(command, f, False, None)
 
-    def test_command_aliases(self):
-        c = util.command(aliases=["foo", "bar"])
+    @given(bot_command_list())
+    def test_command_aliases(self, aliases):
+        lala.pluginmanager.register_callback.reset_mock()
+        c = util.command(aliases=aliases)
         c(f)
-        lala.pluginmanager.register_callback.assert_called_once_with("f", f, False, ["foo", "bar"])
+        lala.pluginmanager.register_callback.assert_called_once_with("f", f, False, aliases)
 
     def test_command_str(self):
         self.assertRaises(TypeError, util.command, object())

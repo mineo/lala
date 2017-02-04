@@ -2,7 +2,8 @@ import datetime
 import mock
 
 
-from functools import wraps
+from functools import partial, wraps
+from hypothesis.strategies import lists, text
 from twisted.internet.defer import Deferred
 
 
@@ -45,3 +46,23 @@ def mock_is_admin(f):
             mocked.return_value = True
             return f(*args, **kwargs)
     return wrapper
+
+
+#: Like :meth:`text`, but preconfigured for irc nicknames
+irc_nickname = partial(text,
+                       alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ|",  # noqa
+                       min_size=1,
+                       average_size=5)
+
+#: A function returning a list of IRC nicknames
+irc_nickname_list = partial(lists, irc_nickname())
+
+
+#: Like :meth:`text`, but preconfigured for bot commands
+bot_command = partial(text,
+                      alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ|,",  # noqa
+                      min_size=1,
+                      average_size=5)
+
+#: A function returning a list of bot command names
+bot_command_list = partial(lists, bot_command())

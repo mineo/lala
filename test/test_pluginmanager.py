@@ -5,6 +5,9 @@ except ImportError:
     import unittest
 import mock
 
+from ._helpers import (irc_nickname, irc_nickname_list, bot_command,
+                       bot_command_list)
+from hypothesis import assume, given
 from lala import util, pluginmanager
 from re import compile
 from twisted.internet.defer import Deferred
@@ -47,45 +50,54 @@ class TestPluginmanager(unittest.TestCase):
         self.assertEqual(len(pluginmanager._callbacks), 1)
         self.assertTrue("f" in pluginmanager._callbacks)
 
-    def test_command_aliases(self):
-        self.assertEqual(len(pluginmanager._callbacks), 0)
+    @given(aliases=bot_command_list())
+    def test_command_aliases(self, aliases):
+        pluginmanager._callbacks = {}
 
-        util.command(f, aliases=["foo", "bar"])
+        util.command(f, aliases=aliases)
 
-        self.assertTrue("Aliases: foo, bar" in pluginmanager._callbacks["f"].func.__doc__)
-        self.assertTrue("foo" in pluginmanager._callbacks.keys())
-        self.assertTrue("bar" in pluginmanager._callbacks.keys())
-        self.assertEqual(pluginmanager._callbacks["foo"], pluginmanager._callbacks["bar"])
-        self.assertEqual(pluginmanager._callbacks["f"], pluginmanager._callbacks["bar"])
+        self.assertTrue("Aliases: %s" % (", ".join(aliases))
+                        in pluginmanager._callbacks["f"].func.__doc__)
 
-    def test_named_command(self):
-        self.assertEqual(len(pluginmanager._callbacks), 0)
+        for alias in aliases:
+            self.assertEqual(pluginmanager._callbacks["f"],
+                             pluginmanager._callbacks[alias])
 
-        c = util.command("command")
+    @given(bot_command())
+    def test_named_command(self, command):
+        pluginmanager._callbacks = {}
+
+        c = util.command(command)
         c(f)
 
         self.assertEqual(len(pluginmanager._callbacks), 1)
-        self.assertTrue("command" in pluginmanager._callbacks)
+        self.assertTrue(command in pluginmanager._callbacks)
 
-    def test_disabled_command(self):
-        c = util.command("command", aliases=["foo"])
+    @given(command=bot_command(), aliases=bot_command_list())
+    def test_disabled_command(self, command, aliases):
+        c = util.command(command, aliases=aliases)
         c(f3)
 
-        pluginmanager.disable("command")
-        self.assertFalse(pluginmanager._callbacks["command"].enabled)
-        self.assertFalse(pluginmanager._callbacks["foo"].enabled)
-        pluginmanager._handle_message("user", "channel", "!command")
+        pluginmanager.disable(command)
+        self.assertFalse(pluginmanager._callbacks[command].enabled)
+        for alias in aliases:
+            self.assertFalse(pluginmanager._callbacks[alias].enabled)
+        pluginmanager._handle_message("user", "channel", "!%s" % command)
 
-    def test_reenabled_command(self):
-        c = util.command("command", aliases=["foo"])
+    @given(command=bot_command(), aliases=bot_command_list())
+    def test_reenabled_command(self, command, aliases):
+        c = util.command(command, aliases=aliases)
         c(f3)
 
-        pluginmanager.disable("command")
-        pluginmanager.enable("command")
-        self.assertTrue(pluginmanager._callbacks["command"].enabled)
-        self.assertTrue(pluginmanager._callbacks["foo"].enabled)
+        pluginmanager.disable(command)
+        pluginmanager.enable(command)
+        self.assertTrue(pluginmanager._callbacks[command].enabled)
         self.assertRaises(ValueError, pluginmanager._handle_message, "user",
-        "channel", "!command")
+                          "channel", "!%s" % command)
+        for alias in aliases:
+            self.assertTrue(pluginmanager._callbacks[alias].enabled)
+            self.assertRaises(ValueError, pluginmanager._handle_message, "user",
+                              "channel", "!%s" % alias)
 
     def test_regex(self):
         self.assertEqual(len(pluginmanager._regexes), 0)
@@ -115,12 +127,13 @@ class TestPluginmanager(unittest.TestCase):
         pluginmanager.enable(regex.pattern)
         self.assertTrue(pluginmanager._regexes[regex].enabled)
         self.assertRaises(ValueError, pluginmanager._handle_message, "user",
-        "channel", "command")
+                          "channel", "command")
 
-    def test_message_called(self):
+    @given(bot_command())
+    def test_message_called(self, command):
         mocked_f = mock.Mock(spec=f)
-        pluginmanager.register_callback("test", mocked_f)
-        pluginmanager._handle_message("user", "channel", "!test")
+        pluginmanager.register_callback(command, mocked_f)
+        pluginmanager._handle_message("user", "channel", "!%s" % command)
         mocked_f.assert_called_once_with("user", "channel", "")
 
     def test_on_join_called(self):
@@ -138,41 +151,84 @@ class TestPluginmanager(unittest.TestCase):
         self.assertTrue(mocked_f.called)
 
     @mock.patch("lala.config._get")
-    def test_is_admin_no_nickserv(self, mock):
+    @given(username=irc_nickname(),
+           admins=irc_nickname_list())
+    def test_is_admin_no_nickserv_positive(self, mock, username, admins):
+        admins.append(username)
         util._BOT.factory.nspassword = None
-        mock.return_value = "superman,gandalf"
-        self.assertTrue(pluginmanager.is_admin("superman"))
-        self.assertFalse(pluginmanager.is_admin("i'm-no-superman"))
+        mock.return_value = ",".join(admins)
+        self.assertTrue(pluginmanager.is_admin(username))
+
+
+    @mock.patch("lala.config._get")
+    @given(username=irc_nickname(),
+           admins=irc_nickname_list())
+    def test_is_admin_no_nickserv_negative(self, mock, username, admins):
+        assume(username not in admins)
+        util._BOT.factory.nspassword = None
+        mock.return_value = ",".join(admins)
+        self.assertFalse(pluginmanager.is_admin(username))
 
     @mock.patch.multiple("lala.config", _get=mock.DEFAULT, _CFG=mock.DEFAULT)
-    def test_is_admin_with_nickserv(self, _get, _CFG):
+    @given(username=irc_nickname(),
+           admins=irc_nickname_list())
+    def test_is_admin_with_nickserv_positive(self, _get, _CFG, username, admins):
+        admins.append(username)
         util._BOT.factory.nspassword = "foobar"
-        util._BOT.identified_admins = ["superman"]
-        _get.return_value = "superman,gandalf"
+        util._BOT.identified_admins = admins
+        _get.return_value = ",".join(admins)
         _CFG.getboolean.return_value = True
-        self.assertTrue(pluginmanager.is_admin("superman"))
-        self.assertFalse(pluginmanager.is_admin("i'm-no-superman"))
+        self.assertTrue(pluginmanager.is_admin(username))
 
     @mock.patch.multiple("lala.config", _get=mock.DEFAULT, _CFG=mock.DEFAULT)
-    def test_is_admin_with_explicitly_disabled_nickserv(self, _get, _CFG):
+    @given(username=irc_nickname(),
+           admins=irc_nickname_list())
+    def test_is_admin_with_nickserv_negative(self, _get, _CFG, username, admins):
+        util._BOT.factory.nspassword = "foobar"
+        util._BOT.identified_admins = admins
+
+        assume(username not in util._BOT.identified_admins)
+
+        _get.return_value = ",".join(admins)
+        _CFG.getboolean.return_value = True
+        self.assertFalse(pluginmanager.is_admin(username))
+
+    @mock.patch.multiple("lala.config", _get=mock.DEFAULT, _CFG=mock.DEFAULT)
+    @given(username=irc_nickname(),
+           admins=irc_nickname_list())
+    def test_is_admin_with_explicitly_disabled_nickserv_positive(self, _get, _CFG, username, admins):
+        admins.append(username)
         util._BOT.factory.nspassword = "testpassword"
-        _get.return_value = "superman,gandalf"
+        _get.return_value = ",".join(admins)
         _CFG.getboolean.return_value = False
-        self.assertTrue(pluginmanager.is_admin("superman"))
-        self.assertFalse(pluginmanager.is_admin("i'm-no-superman"))
+        self.assertTrue(pluginmanager.is_admin(username))
+
+    @mock.patch.multiple("lala.config", _get=mock.DEFAULT, _CFG=mock.DEFAULT)
+    @given(username=irc_nickname(),
+           admins=irc_nickname_list())
+    def test_is_admin_with_explicitly_disabled_nickserv_negative(self, _get, _CFG, username, admins):
+        assume(username not in admins)
+        util._BOT.factory.nspassword = "testpassword"
+        _get.return_value = ",".join(admins)
+        _CFG.getboolean.return_value = False
+        self.assertFalse(pluginmanager.is_admin(username))
 
     @mock.patch("lala.config._get")
-    def test_is_admin_partial_match(self, mock):
-        mock.return_value = "superman,gandalf"
-        self.assertFalse(pluginmanager.is_admin("gandal"))
+    @given(username=irc_nickname(min_size=2))
+    def test_is_admin_partial_match(self, mock, username):
+        mock.return_value = username
+        self.assertFalse(pluginmanager.is_admin(username[1:]))
+        self.assertFalse(pluginmanager.is_admin(username[:-1]))
 
     @mock.patch("lala.config._get")
-    def test_admin_only_command_as_non_admin(self, mock):
+    @given(username=irc_nickname(), admins=irc_nickname_list())
+    def test_admin_only_command_as_non_admin(self, mock, username, admins):
+        assume(username not in admins)
         util._BOT.factory.nspassword = None
-        mock.return_value = "superman"
+        mock.return_value = ",".join(admins)
 
         util.command(command="mock", admin_only=True)(f3)
-        pluginmanager._handle_message("gandalf", "#channel", "!mock")
+        pluginmanager._handle_message(username, "#channel", "!mock")
 
     @mock.patch("lala.pluginmanager._generic_errback")
     def test_automatically_adds_errbacks_deferred(self, mock):

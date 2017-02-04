@@ -9,6 +9,8 @@ except ImportError:
     import unittest
 
 from . import _helpers
+from hypothesis import given
+from hypothesis.strategies import integers
 from importlib import import_module
 from six.moves import configparser, range
 from twisted.python.failure import Failure
@@ -263,13 +265,15 @@ class TestQuotes(PluginTestCase):
         self.assertFalse(lala.util.msg.called)
 
     @_helpers.mock_is_admin
-    def test_delquote_no_quote(self):
+    @given(integers())
+    def test_delquote_no_quote(self, qnum):
         lala.plugins.quotes.db_connection.runInteraction =\
             _helpers.DeferredHelper(data=0)
-        lala.pluginmanager._handle_message("user", "#channel", "!delquote 1")
+        lala.pluginmanager._handle_message("user", "#channel",
+                                           "!delquote %d" % qnum)
         lala.plugins.quotes.db_connection.runInteraction.callback()
         lala.util.msg.assert_called_with("#channel",
-                                         "It doesn't look like quote #1 exists.")
+                                         "It doesn't look like quote #%d exists." % qnum)
 
     @_helpers.mock_is_admin
     def test_delquote_with_quote(self):
@@ -280,32 +284,35 @@ class TestQuotes(PluginTestCase):
         lala.util.msg.assert_called_with("#channel",
                                          "Quote #1 has been deleted.")
 
-    def test_getquote(self):
-        data = [(1, "testquote", None, 0)]
+    @given(integers(min_value=0))
+    def test_getquote(self, qnum):
+        data = [(qnum, "testquote", None, 0)]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
+        lala.pluginmanager._handle_message("user", "#channel", "!getquote %d" % qnum)
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_with("#channel",
                                          lala.plugins.quotes.MESSAGE_TEMPLATE_WITH_RATING % data[0])
 
-    def test_getquote_no_quote(self):
+    @given(integers(min_value=0))
+    def test_getquote_no_quote(self, qnum):
         data = []
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
+        lala.pluginmanager._handle_message("user", "#channel", "!getquote %d" % qnum)
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_with("#channel", "%s: There's no quote #%s"
-                                         % ("user", 1))
+                                         % ("user", qnum))
 
-    def test_getquote_none_quote(self):
+    @given(integers(min_value=0))
+    def test_getquote_none_quote(self, qnum):
         data = [(None,  # quote id
                  None,  # quote text
                  None,  # rating
                  0)]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!getquote 1")
+        lala.pluginmanager._handle_message("user", "#channel", "!getquote %d" % qnum)
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_with("#channel", "%s: There's no quote #%s"
-                                         % ("user", 1))
+                                         % ("user", qnum))
 
     def test_qflop(self):
         data = [("1", "quote", "1", "4"), ("2", "quote", "2", "3")]

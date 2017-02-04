@@ -29,6 +29,6 @@ setup(name="lala",
       extras_require={
           "iw": ["ilmwetter"]
       },
-      tests_require=["mock"],
+      tests_require=["mock", "hypothesis"],
       test_suite="test",
 )
