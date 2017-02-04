@@ -1,6 +1,9 @@
 Lala IRC Bot
 ============
 
+.. image:: https://travis-ci.org/mineo/lala.svg?branch=master
+    :target: https://travis-ci.org/mineo/lala
+
 Dependencies
 ------------
 
