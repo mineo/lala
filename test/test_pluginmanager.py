@@ -36,6 +36,13 @@ class TestPluginmanager(unittest.TestCase):
         pluginmanager._regexes = {}
         pluginmanager._join_callbacks = []
 
+    def execute_example(self, f):
+        self.setUp()
+        try:
+            return f()
+        finally:
+            self.tearDown()
+
     def test_on_join(self):
         self.assertEqual(len(pluginmanager._join_callbacks), 0)
         util.on_join(f2)
@@ -52,8 +59,6 @@ class TestPluginmanager(unittest.TestCase):
 
     @given(aliases=bot_command_list(min_size=1), gen=command_func_generator)
     def test_command_aliases(self, aliases, gen):
-        pluginmanager._callbacks = {}
-
         f = gen()
 
         util.command(command="f", aliases=aliases)(f)
@@ -70,8 +75,6 @@ class TestPluginmanager(unittest.TestCase):
 
     @given(bot_command())
     def test_named_command(self, command):
-        pluginmanager._callbacks = {}
-
         c = util.command(command)
         c(f)
 

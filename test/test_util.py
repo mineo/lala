@@ -34,6 +34,13 @@ class TestUtil(unittest.TestCase):
         bot_patcher.start()
         self.addCleanup(bot_patcher.stop)
 
+    def execute_example(self, f):
+        self.setUp()
+        try:
+            return f()
+        finally:
+            self.tearDown()
+
     def test_on_join(self):
         util.on_join(f2)
         lala.pluginmanager.register_join_callback.assert_called_once_with(f2)

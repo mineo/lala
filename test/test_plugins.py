@@ -252,6 +252,13 @@ class TestQuotes(PluginTestCase):
         super(TestQuotes, self).setUp()
         lala.plugins.quotes.msg = lala.util.msg
 
+    def execute_example(self, f):
+        self.setUp()
+        try:
+            return f()
+        finally:
+            self.tearDown()
+
     def test_on_join(self):
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(
             data=[[1, "testquote"]])
