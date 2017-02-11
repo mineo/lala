@@ -27,9 +27,11 @@ class PluginFunc(object):
         self.aliases = aliases or []
 
 
-def _make_pluginfunc(func, admin_only=False, aliases=None):
+def _make_pluginfunc(func, cmd=None, admin_only=False, aliases=None):
     if aliases is not None:
-        extradoc = "Aliases: %s" % (", ".join(aliases))
+        triggers = [cmd]
+        triggers.extend(aliases)
+        extradoc = "Triggers: %s" % (", ".join(triggers))
         doc = func.__doc__
         if doc is None:
             func.__doc__ = extradoc
@@ -77,7 +79,7 @@ def load_plugin(name):
 def register_callback(trigger, func, admin_only=False, aliases=None):
     """ Adds ``func`` to the callbacks for ``trigger``."""
     logging.debug("Registering callback for %s" % trigger)
-    f = _make_pluginfunc(func, admin_only, aliases)
+    f = _make_pluginfunc(func, trigger, admin_only, aliases)
     if aliases is not None:
         for alias in aliases:
             _callbacks[alias] = f

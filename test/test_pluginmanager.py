@@ -61,7 +61,7 @@ class TestPluginmanager(unittest.TestCase):
         all_triggers = aliases
         all_triggers.insert(0, "f")
 
-        self.assertIn("Aliases: %s" % (", ".join(aliases)),
+        self.assertIn("Triggers: %s" % (", ".join(aliases)),
                       pluginmanager._callbacks["f"].func.__doc__)
 
         for alias in aliases:
