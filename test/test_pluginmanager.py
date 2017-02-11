@@ -56,8 +56,8 @@ class TestPluginmanager(unittest.TestCase):
 
         util.command(f, aliases=aliases)
 
-        self.assertTrue("Aliases: %s" % (", ".join(aliases))
-                        in pluginmanager._callbacks["f"].func.__doc__)
+        self.assertIn("Aliases: %s" % (", ".join(aliases)),
+                      pluginmanager._callbacks["f"].func.__doc__)
 
         for alias in aliases:
             self.assertEqual(pluginmanager._callbacks["f"],
