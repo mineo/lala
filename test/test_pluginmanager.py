@@ -5,8 +5,8 @@ except ImportError:
     import unittest
 import mock
 
-from ._helpers import (irc_nickname, irc_nickname_list, bot_command,
-                       bot_command_list)
+from ._helpers import (command_func_generator, irc_nickname, irc_nickname_list,
+                       bot_command, bot_command_list)
 from hypothesis import assume, given
 from lala import util, pluginmanager
 from re import compile
@@ -50,11 +50,16 @@ class TestPluginmanager(unittest.TestCase):
         self.assertEqual(len(pluginmanager._callbacks), 1)
         self.assertTrue("f" in pluginmanager._callbacks)
 
-    @given(aliases=bot_command_list())
-    def test_command_aliases(self, aliases):
+    @given(aliases=bot_command_list(min_size=1), gen=command_func_generator)
+    def test_command_aliases(self, aliases, gen):
         pluginmanager._callbacks = {}
 
-        util.command(f, aliases=aliases)
+        f = gen()
+
+        util.command(command="f", aliases=aliases)(f)
+
+        all_triggers = aliases
+        all_triggers.insert(0, "f")
 
         self.assertIn("Aliases: %s" % (", ".join(aliases)),
                       pluginmanager._callbacks["f"].func.__doc__)

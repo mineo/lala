@@ -3,7 +3,7 @@ import mock
 
 
 from functools import partial, wraps
-from hypothesis.strategies import lists, text
+from hypothesis.strategies import just, lists, text
 from twisted.internet.defer import Deferred
 
 
@@ -66,3 +66,7 @@ bot_command = partial(text,
 
 #: A function returning a list of bot command names
 bot_command_list = partial(lists, bot_command())
+
+
+#: A function returning a function returning a command function
+command_func_generator = just(lambda: lambda user, channel, text: None)
