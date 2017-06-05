@@ -36,7 +36,7 @@ _CONNECTIONS = []
 
 
 class LalaWebSocketProtocol(WebSocketServerProtocol):
-    def onConnect(self, request):
+    def onConnect(self, request):  # noqa: N802
         """
         :param self:
         :param request:
@@ -45,7 +45,7 @@ class LalaWebSocketProtocol(WebSocketServerProtocol):
         logging.debug("Client connecting from %s", request.peer)
         _CONNECTIONS.append(self)
 
-    def onClose(self, wasClean, code, reason):
+    def onClose(self, wasClean, code, reason):  # noqa: N802, N803
         """
         :param self:
         :param wasClean:
