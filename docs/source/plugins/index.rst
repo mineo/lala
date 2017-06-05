@@ -16,3 +16,4 @@ Plugins
    log
    quotes
    roulette
+   websocket

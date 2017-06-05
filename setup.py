@@ -27,7 +27,8 @@ setup(name="lala",
       setup_requires=["setuptools_scm"],
       use_scm_version={"write_to": "lala/version.py"},
       extras_require={
-          "iw": ["ilmwetter"]
+          "iw": ["ilmwetter"],
+          "websocket": ["autobahn"]
       },
       tests_require=["mock", "hypothesis"],
       test_suite="test",
