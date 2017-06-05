@@ -217,7 +217,7 @@ class TestRoulette(PluginTestCase):
         lala.plugins.roulette.gun.reload()
         lala.util.msg.reset_mock()
 
-    def test_autorelaod(self):
+    def test_autoreload(self):
         lala.plugins.roulette.gun.bullet = 6
         lala.plugins.roulette.gun.chamber = 5
         lala.pluginmanager._handle_message("user", "#channel", "!shoot")
