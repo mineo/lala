@@ -19,6 +19,8 @@ from twisted.python.failure import Failure
 
 class PluginTestCase(unittest.TestCase):
     plugin = None
+    user = "user"
+    channel = "#channel"
 
     @classmethod
     def setUpClass(cls):
@@ -41,6 +43,12 @@ class PluginTestCase(unittest.TestCase):
         msg_patcher.start()
         self.addCleanup(msg_patcher.stop)
 
+    def handle_message(self, msg):
+        """Instruct the plugin manager to handle ``msg``
+        :param str msg:
+        """
+        lala.pluginmanager._handle_message(self.user, self.channel, msg)
+
 
 class TestFortune(PluginTestCase):
     plugin = "fortune"
@@ -52,14 +60,14 @@ class TestFortune(PluginTestCase):
     def test_fortune(self):
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
             data="fortune")
-        lala.pluginmanager._handle_message("user", "#channel", "!fortune")
+        self.handle_message("!fortune")
         lala.plugins.fortune.getProcessOutput.callback()
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
 
     def test_ofortune(self):
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
             data="ofortune")
-        lala.pluginmanager._handle_message("user", "#channel", "!ofortune")
+        self.handle_message("!ofortune")
         lala.plugins.fortune.getProcessOutput.callback()
         lala.util.msg.assert_called_once_with("#channel", "user: ofortune")
 
@@ -69,7 +77,7 @@ class TestFortune(PluginTestCase):
         lala.config._set("fortune", "fortune_files", "riddles, people")
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
             data="fortune")
-        lala.pluginmanager._handle_message("user", "#channel", "!fortune")
+        self.handle_message("!fortune")
         lala.plugins.fortune.getProcessOutput.callback()
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
         # The first entry is the path to the fortune binary
@@ -79,7 +87,7 @@ class TestFortune(PluginTestCase):
     def test_fortune_with_non_default_files(self):
         lala.plugins.fortune.getProcessOutput = _helpers.DeferredHelper(
             data="fortune")
-        lala.pluginmanager._handle_message("user", "#channel", "!fortune people riddles")
+        self.handle_message("!fortune people riddles")
         lala.plugins.fortune.getProcessOutput.callback()
         lala.util.msg.assert_called_once_with("#channel", "user: fortune")
         # The first entry is the path to the fortune binary
@@ -105,59 +113,59 @@ class TestBase(PluginTestCase):
         lala.plugins.base.is_admin = mock.Mock(return_value=True)
 
     def test_addadmin(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!addadmin user3")
+        self.handle_message("!addadmin user3")
         lala.config._CFG.set.assert_called_once_with("base", "admins",
                                                      "user,user2,user3")
 
     def test_addadmin_already_admin(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!addadmin user")
+        self.handle_message("!addadmin user")
         lala.util._BOT.msg.assert_called_once_with("#channel",
                                                    "user already is an admin",
                                                    True)
 
     def test_admins(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!admins")
+        self.handle_message("!admins")
         lala.util._BOT.msg.assert_called_once_with("#channel", "user,user2",
                                                    True)
 
     def test_deladmin(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!deladmin user2")
+        self.handle_message("!deladmin user2")
         lala.config._CFG.set.assert_called_once_with("base", "admins",
                                                      "user")
 
     def test_deladmin_is_no_admin(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!deladmin user3")
+        self.handle_message("!deladmin user3")
         lala.util._BOT.msg.assert_called_once_with(
             "#channel", "Sorry, user3 is not even an admin", True)
 
     def test_disable(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!disable command")
+        self.handle_message("!disable command")
         lala.pluginmanager.disable.assert_called_once_with("command")
 
     def test_enable(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!enable command")
+        self.handle_message("!enable command")
         lala.pluginmanager.enable.assert_called_once_with("command")
 
     def test_join(self):
-        lala.pluginmanager._handle_message("user", "#channel", u"!join #channel")
+        self.handle_message(u"!join #channel")
         lala.util._BOT.join.assert_called_once_with(b"#channel")
 
     def test_part(self):
-        lala.pluginmanager._handle_message("user", "#channel", u"!part #channel")
+        self.handle_message(u"!part #channel")
         lala.util._BOT.part.assert_called_once_with(b"#channel")
 
     def test_quit(self):
         lala.plugins.base.reactor = mock.Mock()
-        lala.pluginmanager._handle_message("user", "#channel", "!quit")
+        self.handle_message("!quit")
         lala.util._BOT.quit.assert_called_once_with("leaving")
 
     def test_reconnect(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!reconnect")
+        self.handle_message("!reconnect")
         lala.util._BOT.quit.assert_called_once_with("leaving")
 
     def test_server(self):
         lala.util._BOT.server = "irc.nowhere.invalid"
-        lala.pluginmanager._handle_message("user", "#channel", "!server")
+        self.handle_message("!server")
         lala.util._BOT.msg.assert_called_once_with("user",
                                                    "irc.nowhere.invalid", True)
 
@@ -181,7 +189,7 @@ class TestHTTPTitle(PluginTestCase):
         url = "http://example.com"
         lala.plugins.httptitle.getPage = _helpers.DeferredHelper(
             data="<html><head><title>title</title></head></html>")
-        lala.pluginmanager._handle_message("user", "#channel", url)
+        self.handle_message(url)
         lala.plugins.httptitle.getPage.callback()
         self.assertTrue(url in lala.plugins.httptitle.getPage.args)
         lala.util.msg.assert_called_once_with("#channel", "Title: title")
@@ -189,7 +197,7 @@ class TestHTTPTitle(PluginTestCase):
     def test_notitle(self):
         lala.plugins.httptitle.getPage = _helpers.DeferredHelper(
             data="<html></html>")
-        lala.pluginmanager._handle_message("user", "#channel", "http://example.com")
+        self.handle_message("http://example.com")
         lala.plugins.httptitle.getPage.callback()
         self.assertFalse(lala.util.msg.called)
 
@@ -197,7 +205,7 @@ class TestHTTPTitle(PluginTestCase):
         url = "http://example.com"
         f = Failure(Exception())
         lala.plugins.httptitle.getPage = _helpers.DeferredHelper(data=f)
-        lala.pluginmanager._handle_message("user", "#channel", url)
+        self.handle_message(url)
 
         def check_error_got_passed_through(error):
             self.assertEqual(error, f)
@@ -221,14 +229,14 @@ class TestRoulette(PluginTestCase):
     def test_autoreload(self):
         lala.plugins.roulette.gun.bullet = 6
         lala.plugins.roulette.gun.chamber = 5
-        lala.pluginmanager._handle_message("user", "#channel", "!shoot")
+        self.handle_message("!shoot")
         lala.util.msg.assert_called_with("#channel", "Reloading")
 
     def test_shoot(self):
         for chamber in range(1, 6):
             lala.plugins.roulette.gun.bullet = chamber
             for i in range(1, chamber + 1):
-                lala.pluginmanager._handle_message("user", "#channel", "!shoot")
+                self.handle_message("!shoot")
                 if i == chamber:
                     # boom!
                     lala.util.msg.assert_any_call("#channel",
@@ -241,7 +249,7 @@ class TestRoulette(PluginTestCase):
 
     def test_reload(self):
         lala.plugins.roulette.gun.chamber = 6
-        lala.pluginmanager._handle_message("user", "#channel", "!reload")
+        self.handle_message("!reload")
         self.assertEqual(lala.plugins.roulette.gun.chamber, 1)
         self.assertTrue(lala.plugins.roulette.gun.bullet in range(1, 7))
 
@@ -277,7 +285,7 @@ class TestQuotes(PluginTestCase):
     def test_delquote_no_quote(self, qnum):
         lala.plugins.quotes.db_connection.runInteraction =\
             _helpers.DeferredHelper(data=0)
-        lala.pluginmanager._handle_message("user", "#channel",
+        self.handle_message(
                                            "!delquote %d" % qnum)
         lala.plugins.quotes.db_connection.runInteraction.callback()
         lala.util.msg.assert_called_with("#channel",
@@ -287,7 +295,7 @@ class TestQuotes(PluginTestCase):
     def test_delquote_with_quote(self):
         lala.plugins.quotes.db_connection.runInteraction =\
             _helpers.DeferredHelper(data=1)
-        lala.pluginmanager._handle_message("user", "#channel", "!delquote 1")
+        self.handle_message("!delquote 1")
         lala.plugins.quotes.db_connection.runInteraction.callback()
         lala.util.msg.assert_called_with("#channel",
                                          "Quote #1 has been deleted.")
@@ -296,7 +304,7 @@ class TestQuotes(PluginTestCase):
     def test_getquote(self, qnum):
         data = [(qnum, "testquote", None, 0)]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!getquote %d" % qnum)
+        self.handle_message("!getquote %d" % qnum)
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_with("#channel",
                                          lala.plugins.quotes.MESSAGE_TEMPLATE_WITH_RATING % data[0])
@@ -305,7 +313,7 @@ class TestQuotes(PluginTestCase):
     def test_getquote_no_quote(self, qnum):
         data = []
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!getquote %d" % qnum)
+        self.handle_message("!getquote %d" % qnum)
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_with("#channel", "%s: There's no quote #%s"
                                          % ("user", qnum))
@@ -317,7 +325,7 @@ class TestQuotes(PluginTestCase):
                  None,  # rating
                  0)]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!getquote %d" % qnum)
+        self.handle_message("!getquote %d" % qnum)
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_with("#channel", "%s: There's no quote #%s"
                                          % ("user", qnum))
@@ -326,7 +334,7 @@ class TestQuotes(PluginTestCase):
         data = [("1", "quote", "1", "4"), ("2", "quote", "2", "3")]
         calls = [mock.call("#channel", lala.plugins.quotes.MESSAGE_TEMPLATE_WITH_RATING % d) for d in data]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!qflop")
+        self.handle_message("!qflop")
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_has_calls(calls)
 
@@ -334,7 +342,7 @@ class TestQuotes(PluginTestCase):
         data = [("2", "quote", "2", "3"), ("1", "quote", "1", "4")]
         calls = [mock.call("#channel", lala.plugins.quotes.MESSAGE_TEMPLATE_WITH_RATING % d) for d in data]
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!qtop")
+        self.handle_message("!qtop")
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_has_calls(calls)
 
@@ -344,7 +352,7 @@ class TestQuotes(PluginTestCase):
         for i in range(max_quotes):
             data.append([i, "testquote %i" % i])
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!searchquote test")
+        self.handle_message("!searchquote test")
         lala.plugins.quotes.db_connection.runQuery.callback()
         for i in data:
             lala.util.msg.assert_any_call("#channel",
@@ -352,7 +360,7 @@ class TestQuotes(PluginTestCase):
 
     def test_searchquote_none_found(self):
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=[])
-        lala.pluginmanager._handle_message("user", "#channel", "!searchquote foo")
+        self.handle_message("!searchquote foo")
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_once_with("#channel", "No matching quotes found")
 
@@ -362,7 +370,7 @@ class TestQuotes(PluginTestCase):
         for i in range(max_quotes):
             data.append([i, "testquote %i" % i])
         lala.plugins.quotes.db_connection.runQuery = _helpers.DeferredHelper(data=data)
-        lala.pluginmanager._handle_message("user", "#channel", "!searchquote test")
+        self.handle_message("!searchquote test")
         lala.plugins.quotes.db_connection.runQuery.callback()
         lala.util.msg.assert_called_once_with("#channel",
                                               "Too many results, please refine your search")
@@ -377,13 +385,13 @@ class TestBirthday(PluginTestCase):
         lala.plugins.birthday.date = _helpers.NewDate
 
     def test_join_birthday(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!my_birthday_is 10.12.")
+        self.handle_message("!my_birthday_is 10.12.")
         lala.pluginmanager.on_join("user", "#channel")
         lala.plugins.birthday.msg.assert_called_once_with("#channel",
                                                           "\o\ Happy birthday, user /o/")
 
     def test_join_not_birthday(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!my_birthday_is 09.12.")
+        self.handle_message("!my_birthday_is 09.12.")
         lala.pluginmanager.on_join("user", "#channel")
         self.assertFalse(lala.plugins.birthday.msg.called)
 
@@ -394,12 +402,12 @@ class TestBirthday(PluginTestCase):
 
     def test_set_birthday_not_yet(self):
         """Tests setting a birthday that has not already happened this year."""
-        lala.pluginmanager._handle_message("user", "#channel", "!my_birthday_is 11.12.")
+        self.handle_message("!my_birthday_is 11.12.")
         self.assertEqual(lala.config._get("birthday", "user"), "11.12.2012")
 
     def test_set_birthday_already(self):
         """Tests setting a birthday that has already happened this year."""
-        lala.pluginmanager._handle_message("user", "#channel", "!my_birthday_is 09.12.")
+        self.handle_message("!my_birthday_is 09.12.")
         self.assertEqual(lala.config._get("birthday", "user"), "09.12.2013")
 
 
@@ -413,20 +421,20 @@ class TestLast(PluginTestCase):
 
     def _fill_log(self, entries):
         for i in range(entries):
-            lala.pluginmanager._handle_message("user", "#channel", "text %i" % i)
+            self.handle_message("text %i" % i)
 
     def test_chatlog(self):
         max_entries = int(lala.config._get("last", "max_lines"))
         self._fill_log(max_entries)
 
         self.assertEqual(len(lala.plugins.last._chatlog), max_entries)
-        lala.pluginmanager._handle_message("user", "#channel", "text")
+        self.handle_message("text")
         self.assertEqual(len(lala.plugins.last._chatlog), max_entries)
 
     def test_last(self):
         max_entries = int(lala.config._get("last", "max_lines"))
         self._fill_log(max_entries)
-        lala.pluginmanager._handle_message("user", "#channel", "!last")
+        self.handle_message("!last")
 
         messages = []
         date = _helpers.NewDateTime.now().strftime(lala.config._get("last",
@@ -445,7 +453,7 @@ class TestCalendar(PluginTestCase):
 
     def test_weeknum(self):
         lala.plugins.calendar.date = _helpers.NewDate
-        lala.pluginmanager._handle_message("user", "#channel", "!weeknum")
+        self.handle_message("!weeknum")
         lala.plugins.calendar.msg.assert_called_once_with("#channel",
                                                           "It's week #50 of the year 2012.")
 
@@ -459,17 +467,17 @@ class TestDecide(PluginTestCase):
         random.seed(123)
 
     def test_basic(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!decide 1/2/3")
+        self.handle_message("!decide 1/2/3")
         lala.plugins.decide.msg.assert_called_once_with("#channel",
                                                         "user: 1")
 
     def test_real_hard(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!decide_real_hard 1/2/3")
+        self.handle_message("!decide_real_hard 1/2/3")
         lala.plugins.decide.msg.assert_called_once_with("#channel",
                                                         "user: 3 has been chosen 1705 out of %i times" % lala.plugins.decide.TRIES)
 
     def test_real_hard_single_choice(self):
-        lala.pluginmanager._handle_message("user", "#channel", "!decide_real_hard 1")
+        self.handle_message("!decide_real_hard 1")
         lala.plugins.decide.msg.assert_called_once_with("#channel",
                                                         lala.plugins.decide._NO_CHOICE_NECESSARY_TEMPLATE.format(user="user", choice="1"))
 
@@ -479,6 +487,6 @@ class TestDecide(PluginTestCase):
         counter_mock.side_effect = [[('1', tries_half), ('2', tries_half)],
                                     [('1', tries_half + 1), ('2', tries_half - 1)],
                                     ]
-        lala.pluginmanager._handle_message("user", "#channel", "!decide_real_hard 1/2")
+        self.handle_message("!decide_real_hard 1/2")
         lala.plugins.decide.msg.assert_called_once_with("#channel",
                                                         lala.plugins.decide._REAL_HARD_TEMPLATE.format(user="user", choice="1", count=tries_half + 1, tries = lala.plugins.decide.TRIES))
