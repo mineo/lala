@@ -2,6 +2,7 @@ import lala.config
 import lala.pluginmanager
 import lala.util
 import mock
+import random
 try:
     # Python < 2.7
     import unittest2 as unittest
@@ -447,3 +448,22 @@ class TestCalendar(PluginTestCase):
         lala.pluginmanager._handle_message("user", "#channel", "!weeknum")
         lala.plugins.calendar.msg.assert_called_once_with("#channel",
                                                           "It's week #50 of the year 2012.")
+
+
+class TestDecide(PluginTestCase):
+    plugin = "decide"
+
+    def setUp(self):
+        super(TestDecide, self).setUp()
+        lala.plugins.decide.msg = lala.util.msg
+        random.seed(123)
+
+    def test_basic(self):
+        lala.pluginmanager._handle_message("user", "#channel", "!decide 1/2/3")
+        lala.plugins.decide.msg.assert_called_once_with("#channel",
+                                                        "user: 1")
+
+    def test_real_hard(self):
+        lala.pluginmanager._handle_message("user", "#channel", "!decide_real_hard 1/2/3")
+        lala.plugins.decide.msg.assert_called_once_with("#channel",
+                                                        "user: 3 has been chosen 1705 out of %i times" % lala.plugins.decide.TRIES)
