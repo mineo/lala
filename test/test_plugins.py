@@ -481,4 +481,4 @@ class TestDecide(PluginTestCase):
                                     ]
         lala.pluginmanager._handle_message("user", "#channel", "!decide_real_hard 1/2")
         lala.plugins.decide.msg.assert_called_once_with("#channel",
-                                                        "user: 1 has been chosen 2501 out of %i times" % lala.plugins.decide.TRIES)
+                                                        lala.plugins.decide._REAL_HARD_TEMPLATE.format(user="user", choice="1", count=tries_half + 1, tries = lala.plugins.decide.TRIES))

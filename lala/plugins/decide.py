@@ -16,7 +16,8 @@ from lala.util import command, msg
 
 TRIES = 5000
 
-_NO_CHOICE_NECESSARY_TEMPLATE = "{user}: I don't even have to think about that, it's {choice}"
+_NO_CHOICE_NECESSARY_TEMPLATE = "{user}: I don't even have to think about that, it's {choice}"  # noqa
+_REAL_HARD_TEMPLATE = "{user}: {choice} has been chosen {count} out of {tries} times"  # noqa
 
 
 @command
@@ -45,5 +46,5 @@ def decide_real_hard(user, channel, text):
         first_choice, first_count = c[0]
         second_choice, second_count = c[1]
         if first_count > second_count:
-            msg(channel, "%s: %s has been chosen %i out of %i times" %
-                (user, first_choice, first_count, TRIES))
+            msg(channel, _REAL_HARD_TEMPLATE.format(
+                user=user, choice=first_choice, count=first_count, tries=TRIES))
