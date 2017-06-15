@@ -7,7 +7,7 @@ import lala.factory
 import lala.util
 import lala.pluginmanager
 import lala.config
-import mock
+from ._helpers import mock
 
 from twisted.test import proto_helpers
 

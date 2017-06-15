@@ -2,6 +2,14 @@
 from __future__ import print_function
 from setuptools import setup
 
+import sys
+
+is_py3 = sys.version_info > (3, 3)
+
+test_requirements = ["hypothesis"]
+
+if not is_py3:
+    test_requirements.append("mock")
 
 setup(name="lala",
       author="Wieland Hoffmann",
@@ -30,6 +38,6 @@ setup(name="lala",
           "iw": ["ilmwetter"],
           "websocket": ["autobahn"]
       },
-      tests_require=["mock", "hypothesis"],
+      tests_require=test_requirements,
       test_suite="test",
 )

@@ -3,7 +3,7 @@ try:
     import unittest2 as unittest
 except ImportError:
     import unittest
-import mock
+from ._helpers import mock
 
 from ._helpers import (command_func_generator, irc_nickname, irc_nickname_list,
                        bot_command, bot_command_list)

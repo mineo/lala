@@ -4,7 +4,7 @@ try:
 except ImportError:
     import unittest
 import lala.pluginmanager
-import mock
+from ._helpers import mock
 
 from ._helpers import bot_command, bot_command_list
 from hypothesis import given

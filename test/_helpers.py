@@ -1,5 +1,9 @@
 import datetime
-import mock
+try:
+    # Python 3
+    import unittest.mock as mock
+except ImportError:
+    import mock
 
 
 from functools import partial, wraps

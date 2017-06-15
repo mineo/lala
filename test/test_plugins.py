@@ -1,7 +1,6 @@
 import lala.config
 import lala.pluginmanager
 import lala.util
-import mock
 import random
 try:
     # Python < 2.7
@@ -10,6 +9,7 @@ except ImportError:
     import unittest
 
 from . import _helpers
+from ._helpers import mock
 from hypothesis import given
 from hypothesis.strategies import integers
 from importlib import import_module
