@@ -467,3 +467,8 @@ class TestDecide(PluginTestCase):
         lala.pluginmanager._handle_message("user", "#channel", "!decide_real_hard 1/2/3")
         lala.plugins.decide.msg.assert_called_once_with("#channel",
                                                         "user: 3 has been chosen 1705 out of %i times" % lala.plugins.decide.TRIES)
+
+    def test_real_hard_single_choice(self):
+        lala.pluginmanager._handle_message("user", "#channel", "!decide_real_hard 1")
+        lala.plugins.decide.msg.assert_called_once_with("#channel",
+                                                        lala.plugins.decide._NO_CHOICE_NECESSARY_TEMPLATE.format(user="user", choice="1"))
