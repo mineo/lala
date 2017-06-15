@@ -29,6 +29,6 @@ def decide_real_hard(user, channel, text):
     """Pick one choice in an arbitrary list of choices separated by a slash,
     deluxe version"""
     s_text = text.split("/")
-    c = Counter(choice(s_text) for i in range(TRIES)).most_common(1)[0]
+    element, count = Counter(choice(s_text) for i in range(TRIES)).most_common(1)[0]
     msg(channel, "%s: %s has been chosen %i out of %i times" %
-        (user, c[0], c[1], TRIES))
+        (user, element, count, TRIES))
