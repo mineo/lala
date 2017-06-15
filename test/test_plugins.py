@@ -472,3 +472,13 @@ class TestDecide(PluginTestCase):
         lala.pluginmanager._handle_message("user", "#channel", "!decide_real_hard 1")
         lala.plugins.decide.msg.assert_called_once_with("#channel",
                                                         lala.plugins.decide._NO_CHOICE_NECESSARY_TEMPLATE.format(user="user", choice="1"))
+
+    @mock.patch('lala.plugins.decide.Counter.most_common')
+    def test_real_hard_exactly_half(self, counter_mock):
+        tries_half = lala.plugins.decide.TRIES / 2.0
+        counter_mock.side_effect = [[('1', tries_half), ('2', tries_half)],
+                                    [('1', tries_half + 1), ('2', tries_half - 1)],
+                                    ]
+        lala.pluginmanager._handle_message("user", "#channel", "!decide_real_hard 1/2")
+        lala.plugins.decide.msg.assert_called_once_with("#channel",
+                                                        "user: 1 has been chosen 2501 out of %i times" % lala.plugins.decide.TRIES)

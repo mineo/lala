@@ -37,6 +37,13 @@ def decide_real_hard(user, channel, text):
                                                           choice=s_text[0]))
         return
 
-    element, count = Counter(choice(s_text) for i in range(TRIES)).most_common(1)[0]
-    msg(channel, "%s: %s has been chosen %i out of %i times" %
-        (user, element, count, TRIES))
+    first_count = second_count = 0
+    while first_count == second_count:
+        c = Counter(choice(s_text) for i in range(TRIES)).most_common(2)
+        # There might be more elements with the same count, but knowing two of
+        # them have the same is enough.
+        first_choice, first_count = c[0]
+        second_choice, second_count = c[1]
+        if first_count > second_count:
+            msg(channel, "%s: %s has been chosen %i out of %i times" %
+                (user, first_choice, first_count, TRIES))
