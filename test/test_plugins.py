@@ -438,6 +438,7 @@ class TestDecide(PluginTestCase):
 
     def setUp(self):
         super(TestDecide, self).setUp()
+        self.tries_half = int(self.mod.TRIES / 2)
         random.seed(123)
 
     def test_basic(self):
@@ -445,10 +446,14 @@ class TestDecide(PluginTestCase):
         self.mod.msg.assert_called_once_with(self.channel,
                                              "user: 1")
 
-    def test_real_hard(self):
+    @mock.patch('lala.plugins.decide.Counter.most_common')
+    def test_real_hard(self, counter_mock):
+        # We could use the seed here, but even with a seeded RNG the results
+        # differ across Python versions.
+        counter_mock.side_effect = [[('1', self.tries_half), ('2', self.tries_half - 1)]]
         self.handle_message("!decide_real_hard 1/2/3")
         self.mod.msg.assert_called_once_with(self.channel,
-                                             self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice="3", count=1705, tries=self.mod.TRIES))
+                                             self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice="1", count=self.tries_half, tries=self.mod.TRIES))
 
     def test_real_hard_single_choice(self):
         self.handle_message("!decide_real_hard 1")
@@ -457,10 +462,9 @@ class TestDecide(PluginTestCase):
 
     @mock.patch('lala.plugins.decide.Counter.most_common')
     def test_real_hard_exactly_half(self, counter_mock):
-        tries_half = self.mod.TRIES / 2.0
-        counter_mock.side_effect = [[('1', tries_half), ('2', tries_half)],
-                                    [('1', tries_half + 1), ('2', tries_half - 1)],
+        counter_mock.side_effect = [[('1', self.tries_half), ('2', self.tries_half)],
+                                    [('1', self.tries_half + 1), ('2', self.tries_half - 1)],
                                     ]
         self.handle_message("!decide_real_hard 1/2")
         self.mod.msg.assert_called_once_with(self.channel,
-                                             self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice="1", count=tries_half + 1, tries = lala.plugins.decide.TRIES))
+                                             self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice="1", count=self.tries_half + 1, tries = lala.plugins.decide.TRIES))
