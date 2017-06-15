@@ -58,14 +58,14 @@ class TestFortune(PluginTestCase):
             data="fortune")
         self.handle_message("!fortune")
         self.mod.getProcessOutput.callback()
-        self.mod.msg.assert_called_once_with("#channel", "user: fortune")
+        self.mod.msg.assert_called_once_with(self.channel, "user: fortune")
 
     def test_ofortune(self):
         self.mod.getProcessOutput = _helpers.DeferredHelper(
             data="ofortune")
         self.handle_message("!ofortune")
         self.mod.getProcessOutput.callback()
-        self.mod.msg.assert_called_once_with("#channel", "user: ofortune")
+        self.mod.msg.assert_called_once_with(self.channel, "user: ofortune")
 
     def test_fortune_with_default_files(self):
         # A space is in front of 'people' to make sure whitespace around
@@ -75,7 +75,7 @@ class TestFortune(PluginTestCase):
             data="fortune")
         self.handle_message("!fortune")
         self.mod.getProcessOutput.callback()
-        self.mod.msg.assert_called_once_with("#channel", "user: fortune")
+        self.mod.msg.assert_called_once_with(self.channel, "user: fortune")
         # The first entry is the path to the fortune binary
         self.assertEqual(self.mod.getProcessOutput.args[1:][0],
                          ["riddles", "people"])
@@ -85,7 +85,7 @@ class TestFortune(PluginTestCase):
             data="fortune")
         self.handle_message("!fortune people riddles")
         self.mod.getProcessOutput.callback()
-        self.mod.msg.assert_called_once_with("#channel", "user: fortune")
+        self.mod.msg.assert_called_once_with(self.channel, "user: fortune")
         # The first entry is the path to the fortune binary
         self.assertEqual(self.mod.getProcessOutput.args[1:][0],
                          ["people", "riddles"])
@@ -115,12 +115,12 @@ class TestBase(PluginTestCase):
 
     def test_addadmin_already_admin(self):
         self.handle_message("!addadmin user")
-        self.mod.msg.assert_called_once_with("#channel",
+        self.mod.msg.assert_called_once_with(self.channel,
                                              "user already is an admin")
 
     def test_admins(self):
         self.handle_message("!admins")
-        self.mod.msg.assert_called_once_with("#channel", "user,user2")
+        self.mod.msg.assert_called_once_with(self.channel, "user,user2")
 
     def test_deladmin(self):
         self.handle_message("!deladmin user2")
@@ -130,7 +130,7 @@ class TestBase(PluginTestCase):
     def test_deladmin_is_no_admin(self):
         self.handle_message("!deladmin user3")
         self.mod.msg.assert_called_once_with(
-            "#channel", "Sorry, user3 is not even an admin")
+            self.channel, "Sorry, user3 is not even an admin")
 
     def test_disable(self):
         self.handle_message("!disable command")
@@ -160,7 +160,7 @@ class TestBase(PluginTestCase):
     def test_server(self):
         lala.util._BOT.server = "irc.nowhere.invalid"
         self.handle_message("!server")
-        self.mod.msg.assert_called_once_with("user", "irc.nowhere.invalid")
+        self.mod.msg.assert_called_once_with(self.user, "irc.nowhere.invalid")
 
     def tearDown(self):
         super(TestBase, self).tearDown()
@@ -181,7 +181,7 @@ class TestHTTPTitle(PluginTestCase):
         self.handle_message(url)
         self.mod.getPage.callback()
         self.assertTrue(url in self.mod.getPage.args)
-        self.mod.msg.assert_called_once_with("#channel", "Title: title")
+        self.mod.msg.assert_called_once_with(self.channel, "Title: title")
 
     def test_notitle(self):
         self.mod.getPage = _helpers.DeferredHelper(
@@ -202,7 +202,7 @@ class TestHTTPTitle(PluginTestCase):
         self.mod.getPage.addErrback(
             check_error_got_passed_through)
         self.mod.getPage.errback()
-        self.mod.msg.assert_called_once_with("#channel",
+        self.mod.msg.assert_called_once_with(self.channel,
                                              "Sorry, I couldn't get the title for %s" % url)
 
 
@@ -217,7 +217,7 @@ class TestRoulette(PluginTestCase):
         self.mod.gun.bullet = 6
         self.mod.gun.chamber = 5
         self.handle_message("!shoot")
-        self.mod.msg.assert_called_with("#channel", "Reloading")
+        self.mod.msg.assert_called_with(self.channel, "Reloading")
 
     def test_shoot(self):
         for chamber in range(1, 6):
@@ -226,11 +226,11 @@ class TestRoulette(PluginTestCase):
                 self.handle_message("!shoot")
                 if i == chamber:
                     # boom!
-                    self.mod.msg.assert_any_call("#channel",
+                    self.mod.msg.assert_any_call(self.channel,
                                                  "user: Chamber %s of 6: BOOM" % chamber)
-                    self.mod.msg.assert_any_call("#channel", "Reloading")
+                    self.mod.msg.assert_any_call(self.channel, "Reloading")
                 else:
-                    self.mod.msg.assert_called_with("#channel",
+                    self.mod.msg.assert_called_with(self.channel,
                                                     "user: Chamber %s of 6: *click*" % i)
             self.mod.msg.reset_mock()
 
@@ -254,13 +254,13 @@ class TestQuotes(PluginTestCase):
     def test_on_join(self):
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(
             data=[[1, "testquote"]])
-        lala.pluginmanager.on_join("user", "#channel")
+        lala.pluginmanager.on_join(self.user, self.channel)
         self.mod.db_connection.runQuery.callback()
-        self.mod.msg.assert_called_once_with("#channel", "[1] testquote")
+        self.mod.msg.assert_called_once_with(self.channel, "[1] testquote")
 
     def test_on_join_no_quote(self):
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(data=[])
-        lala.pluginmanager.on_join("user", "#channel")
+        lala.pluginmanager.on_join(self.user, self.channel)
         self.assertFalse(self.mod.msg.called)
 
     @_helpers.mock_is_admin
@@ -269,7 +269,7 @@ class TestQuotes(PluginTestCase):
         self.mod.db_connection.runInteraction = _helpers.DeferredHelper(data=0)
         self.handle_message("!delquote %d" % qnum)
         self.mod.db_connection.runInteraction.callback()
-        self.mod.msg.assert_called_with("#channel",
+        self.mod.msg.assert_called_with(self.channel,
                                         "It doesn't look like quote #%d exists." % qnum)
 
     @_helpers.mock_is_admin
@@ -278,7 +278,7 @@ class TestQuotes(PluginTestCase):
             _helpers.DeferredHelper(data=1)
         self.handle_message("!delquote 1")
         self.mod.db_connection.runInteraction.callback()
-        self.mod.msg.assert_called_with("#channel",
+        self.mod.msg.assert_called_with(self.channel,
                                         "Quote #1 has been deleted.")
 
     @given(integers(min_value=0))
@@ -287,7 +287,7 @@ class TestQuotes(PluginTestCase):
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         self.handle_message("!getquote %d" % qnum)
         self.mod.db_connection.runQuery.callback()
-        self.mod.msg.assert_called_with("#channel",
+        self.mod.msg.assert_called_with(self.channel,
                                         self.mod.MESSAGE_TEMPLATE_WITH_RATING % data[0])
 
     @given(integers(min_value=0))
@@ -296,8 +296,8 @@ class TestQuotes(PluginTestCase):
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         self.handle_message("!getquote %d" % qnum)
         self.mod.db_connection.runQuery.callback()
-        self.mod.msg.assert_called_with("#channel", "%s: There's no quote #%s"
-                                        % ("user", qnum))
+        self.mod.msg.assert_called_with(self.channel, "%s: There's no quote #%s"
+                                        % (self.user, qnum))
 
     @given(integers(min_value=0))
     def test_getquote_none_quote(self, qnum):
@@ -308,12 +308,12 @@ class TestQuotes(PluginTestCase):
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         self.handle_message("!getquote %d" % qnum)
         self.mod.db_connection.runQuery.callback()
-        self.mod.msg.assert_called_with("#channel", "%s: There's no quote #%s"
-                                        % ("user", qnum))
+        self.mod.msg.assert_called_with(self.channel, "%s: There's no quote #%s"
+                                        % (self.user, qnum))
 
     def test_qflop(self):
         data = [("1", "quote", "1", "4"), ("2", "quote", "2", "3")]
-        calls = [mock.call("#channel", self.mod.MESSAGE_TEMPLATE_WITH_RATING % d) for d in data]
+        calls = [mock.call(self.channel, self.mod.MESSAGE_TEMPLATE_WITH_RATING % d) for d in data]
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         self.handle_message("!qflop")
         self.mod.db_connection.runQuery.callback()
@@ -321,7 +321,7 @@ class TestQuotes(PluginTestCase):
 
     def test_qtop(self):
         data = [("2", "quote", "2", "3"), ("1", "quote", "1", "4")]
-        calls = [mock.call("#channel", self.mod.MESSAGE_TEMPLATE_WITH_RATING % d) for d in data]
+        calls = [mock.call(self.channel, self.mod.MESSAGE_TEMPLATE_WITH_RATING % d) for d in data]
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         self.handle_message("!qtop")
         self.mod.db_connection.runQuery.callback()
@@ -336,14 +336,14 @@ class TestQuotes(PluginTestCase):
         self.handle_message("!searchquote test")
         self.mod.db_connection.runQuery.callback()
         for i in data:
-            self.mod.msg.assert_any_call("#channel",
+            self.mod.msg.assert_any_call(self.channel,
                                          self.mod.MESSAGE_TEMPLATE % (i[0], i[1]))
 
     def test_searchquote_none_found(self):
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(data=[])
         self.handle_message("!searchquote foo")
         self.mod.db_connection.runQuery.callback()
-        self.mod.msg.assert_called_once_with("#channel", "No matching quotes found")
+        self.mod.msg.assert_called_once_with(self.channel, "No matching quotes found")
 
     def test_searchquote_too_many(self):
         max_quotes = int(lala.config._get("quotes", "max_quotes")) + 1
@@ -353,7 +353,7 @@ class TestQuotes(PluginTestCase):
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(data=data)
         self.handle_message("!searchquote test")
         self.mod.db_connection.runQuery.callback()
-        self.mod.msg.assert_called_once_with("#channel",
+        self.mod.msg.assert_called_once_with(self.channel,
                                              "Too many results, please refine your search")
 
 
@@ -366,29 +366,29 @@ class TestBirthday(PluginTestCase):
 
     def test_join_birthday(self):
         self.handle_message("!my_birthday_is 10.12.")
-        lala.pluginmanager.on_join("user", "#channel")
-        self.mod.msg.assert_called_once_with("#channel",
+        lala.pluginmanager.on_join(self.user, self.channel)
+        self.mod.msg.assert_called_once_with(self.channel,
                                              "\o\ Happy birthday, user /o/")
 
     def test_join_not_birthday(self):
         self.handle_message("!my_birthday_is 09.12.")
-        lala.pluginmanager.on_join("user", "#channel")
+        lala.pluginmanager.on_join(self.user, self.channel)
         self.assertFalse(self.mod.msg.called)
 
     def test_past_birthday(self):
-        lala.config._set("birthday", "user", "09.12.2012")
-        lala.pluginmanager.on_join("user", "#channel")
-        self.assertEqual(lala.config._get("birthday", "user"), "09.12.2013")
+        lala.config._set("birthday", self.user, "09.12.2012")
+        lala.pluginmanager.on_join(self.user, self.channel)
+        self.assertEqual(lala.config._get("birthday", self.user), "09.12.2013")
 
     def test_set_birthday_not_yet(self):
         """Tests setting a birthday that has not already happened this year."""
         self.handle_message("!my_birthday_is 11.12.")
-        self.assertEqual(lala.config._get("birthday", "user"), "11.12.2012")
+        self.assertEqual(lala.config._get("birthday", self.user), "11.12.2012")
 
     def test_set_birthday_already(self):
         """Tests setting a birthday that has already happened this year."""
         self.handle_message("!my_birthday_is 09.12.")
-        self.assertEqual(lala.config._get("birthday", "user"), "09.12.2013")
+        self.assertEqual(lala.config._get("birthday", self.user), "09.12.2013")
 
 
 class TestLast(PluginTestCase):
@@ -429,7 +429,7 @@ class TestCalendar(PluginTestCase):
     def test_weeknum(self):
         self.mod.date = _helpers.NewDate
         self.handle_message("!weeknum")
-        self.mod.msg.assert_called_once_with("#channel",
+        self.mod.msg.assert_called_once_with(self.channel,
                                              "It's week #50 of the year 2012.")
 
 
@@ -442,18 +442,18 @@ class TestDecide(PluginTestCase):
 
     def test_basic(self):
         self.handle_message("!decide 1/2/3")
-        self.mod.msg.assert_called_once_with("#channel",
+        self.mod.msg.assert_called_once_with(self.channel,
                                              "user: 1")
 
     def test_real_hard(self):
         self.handle_message("!decide_real_hard 1/2/3")
-        self.mod.msg.assert_called_once_with("#channel",
-                                             self.mod._REAL_HARD_TEMPLATE.format(user="user", choice="3", count=1705, tries=self.mod.TRIES))
+        self.mod.msg.assert_called_once_with(self.channel,
+                                             self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice="3", count=1705, tries=self.mod.TRIES))
 
     def test_real_hard_single_choice(self):
         self.handle_message("!decide_real_hard 1")
-        self.mod.msg.assert_called_once_with("#channel",
-                                             self.mod._NO_CHOICE_NECESSARY_TEMPLATE.format(user="user", choice="1"))
+        self.mod.msg.assert_called_once_with(self.channel,
+                                             self.mod._NO_CHOICE_NECESSARY_TEMPLATE.format(user=self.user, choice="1"))
 
     @mock.patch('lala.plugins.decide.Counter.most_common')
     def test_real_hard_exactly_half(self, counter_mock):
@@ -462,5 +462,5 @@ class TestDecide(PluginTestCase):
                                     [('1', tries_half + 1), ('2', tries_half - 1)],
                                     ]
         self.handle_message("!decide_real_hard 1/2")
-        self.mod.msg.assert_called_once_with("#channel",
-                                             self.mod._REAL_HARD_TEMPLATE.format(user="user", choice="1", count=tries_half + 1, tries = lala.plugins.decide.TRIES))
+        self.mod.msg.assert_called_once_with(self.channel,
+                                             self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice="1", count=tries_half + 1, tries = lala.plugins.decide.TRIES))
