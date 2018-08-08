@@ -32,9 +32,9 @@ def regex_f(user, channel, text, regex):
 
 class TestPluginmanager(unittest.TestCase):
     def setUp(self):
-        pluginmanager._callbacks = {}
-        pluginmanager._regexes = {}
-        pluginmanager._join_callbacks = []
+        pluginmanager._callbacks.clear()
+        pluginmanager._regexes.clear()
+        pluginmanager._join_callbacks = pluginmanager._join_callbacks[:0]
 
     def execute_example(self, f):
         self.setUp()

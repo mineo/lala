@@ -26,9 +26,9 @@ class PluginTestCase(unittest.TestCase):
     def setUpClass(cls):
         lala.config._CFG = configparser.RawConfigParser()
         lala.config._set("quotes", "database_path", ":memory:")
-        lala.pluginmanager._callsbacks = {}
-        lala.pluginmanager._regexes = {}
-        lala.pluginmanager._join_callbacks = []
+        lala.pluginmanager._callbacks.clear()
+        lala.pluginmanager._regexes.clear()
+        lala.pluginmanager._join_callbacks = lala.pluginmanager._join_callbacks[:0]
         cls.mod = import_module("lala.plugins.%s" % cls.plugin)
         default_opts = getattr(cls.mod, lala.pluginmanager.DEFAULT_OPTIONS_VARIABLE,
                                None)
