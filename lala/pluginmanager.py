@@ -62,9 +62,9 @@ def load_plugin(name):
     logging.debug("Trying to load %s" % name)
     if not lala.config._CFG.has_section(name):
         lala.config._CFG.add_section(name)
-    name = "lala/plugins/%s" % name
-    (f, p, d) = imp.find_module(name)
-    mod = imp.load_module(name, f, p, d)
+    modname = "lala/plugins/%s" % name
+    (f, p, d) = imp.find_module(modname)
+    mod = imp.load_module(modname, f, p, d)
     if hasattr(mod, DEFAULT_OPTIONS_VARIABLE):
         lala.config._set_default_options(name,
                                          getattr(mod, DEFAULT_OPTIONS_VARIABLE))
