@@ -36,6 +36,7 @@ setup(name="lala",
       use_scm_version={"write_to": "lala/version.py"},
       extras_require={
           "iw": ["ilmwetter"],
+          "prometheus": ["prometheus_client"],
           "websocket": ["autobahn"]
       },
       tests_require=test_requirements,

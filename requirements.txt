@@ -1,1 +1,1 @@
--e .[iw,websocket]
+-e .[iw,prometheus,websocket]

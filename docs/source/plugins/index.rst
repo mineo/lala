@@ -14,6 +14,7 @@ Plugins
    iw
    last
    log
+   prometheus
    quotes
    roulette
    websocket
