@@ -41,6 +41,7 @@ joins = Counter("joins",
 def inc_join_counter(user, channel):
     joins.labels(channel=channel).inc()
 
+
 @regex(".*")
 def inc_message_counter(user, channel, text, match_obj):
     messages.labels(channel=channel).inc()

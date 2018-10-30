@@ -62,7 +62,7 @@ def birthday_join_notice(user, channel):
         return
     today = date.today()
     if date_of_birth == today:
-        msg(channel, "\o\ Happy birthday, %s /o/" % user)
+        msg(channel, r"\o\ Happy birthday, %s /o/" % user)
         date_of_birth = date_of_birth + timedelta(days=365)
         set(user, date_of_birth.strftime(_CONFIG_TIME_FORMAT))
     elif date_of_birth < today:

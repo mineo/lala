@@ -105,7 +105,7 @@ def on_join(f):
 
 
 class regex(object):  # noqa: N801
-    """Decorator to register a regex. Example::
+    r"""Decorator to register a regex. Example::
 
            @regex("(https?://.+)\s?")
            def somefunc(user, channel, text, match_obj):

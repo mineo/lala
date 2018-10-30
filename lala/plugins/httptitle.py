@@ -22,7 +22,7 @@ from twisted.internet.defer import inlineCallbacks, returnValue
 __all__ = ()
 
 
-_regex = re.compile("(https?://.+)\s?")
+_regex = re.compile(r"(https?://.+)\s?")
 
 
 @regex(_regex)
