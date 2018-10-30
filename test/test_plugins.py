@@ -1,3 +1,4 @@
+# coding: utf-8
 import lala.config
 import lala.pluginmanager
 import lala.util
@@ -45,8 +46,15 @@ class PluginTestCase(unittest.TestCase):
 
     def handle_message(self, msg):
         """Instruct the plugin manager to handle ``msg``
+
+        ``msg`` will automatically be converted to an object of type
+        ``unicode``.
+
         :param str msg:
         """
+        if not isinstance(msg, unicode):
+            self.assertIsInstance(msg, str)
+            msg = msg.decode("utf-8")
         lala.pluginmanager._handle_message(self.user, self.channel, msg)
 
     def assert_only_message(self, msg):
