@@ -67,7 +67,7 @@ def _get(section, key):
 def get_int(*args):
     """Returns the value of a config option as an int.
 
-    :param \*args: See :meth:`lala.config.get`
+    :param *args: See :meth:`lala.config.get`
     :rtype: int
     """
     return get(*args, converter=int)
@@ -95,7 +95,7 @@ def _list_converter(value):
 def get_list(*args):
     """Gets a list option.
 
-    :param \*args: See :meth:`lala.config.get`
+    :param *args: See :meth:`lala.config.get`
     :rtype: list of strings
     """
     value = get(*args, converter=_list_converter)
