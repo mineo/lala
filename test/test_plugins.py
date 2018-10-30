@@ -451,16 +451,16 @@ class TestDecide(PluginTestCase):
         random.seed(123)
 
     def test_basic(self):
-        self.handle_message("!decide 1/2/3")
-        self.assert_only_message("user: 1")
+        self.handle_message("!decide erdnüsse/chips/3")
+        self.assert_only_message(u"user: erdnüsse")
 
     @mock.patch('lala.plugins.decide.Counter.most_common')
     def test_real_hard(self, counter_mock):
         # We could use the seed here, but even with a seeded RNG the results
         # differ across Python versions.
-        counter_mock.side_effect = [[('1', self.tries_half), ('2', self.tries_half - 1)]]
-        self.handle_message("!decide_real_hard 1/2/3")
-        self.assert_only_message(self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice="1", count=self.tries_half, tries=self.mod.TRIES))
+        counter_mock.side_effect = [[(u"erdnüsse", self.tries_half), (u"chips", self.tries_half - 1)]]
+        self.handle_message("!decide_real_hard erdnüsse/chips/3")
+        self.assert_only_message(self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice=u"erdnüsse", count=self.tries_half, tries=self.mod.TRIES))
 
     def test_real_hard_single_choice(self):
         self.handle_message("!decide_real_hard 1")
@@ -468,8 +468,8 @@ class TestDecide(PluginTestCase):
 
     @mock.patch('lala.plugins.decide.Counter.most_common')
     def test_real_hard_exactly_half(self, counter_mock):
-        counter_mock.side_effect = [[('1', self.tries_half), ('2', self.tries_half)],
-                                    [('1', self.tries_half + 1), ('2', self.tries_half - 1)],
+        counter_mock.side_effect = [[(u"erdnüsse", self.tries_half), (u"chips", self.tries_half)],
+                                    [(u"erdnüsse", self.tries_half + 1), (u"chips", self.tries_half - 1)],
                                     ]
         self.handle_message("!decide_real_hard 1/2")
-        self.assert_only_message(self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice="1", count=self.tries_half + 1, tries = lala.plugins.decide.TRIES))
+        self.assert_only_message(self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice=u"erdnüsse", count=self.tries_half + 1, tries = lala.plugins.decide.TRIES))

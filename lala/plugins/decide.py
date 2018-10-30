@@ -16,8 +16,8 @@ from lala.util import command, msg
 
 TRIES = 5000
 
-_NO_CHOICE_NECESSARY_TEMPLATE = "{user}: I don't even have to think about that, it's {choice}"  # noqa
-_REAL_HARD_TEMPLATE = "{user}: {choice} has been chosen {count} out of {tries} times"  # noqa
+_NO_CHOICE_NECESSARY_TEMPLATE = u"{user}: I don't even have to think about that, it's {choice}"  # noqa
+_REAL_HARD_TEMPLATE = u"{user}: {choice} has been chosen {count} out of {tries} times"  # noqa
 
 
 @command
