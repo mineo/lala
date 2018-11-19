@@ -25,17 +25,19 @@ class PluginTestCase(LalaTestCase):
         lala.pluginmanager._callbacks.clear()
         lala.pluginmanager._regexes.clear()
         lala.pluginmanager._join_callbacks = lala.pluginmanager._join_callbacks[:0]
-        cls.mod = import_module("lala.plugins.%s" % cls.plugin)
-        default_opts = getattr(cls.mod, lala.pluginmanager.DEFAULT_OPTIONS_VARIABLE,
-                               None)
-        if default_opts is not None:
-            lala.config._set_default_options(cls.plugin, default_opts)
-        initf = getattr(cls.mod, lala.pluginmanager.MODULE_INIT_FUNC, None)
-        if initf is not None:
-            initf()
 
     def setUp(self):
         super(PluginTestCase, self).setUp()
+
+        self.mod = import_module("lala.plugins.%s" % self.plugin)
+        default_opts = getattr(self.mod, lala.pluginmanager.DEFAULT_OPTIONS_VARIABLE,
+                               None)
+        if default_opts is not None:
+            lala.config._set_default_options(self.plugin, default_opts)
+        initf = getattr(self.mod, lala.pluginmanager.MODULE_INIT_FUNC, None)
+        if initf is not None:
+            initf()
+
         msg_patcher = mock.patch('lala.plugins.%s.msg' % self.plugin)
         msg_patcher.start()
         self.addCleanup(msg_patcher.stop)
