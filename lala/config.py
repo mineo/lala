@@ -48,6 +48,7 @@ def _initialize(filename=None):
     else:
         configfiles = [filename]
     files = cfg.read(configfiles)
+    cfg.add_section("base")
 
     logging.info("Read config files %s", files)
     logging.info("Using %s to save setting", files[0])
