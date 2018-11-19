@@ -76,7 +76,7 @@ def _set(section, key, value):
         _CFG.add_section(section)
         _CFG.set(section, key, value)
     if _FILENAME is not None:
-        with open(_FILENAME, "wb") as fp:
+        with open(_FILENAME, "w") as fp:
             _CFG.write(fp)
 
 
