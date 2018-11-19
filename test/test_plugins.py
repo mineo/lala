@@ -3,14 +3,9 @@ import lala.config
 import lala.pluginmanager
 import lala.util
 import random
-try:
-    # Python < 2.7
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 
 from . import _helpers
-from ._helpers import mock
+from ._helpers import mock, LalaTestCase
 from hypothesis import given
 from hypothesis.strategies import integers
 from importlib import import_module
@@ -18,7 +13,7 @@ from six.moves import configparser, range
 from twisted.python.failure import Failure
 
 
-class PluginTestCase(unittest.TestCase):
+class PluginTestCase(LalaTestCase):
     plugin = None
     user = "user"
     channel = "#channel"
@@ -40,6 +35,7 @@ class PluginTestCase(unittest.TestCase):
             initf()
 
     def setUp(self):
+        super(PluginTestCase, self).setUp()
         msg_patcher = mock.patch('lala.plugins.%s.msg' % self.plugin)
         msg_patcher.start()
         self.addCleanup(msg_patcher.stop)
@@ -255,13 +251,6 @@ class TestRoulette(PluginTestCase):
 
 class TestQuotes(PluginTestCase):
     plugin = "quotes"
-
-    def execute_example(self, f):
-        self.setUp()
-        try:
-            return f()
-        finally:
-            self.tearDown()
 
     def test_on_join(self):
         self.mod.db_connection.runQuery = _helpers.DeferredHelper(

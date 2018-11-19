@@ -1,12 +1,7 @@
-try:
-    # Python < 2.7
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 import lala.pluginmanager
 from ._helpers import mock
 
-from ._helpers import bot_command, bot_command_list
+from ._helpers import bot_command, bot_command_list, LalaTestCase
 from hypothesis import given
 from lala import util
 from re import compile
@@ -24,8 +19,9 @@ def regex_f(arg1, arg2, arg3, arg4):
     pass
 
 
-class TestUtil(unittest.TestCase):
+class TestUtil(LalaTestCase):
     def setUp(self):
+        super(TestUtil, self).setUp()
         pm_patcher = mock.patch('lala.pluginmanager')
         pm_patcher.start()
         self.addCleanup(pm_patcher.stop)
@@ -33,13 +29,6 @@ class TestUtil(unittest.TestCase):
         bot_patcher = mock.patch('lala.util._BOT')
         bot_patcher.start()
         self.addCleanup(bot_patcher.stop)
-
-    def execute_example(self, f):
-        self.setUp()
-        try:
-            return f()
-        finally:
-            self.tearDown()
 
     def test_on_join(self):
         util.on_join(f2)

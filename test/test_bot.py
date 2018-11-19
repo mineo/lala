@@ -1,19 +1,15 @@
-try:
-    # Python < 2.7
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 import lala.factory
 import lala.util
 import lala.pluginmanager
 import lala.config
-from ._helpers import mock
+from ._helpers import mock, LalaTestCase
 
 from twisted.test import proto_helpers
 
 
-class TestBot(unittest.TestCase):
+class TestBot(LalaTestCase):
     def setUp(self):
+        super(TestBot, self).setUp()
         patcher = mock.patch("lala.pluginmanager")
         patcher.start()
         self.addCleanup(patcher.stop)

@@ -1,12 +1,7 @@
-try:
-    # Python < 2.7
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 from ._helpers import mock
 
 from ._helpers import (command_func_generator, irc_nickname, irc_nickname_list,
-                       bot_command, bot_command_list)
+                       bot_command, bot_command_list, LalaTestCase)
 from hypothesis import assume, given
 from lala import util, pluginmanager
 from re import compile
@@ -30,8 +25,9 @@ def regex_f(user, channel, text, regex):
     raise ValueError("I have been called, something is wrong")
 
 
-class TestPluginmanager(unittest.TestCase):
+class TestPluginmanager(LalaTestCase):
     def setUp(self):
+        super(TestPluginmanager, self).setUp()
         pluginmanager._callbacks.clear()
         pluginmanager._regexes.clear()
         pluginmanager._join_callbacks = pluginmanager._join_callbacks[:0]
@@ -39,7 +35,7 @@ class TestPluginmanager(unittest.TestCase):
     def execute_example(self, f):
         self.setUp()
         try:
-            return f()
+            f()
         finally:
             self.tearDown()
 

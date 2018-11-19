@@ -1,4 +1,5 @@
 import datetime
+import unittest
 try:
     # Python 3
     import unittest.mock as mock
@@ -8,7 +9,29 @@ except ImportError:
 
 from functools import partial, wraps
 from hypothesis.strategies import just, lists, text
+from lala import config
+from os import close, remove
+from tempfile import mkstemp
 from twisted.internet.defer import Deferred
+
+
+class LalaTestCase(unittest.TestCase):
+    def setUp(self):
+        (fd, self.configfile) = mkstemp()
+        close(fd)
+        with open(self.configfile, "w") as _file:
+            self.writeConfigFile(_file)
+        config._initialize(filename=self.configfile)
+
+    def writeConfigFile(self, _file):
+        pass
+
+    def tearDown(self):
+        # For tests executed with hypothesis' execute_example, tearDown is
+        # called twice.
+        if self.configfile is not None:
+            remove(self.configfile)
+        self.configfile = None
 
 
 class NewDate(datetime.date):
