@@ -109,14 +109,24 @@ class TestBase(PluginTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestBase, cls).setUpClass()
-        lala.util._BOT.factory.nspassword = None
-        lala.config._CFG = mock.Mock()
-        lala.config._CFG.get.return_value = "user,user2"
-        lala.pluginmanager.enable = mock.Mock()
-        lala.pluginmanager.disable = mock.Mock()
 
     def setUp(self):
         super(TestBase, self).setUp()
+        lala.util._BOT.factory.nspassword = None
+
+        cfg_patcher = mock.patch("lala.config._CFG")
+        cfg_patcher.start()
+        self.addCleanup(cfg_patcher.stop)
+        lala.config._CFG.get.return_value = "user,user2"
+
+        enable_patcher = mock.patch("lala.pluginmanager.enable")
+        enable_patcher.start()
+        self.addCleanup(enable_patcher.stop)
+
+        disable_patcher = mock.patch("lala.pluginmanager.disable")
+        disable_patcher.start()
+        self.addCleanup(disable_patcher.stop)
+
         self.mod.is_admin = mock.Mock(return_value=True)
 
     def test_addadmin(self):
