@@ -9,15 +9,51 @@ option names and the values are the default values in your plugin.
 import logging
 
 
+from appdirs import user_config_dir
 from inspect import getframeinfo, stack
-from os.path import basename
+from os import getenv
+from os.path import basename, expanduser, join
 from six import iteritems, string_types
+from six.moves import configparser
 
 _CFG = None
 _FILENAME = None
 
 #: Used as a separator when storing lists of values in the config file
 _LIST_SEPARATOR = ","
+
+#: Default settings
+_CONFIG_DEFAULTS = {
+    "channels": "",
+    "plugins": "",
+    "nickserv_password": None,
+    "log_folder": expanduser("~/.lala/logs"),
+    "log_file": expanduser("~/.lala/lala.log"),
+    "encoding": "utf-8",
+    "fallback_encoding": "utf-8",
+    "max_log_days": 2,
+    "nickserv_admin_tracking": "false"
+}
+
+
+def _initialize(filename=None):
+    global _CFG
+    global _FILENAME
+    cfg = configparser.RawConfigParser(_CONFIG_DEFAULTS)
+    if filename is None:
+        configfiles = [join(user_config_dir(appname="lala"),
+                            "config"),
+                       join(getenv("HOME"), ".lala", "config"),
+                       "/etc/lala/config"]
+    else:
+        configfiles = [filename]
+    files = cfg.read(configfiles)
+
+    logging.info("Read config files %s", files)
+    logging.info("Using %s to save setting", files[0])
+
+    _CFG = cfg
+    _FILENAME = files[0]
 
 
 def _find_current_plugin_name():

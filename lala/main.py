@@ -1,26 +1,10 @@
 import logging
-import os
 
-from appdirs import user_config_dir
 from lala import config
 from lala.factory import LalaFactory
-from six.moves import configparser
 from twisted.application import service, internet
 from twisted.python import log
 from twisted.python.usage import Options
-
-
-CONFIG_DEFAULTS = {
-    "channels": "",
-    "plugins": "",
-    "nickserv_password": None,
-    "log_folder": os.path.expanduser("~/.lala/logs"),
-    "log_file": os.path.expanduser("~/.lala/lala.log"),
-    "encoding": "utf-8",
-    "fallback_encoding": "utf-8",
-    "max_log_days": 2,
-    "nickserv_admin_tracking": "false"
-}
 
 
 class LalaOptions(Options):
@@ -34,25 +18,15 @@ def getService(options):  # noqa: N802
     observer.start()
 
     # Set up the config
-    cfg = configparser.RawConfigParser(CONFIG_DEFAULTS)
-    configfiles = [os.path.join(user_config_dir(appname="lala"),
-                                "config"),
-                   os.path.join(os.getenv("HOME"), ".lala", "config"),
-                   "/etc/lala/config"]
-    files = cfg.read(configfiles)
-
-    config._CFG = cfg
-    config._FILENAME = files[0]
+    config._initialize()
 
     # Set the default logging level so we can already log messages
     logging.getLogger("").setLevel(logging.INFO)
-    logging.info("Read config files %s", files)
-    logging.info("Using %s to save setting", files[0])
 
     # Set up logging
     handler = logging.FileHandler(filename=config._get("base", "log_file"),
                                   encoding="utf-8")
-    if options["verbose"] or cfg.getboolean("base", "debug"):
+    if options["verbose"] or config._CFG.getboolean("base", "debug"):
         logging.getLogger("").setLevel(logging.DEBUG)
         handler.setFormatter(logging.Formatter(
             "%(asctime)s %(levelname)s %(filename)s: %(funcName)s:%(lineno)d"
@@ -61,11 +35,11 @@ def getService(options):  # noqa: N802
         handler.setFormatter(logging.Formatter("%(message)s"))
     logging.getLogger("").addHandler(handler)
 
-    f = LalaFactory(cfg.get("base", "channels"),
-                    cfg.get("base", "nick"))
+    f = LalaFactory(config._get("base", "channels"),
+                    config._get("base", "nick"))
 
-    return internet.TCPClient(cfg.get("base", "server"),
-                              int(cfg.get("base", "port")),
+    return internet.TCPClient(config._get("base", "server"),
+                              int(config._get("base", "port")),
                               f)
 
 
