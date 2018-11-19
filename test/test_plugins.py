@@ -107,7 +107,6 @@ class TestBase(PluginTestCase):
     @classmethod
     def setUpClass(cls):
         super(TestBase, cls).setUpClass()
-        lala.util._BOT = mock.Mock()
         lala.util._BOT.factory.nspassword = None
         lala.config._CFG = mock.Mock()
         lala.config._CFG.get.return_value = "user,user2"

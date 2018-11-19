@@ -26,10 +26,6 @@ class TestUtil(LalaTestCase):
         pm_patcher.start()
         self.addCleanup(pm_patcher.stop)
 
-        bot_patcher = mock.patch('lala.util._BOT')
-        bot_patcher.start()
-        self.addCleanup(bot_patcher.stop)
-
     def test_on_join(self):
         util.on_join(f2)
         lala.pluginmanager.register_join_callback.assert_called_once_with(f2)

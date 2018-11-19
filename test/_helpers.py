@@ -23,6 +23,10 @@ class LalaTestCase(unittest.TestCase):
             self.writeConfigFile(_file)
         config._initialize(filename=self.configfile)
 
+        bot_patcher = mock.patch('lala.util._BOT')
+        bot_patcher.start()
+        self.addCleanup(bot_patcher.stop)
+
     def writeConfigFile(self, _file):
         pass
 
