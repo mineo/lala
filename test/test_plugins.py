@@ -9,6 +9,7 @@ from ._helpers import mock, LalaTestCase
 from hypothesis import given
 from hypothesis.strategies import integers
 from importlib import import_module
+from six import text_type
 from six.moves import configparser, range
 from twisted.python.failure import Failure
 
@@ -50,7 +51,7 @@ class PluginTestCase(LalaTestCase):
 
         :param str msg:
         """
-        if not isinstance(msg, unicode):
+        if not isinstance(msg, text_type):
             self.assertIsInstance(msg, str)
             msg = msg.decode("utf-8")
         lala.pluginmanager._handle_message(self.user, self.channel, msg)
