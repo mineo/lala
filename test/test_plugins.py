@@ -484,4 +484,4 @@ class TestDecide(PluginTestCase):
                                     [(u"erdnüsse", self.tries_half + 1), (u"chips", self.tries_half - 1)],
                                     ]
         self.handle_message("!decide_real_hard 1/2")
-        self.assert_only_message(self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice=u"erdnüsse", count=self.tries_half + 1, tries = lala.plugins.decide.TRIES))
+        self.assert_only_message(self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice=u"erdnüsse", count=self.tries_half + 1, tries=self.mod.TRIES))
