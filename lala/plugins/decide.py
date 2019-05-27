@@ -44,7 +44,8 @@ def decide_real_hard(user, channel, text):
         # There might be more elements with the same count, but knowing two of
         # them have the same is enough.
         first_choice, first_count = c[0]
-        second_choice, second_count = c[1]
+        if len(c) == 2:
+            _, second_count = c[1]
         if first_count > second_count:
             msg(channel, _REAL_HARD_TEMPLATE.format(
                 user=user, choice=first_choice, count=first_count, tries=TRIES))

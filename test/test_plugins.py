@@ -455,6 +455,10 @@ class TestDecide(PluginTestCase):
         self.handle_message("!decide erdnüsse/chips/3")
         self.assert_only_message(u"user: erdnüsse")
 
+    def test_same_choice(self):
+        self.handle_message("!decide foo/foo")
+        self.assert_only_message(u"user: foo")
+
     @mock.patch('lala.plugins.decide.Counter.most_common')
     def test_real_hard(self, counter_mock):
         # We could use the seed here, but even with a seeded RNG the results
@@ -462,6 +466,13 @@ class TestDecide(PluginTestCase):
         counter_mock.side_effect = [[(u"erdnüsse", self.tries_half), (u"chips", self.tries_half - 1)]]
         self.handle_message("!decide_real_hard erdnüsse/chips/3")
         self.assert_only_message(self.mod._REAL_HARD_TEMPLATE.format(user=self.user, choice=u"erdnüsse", count=self.tries_half, tries=self.mod.TRIES))
+
+    def test_real_hard_same_choice(self):
+        self.handle_message("!decide_real_hard foo/foo")
+        self.assert_only_message(self.mod._REAL_HARD_TEMPLATE.format(user=self.user,
+                                                                     choice=u"foo",
+                                                                     count=self.mod.TRIES,
+                                                                     tries=self.mod.TRIES))
 
     def test_real_hard_single_choice(self):
         self.handle_message("!decide_real_hard 1")
