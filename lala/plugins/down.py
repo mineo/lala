@@ -4,7 +4,7 @@ Downforeveryoneorjustme
 
 This plugin provides a single command, ``isitdown`` that, given a URL checks its
 availability on
-`Downforeveryoneorjustme <http://www.downforeveryoneorjustme.com/>`_.
+`Downforeveryoneorjustme <https://www.downforeveryoneorjustme.com/>`_.
 
 Options
 -------
@@ -18,7 +18,7 @@ from lala.util import msg, command
 from twisted.web.client import getPage
 from twisted.internet.defer import inlineCallbacks
 
-DFEOOJM_URL = "http://www.downforeveryoneorjustme.com/%s"
+DFEOOJM_URL = "https://www.downforeveryoneorjustme.com/%s"
 
 
 @command
