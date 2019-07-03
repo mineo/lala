@@ -98,6 +98,7 @@ def register_regex(regex, func):
 
 
 def _generic_errback(user, channel, failure):
+    failure.printTraceback()
     lala.util.msg(channel, "%s: whoops, something went wrong while processing "
                   "your command!" % user)
     return failure
