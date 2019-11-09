@@ -1,1 +1,6 @@
 -e .[iw,prometheus,websocket]
+flake8
+flake8-todo
+flake8-print
+pep8
+pep8-naming
