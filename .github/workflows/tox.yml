@@ -13,9 +13,15 @@ jobs:
           - python-version: "3.6"
             env: py36-twistedcurrent
           - python-version: "3.7"
+            env: py37-twistedcurrent
+          - python-version: "3.8"
+            env: py38-twistedcurrent
+          - python-version: "3.9"
             env: docs
-          - python-version: "3.7"
+          - python-version: "3.9"
             env: flake8
+          - python-version: "3.9"
+            env: py39-twistedcurrent
           - python-version: "pypy2"
             env: pypy2-twisted17
           - python-version: "pypy2"
