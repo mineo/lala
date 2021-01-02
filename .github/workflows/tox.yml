@@ -22,14 +22,6 @@ jobs:
             env: flake8
           - python-version: "3.9"
             env: py39-twistedcurrent
-          - python-version: "pypy2"
-            env: pypy2-twisted17
-          - python-version: "pypy2"
-            env: pypy2-twistedcurrent
-          - python-version: "pypy3"
-            env: pypy3-twisted17
-          - python-version: "pypy3"
-            env: pypy3-twistedcurrent
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
