@@ -13,5 +13,7 @@ plugins=decide,quotes,last,fortune
 # Channels to automatically join (optional)
 # channels =
 # Folder to save the logs in (optional)
-# Defaults to ~/.lala/logs (to be changed in the future)
+# Defaults to ~/.lala/logs (to be changed in the future). The folder must exist.
 # log_folder =
+
+debug = False
