@@ -2,14 +2,6 @@
 from __future__ import print_function
 from setuptools import setup
 
-import sys
-
-is_py3 = sys.version_info > (3, 3)
-
-test_requirements = ["hypothesis"]
-
-if not is_py3:
-    test_requirements.append("mock")
 
 setup(name="lala",
       author="Wieland Hoffmann",
@@ -28,8 +20,11 @@ setup(name="lala",
                    "License :: OSI Approved :: MIT License",
                    "Natural Language :: English",
                    "Operating System :: OS Independent",
-                   "Programming Language :: Python :: 2.7",
-                   "Programming Language :: Python :: 3.6"],
+                   "Programming Language :: Python :: 3.6"
+                   "Programming Language :: Python :: 3.7",
+                   "Programming Language :: Python :: 3.8",
+                   "Programming Language :: Python :: 3.9"
+                   ],
       data_files=[("usr/share/doc/lala", ["config.example"])],
       install_requires=["Twisted", "appdirs", "six"],
       setup_requires=["setuptools_scm"],
@@ -39,6 +34,6 @@ setup(name="lala",
           "prometheus": ["prometheus_client"],
           "websocket": ["autobahn"]
       },
-      tests_require=test_requirements,
+      tests_require=["hypothesis"],
       test_suite="test",
 )

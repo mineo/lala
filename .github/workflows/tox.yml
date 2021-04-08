@@ -6,20 +6,24 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: "2.7"
-            env: py27-twisted17
-          - python-version: "2.7"
-            env: py27-twistedcurrent
+          - python-version: "3.6"
+            env: py36-twisted21
           - python-version: "3.6"
             env: py36-twistedcurrent
           - python-version: "3.7"
+            env: py37-twisted21
+          - python-version: "3.7"
             env: py37-twistedcurrent
+          - python-version: "3.8"
+            env: py38-twisted21
           - python-version: "3.8"
             env: py38-twistedcurrent
           - python-version: "3.9"
             env: docs
           - python-version: "3.9"
             env: flake8
+          - python-version: "3.9"
+            env: py39-twisted21
           - python-version: "3.9"
             env: py39-twistedcurrent
     steps:
