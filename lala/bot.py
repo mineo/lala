@@ -86,10 +86,12 @@ class Lala(irc.IRCClient):
     def noticed(self, user, channel, message):
         """ Same as :py:meth:`lala.bot.Lala.privmsg` for NOTICEs."""
         user = user.split("!")[0]
-        try:
-            message = message.decode("utf-8")
-        except Exception:
-            message = message.decode(config._get("base", "fallback_encoding"))
+        if isinstance(message, bytes):
+            try:
+                message = message.decode("utf-8")
+            except Exception:
+                message = message.decode(config._get("base",
+                                                     "fallback_encoding"))
         logging.info("NOTICE: %s: %s" % (user, message))
 
     def irc_RPL_WHOISREGNICK(self, prefix, params):  # noqa: N802
