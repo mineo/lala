@@ -58,12 +58,7 @@ class Lala(irc.IRCClient):
         if channel == self.nickname:
             # This is true if the bot was queried
             channel = user
-        if isinstance(message, bytes):
-            try:
-                message = message.decode("utf-8")
-            except Exception:
-                message = message.decode(config._get("base",
-                                                     "fallback_encoding"))
+        message = self._decode_if_required(message)
         logging.debug("%s: %s" % (user, message))
         lala.pluginmanager._handle_message(user, channel, message)
 
@@ -86,12 +81,7 @@ class Lala(irc.IRCClient):
     def noticed(self, user, channel, message):
         """ Same as :py:meth:`lala.bot.Lala.privmsg` for NOTICEs."""
         user = user.split("!")[0]
-        if isinstance(message, bytes):
-            try:
-                message = message.decode("utf-8")
-            except Exception:
-                message = message.decode(config._get("base",
-                                                     "fallback_encoding"))
+        message = self._decode_if_required(message)
         logging.info("NOTICE: %s: %s" % (user, message))
 
     def irc_RPL_WHOISREGNICK(self, prefix, params):  # noqa: N802
@@ -140,3 +130,13 @@ class Lala(irc.IRCClient):
     @staticmethod
     def _list_of_admins():
         return config._get("base", "admins").split(config._LIST_SEPARATOR)
+
+    @staticmethod
+    def _decode_if_required(message):
+        if isinstance(message, bytes):
+            try:
+                message = message.decode("utf-8")
+            except Exception:
+                message = message.decode(config._get("base",
+                                                     "fallback_encoding"))
+        return message
