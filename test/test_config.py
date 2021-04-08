@@ -6,6 +6,7 @@ except ImportError:
 
 from lala import config
 from six.moves import configparser
+from tempfile import TemporaryDirectory
 
 
 class TestConfig(unittest.TestCase):
@@ -52,3 +53,7 @@ class TestConfig(unittest.TestCase):
 
     def test_raises(self):
         self.assertRaises(configparser.NoSectionError, config.get, "foo")
+
+    def test_raises_on_no_config_file(self):
+        with TemporaryDirectory() as tmp:
+            self.assertRaises(RuntimeError, config._initialize, f"{tmp}/does_not_exist")

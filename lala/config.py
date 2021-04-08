@@ -51,6 +51,9 @@ def _initialize(filename=None):
     if not cfg.has_section("base"):
         cfg.add_section("base")
 
+    if not files:
+        raise RuntimeError(f"Unable to read any config file. Tried: {configfiles}")
+
     logging.info("Read config files %s", files)
     logging.info("Using %s to save setting", files[0])
 
